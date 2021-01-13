@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Register</title>
+    <link rel="stylesheet" href="webjars/bootstrap/3.3.2/css/bootstrap.min.css"/>
+</head>
+<body>
+<form action="/create_user_form" method="post">
+    <fieldset>
+        <div id="legend">
+            <legend class="">Register</legend>
+        </div>
+        <div class="control-group">
+            <!-- Username -->
+            <label class="control-label"  for="username">Username</label>
+            <div class="controls">
+                <input type="text" id="username" name="username" placeholder="Please input your username" class="input-xlarge">
+                <p class="help-block">Username can contain any letters or numbers, without spaces</p>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <!-- E-mail -->
+            <label class="control-label" for="email">E-mail</label>
+            <div class="controls">
+                <input type="text" id="email" name="email" placeholder="" class="input-xlarge">
+                <p class="help-block">Please provide your E-mail</p>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <!-- FirstName -->
+            <label class="control-label"  for="firstname">Firstname</label>
+            <div class="controls">
+                <input type="text" id="firstname" name="firstname" placeholder="" class="input-xlarge">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <!-- LastName -->
+            <label class="control-label"  for="lastname">LastName</label>
+            <div class="controls">
+                <input type="text" id="lastname" name="lastname" placeholder="" class="input-xlarge">
+            </div>
+        </div>
+
+
+        <div class="control-group">
+            <!-- title-->
+            <label class="control-label" for="title">Title</label>
+            <div class="controls">
+                <input type="text" id="title" name="title" placeholder="" class="input-xlarge">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <!-- PartnerName-->
+            <label class="control-label" for="partnername">PartnerName</label>
+            <div class="controls">
+                <input type="text" id="partnername" name="partnername" placeholder="" class="input-xlarge">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <!-- Button -->
+            <div class="controls">
+                <button class="btn btn-success">Register</button>
+            </div>
+        </div>
+    </fieldset>
+</form>
+</body>
+</html>
