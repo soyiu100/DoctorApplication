@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Create Session</title>
+    <link rel="stylesheet" href="webjars/bootstrap/3.3.2/css/bootstrap.min.css"/>
+</head>
+<body>
+<form action="/create_session_form" method="post">
+    <fieldset>
+        <div id="legend">
+            <legend class="">Create Session</legend>
+        </div>
+        <div class="control-group">
+            <!-- patientId -->
+            <label class="control-label"  for="patientId">PatientId</label>
+            <div class="controls">
+                <input type="text" id="patientId" name="patientId"  class="input-xlarge">
+            </div>
+        </div>
+        <div class="control-group">
+            <!-- PatientName -->
+            <label class="control-label"  for="patientName">Patient Name</label>
+            <div class="controls">
+                <input type="text" id="patientName" name="patientName" placeholder="patientName get from searchPatient page" class="input-xlarge">
+            </div>
+        </div>
+        <div class="control-group">
+            <!-- scheduledTime -->
+            <label class="control-label" for="scheduledTime">scheduledTime</label>
+            <div class="controls">
+                <input type="text" id="scheduledTime" name="scheduledTime" placeholder="Will replace Text fields to other componenet like calendar selection"
+                       class="input-xlarge">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <!-- durationInMin -->
+            <label class="control-label"  for="durationInMin">durationInMin</label>
+            <div class="controls">
+                <input type="text" id="durationInMin" name="durationInMin" placeholder="Duration in Mins" class="input-xlarge">
+            </div>
+        </div>
+
+
+        <div class="control-group">
+            <!-- Button -->
+            <div class="controls">
+                <button class="btn btn-success">Create</button>
+            </div>
+        </div>
+    </fieldset>
+</form>
+</body>
+</html>

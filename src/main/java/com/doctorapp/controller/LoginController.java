@@ -49,7 +49,7 @@ public class LoginController {
                     authResult.getChallengeName().equals("NEW_PASSWORD_REQUIRED")) {
                 newPage = "redirect:change_password";
             } else {
-                newPage = "redirect:/";
+                newPage = "redirect:sessions";
             }
         } catch (Exception e) {
             //todo: Error message like : failed to validate your user credential

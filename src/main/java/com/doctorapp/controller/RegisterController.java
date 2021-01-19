@@ -2,8 +2,8 @@ package com.doctorapp.controller;
 
 import com.amazonaws.services.cognitoidp.model.ListUsersResult;
 import com.doctorapp.client.CognitoClient;
+import com.doctorapp.exception.DependencyException;
 import com.doctorapp.model.Doctor;
-import com.doctorapp.exception.DuplicationUserException;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,14 +67,14 @@ public class RegisterController {
      * @param userName
      * @exception InvalidParameterException
      */
-    private void validateUsername(String userName) throws Exception{
+    private void validateUsername(String userName) throws DependencyException{
         try {
             Validate.notBlank(userName, "userName cannot be blank.");
             Map<String, String> queryMap = new HashMap<>();
             queryMap.put(USERNAME, userName);
             ListUsersResult userResult = cognitoClient.getUsersByFilter(queryMap);
             if(userResult != null && userResult.getUsers().size() > 0) {
-                throw new DuplicationUserException("Duplicate user found for userName" + userName);
+                throw new DependencyException("Duplicate user found for userName" + userName);
             }
             log.info("No duplicate user found for username: {}", userName);
         } catch (IllegalArgumentException e) {
@@ -99,7 +99,7 @@ public class RegisterController {
             queryMap.put(EMAIL, emailAddr);
             ListUsersResult userResult = cognitoClient.getUsersByFilter(queryMap);
             if(userResult != null && userResult.getUsers().size() > 0) {
-                throw new DuplicationUserException("Duplicate user found for userName" + emailAddr);
+                throw new DependencyException("Duplicate user found for userName" + emailAddr);
             }
             log.info("No duplicate user found for username: {}", emailAddr);
         } catch (IllegalArgumentException e) {

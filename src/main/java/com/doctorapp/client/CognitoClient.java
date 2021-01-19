@@ -8,13 +8,14 @@ import com.doctorapp.model.Doctor;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
 
 import static com.doctorapp.constant.DoctorApplicationConstant.*;
 
-@Component
+@Service
 @Log4j2
 public class CognitoClient {
 
