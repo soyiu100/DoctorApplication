@@ -34,6 +34,7 @@ public class ScheduledSessionDao {
     public void init() {
         AmazonDynamoDB amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
                 .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
+                .withRegion(REGION)
                 .build();
         dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
     }

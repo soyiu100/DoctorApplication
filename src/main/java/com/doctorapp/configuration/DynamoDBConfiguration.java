@@ -7,6 +7,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.doctorapp.constant.DoctorApplicationConstant.REGION;
+
 @Configuration
 public class DynamoDBConfiguration {
 
@@ -14,6 +16,7 @@ public class DynamoDBConfiguration {
     public AmazonDynamoDB amazonDynamoDB() {
         return AmazonDynamoDBClientBuilder.standard()
                 .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
+                .withRegion(REGION)
                 .build();
     }
 
