@@ -1,10 +1,63 @@
+<!-- Doctor Preview Sessions : /viewSession -->
+
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>View Session</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Preview Sessions</title>
+    <th:block th:include="../fragments/header.html"></th:block>
 </head>
 <body>
-<p th:text="'Sessions, ' + ${session} + '!'" />
+<div class="d-flex justify-content-center"
+     style="padding-top: 2%;
+     padding-left:10%;
+     padding-right:10%;
+     display: block !important;">
+    <div>
+        <h1>Scheduled Sessions</h1>
+    </div>
+
+    <div th:if="sessions" style="display: block;">
+        <table class="table">
+            <thead class="thead-dark">
+            <tr>
+                <th>Room ID</th>
+                <th>Patient Name</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Duration</th>
+                <th>Doctor Status</th>
+                <th>Patient Status</th>
+                <th style="background-color: #fff;
+                        color: #000;
+                        border-color: #fff;">Access Session</th>
+            </tr>
+            </thead>
+
+            <!-- Given that in the backend, a list of Sessions with these fields are passed
+            into the model of the request mapping. Can adjust with new published code. -->
+            <th:block th:each="sess : ${sessions}">
+                <tr>
+                    <td th:text="${sess.sessionId}">...</td>
+                    <td th:text="${sess.patientName}">...</td>
+                    <td th:text="${sess.date}">...</td>
+                    <td th:text="${sess.time}">...</td>
+                    <td th:text="${sess.duration}">...</td>
+
+                    <!-- sess.doctorStatus and sess.patientStatus are both bools -->
+                    <td th:if="${sess.doctorStatus}">Connected</td>
+                    <td th:unless="${sess.doctorStatus}">Not Connected</td>
+
+                    <td th:if="${sess.patientStatus}">Connected</td>
+                    <td th:unless="${sess.patientStatus}"> Not Connected</td>
+
+                    <td th:if="${sess.patientStatus == sess.doctorStatus}">
+                        button
+                    </td>
+                </tr>
+            </th:block>
+        </table>
+    </div>
+</div>
+
 </body>
 </html>
