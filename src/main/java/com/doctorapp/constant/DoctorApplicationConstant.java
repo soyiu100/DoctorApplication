@@ -28,7 +28,8 @@ public class DoctorApplicationConstant {
     /**
      * Constant for Sessions
      */
-    public final static String ParticipantStatus_NOTCONNECTTED = "NOTCONNECTTED";
+    // TODO: change logic for participant status to boolean, so that the text only needs to be reworked on the front end if needed
+    public final static String ParticipantStatus_NOTCONNECTTED = "NOT CONNECTED";
     public final static String ParticipantStatus_JOINED = "JOINED";
 
     /**

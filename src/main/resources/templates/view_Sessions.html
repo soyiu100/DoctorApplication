@@ -1,4 +1,4 @@
-<!-- Doctor Preview Sessions : /viewSession -->
+<!-- Doctor Preview Sessions : /sessions -->
 
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
@@ -7,11 +7,13 @@
     <th:block th:include="../fragments/header.html"></th:block>
 </head>
 <body>
+<th:block th:include="../fragments/navbar.html"></th:block>
 <div class="d-flex justify-content-center"
      style="padding-top: 2%;
-     padding-left:10%;
-     padding-right:10%;
+     padding-left:20%;
+     padding-right:20%;
      display: block !important;">
+
     <div>
         <h1>Scheduled Sessions</h1>
     </div>
@@ -33,29 +35,37 @@
             </tr>
             </thead>
 
-            <!-- Given that in the backend, a list of Sessions with these fields are passed
-            into the model of the request mapping. Can adjust with new published code. -->
             <th:block th:each="sess : ${sessions}">
                 <tr>
-                    <td th:text="${sess.sessionId}">...</td>
-                    <td th:text="${sess.patientName}">...</td>
-                    <td th:text="${sess.date}">...</td>
-                    <td th:text="${sess.time}">...</td>
-                    <td th:text="${sess.duration}">...</td>
+                    <td th:if="${sess.roomId}" th:text="${sess.roomId}">...</td>
 
-                    <!-- sess.doctorStatus and sess.patientStatus are both bools -->
-                    <td th:if="${sess.doctorStatus}">Connected</td>
-                    <td th:unless="${sess.doctorStatus}">Not Connected</td>
+                    <!-- Placeholder for patient name: -->
+                    <!-- In theory, this would be hidden somewhere else,
+                    and the line commented out below would be here -->
+                    <td th:if="${sess.patientId}" th:text="${sess.patientId}">...</td>
+<!--                    <td th:text="${sess.patientName}">...</td>-->
 
-                    <td th:if="${sess.patientStatus}">Connected</td>
-                    <td th:unless="${sess.patientStatus}"> Not Connected</td>
+                    <!-- Placeholder for the date -->
+                    <td>January 25, 2021</td>
+<!--                    <td th:if="${sess.date}" th:text="${sess.date}">...</td>-->
 
-                    <td th:if="${sess.patientStatus == sess.doctorStatus}">
-                        button
+                    <td th:if="${sess.scheduledTime}" th:text="${sess.scheduledTime}">...</td>
+                    <td th:if="${sess.durationInMin}" th:text="${sess.durationInMin}">...</td>
+
+                    <td th:if="${sess.doctorStatus}" th:text="${sess.doctorStatus}">...</td>
+
+                    <td th:if="${sess.patientStatus}" th:text="${sess.patientStatus}">...</td>
+
+                    <td th:classappend="${sess.doctorStatus != 'JOINED'} ? table-link">
+                        <div th:if="${sess.doctorStatus != 'JOINED'}" onclick="location.href='/sessionCall'">
+                            Join Session
+                        </div>
                     </td>
                 </tr>
             </th:block>
         </table>
+
+        <a class="btn btn-outline-secondary" href="/create_sessions" style="float:right;">Create New Session</a>
     </div>
 </div>
 

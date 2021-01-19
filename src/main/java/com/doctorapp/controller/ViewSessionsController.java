@@ -29,6 +29,7 @@ public class ViewSessionsController {
         String endTime = "2021-01-03";
         List<ScheduledSession> sessions = scheduledSessionDao.
                 getScheduledSessionsByTimeRange(new TimeRange(startTime, endTime));
+
         log.info("get Sessions number: " + sessions.size());
         StringBuilder sessionInfo = new StringBuilder();
 
@@ -49,7 +50,7 @@ public class ViewSessionsController {
         });
 
         log.info(sessionInfo);
-        model.addAttribute("session", sessionInfo);
+        model.addAttribute("sessions", sessions);
         return "view_Sessions";
 
     }

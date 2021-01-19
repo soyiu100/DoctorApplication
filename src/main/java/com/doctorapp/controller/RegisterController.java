@@ -49,8 +49,6 @@ public class RegisterController {
         Doctor doctor = new Doctor(userName, emailAddr, firstname, lastname, title, partnername);
         try {
             cognitoClient.createNewUser(doctor);
-            redirect.addFlashAttribute("login_message", "Your user name is " +
-                    userName + ". Please check your email for your temporary password");
             redirect.addFlashAttribute("user_name_val", userName);
             //todo: confirmatin message like: register succeed and please check your mailbox for temporary password
             newPage = "redirect:login";

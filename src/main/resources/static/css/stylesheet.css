@@ -1,0 +1,8 @@
+.table-link {
+    display:block;
+    text-decoration:none;
+    cursor:pointer;
+    text-align:center !important;
+    color:#f88192 !important;
+    background-color:#ffffbb !important;
+}
