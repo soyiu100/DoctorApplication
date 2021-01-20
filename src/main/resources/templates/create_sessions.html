@@ -1,55 +1,69 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Create Session</title>
-    <link rel="stylesheet" href="webjars/bootstrap/3.3.2/css/bootstrap.min.css"/>
+    <th:block th:include="../fragments/header.html"></th:block>
 </head>
 <body>
-<form action="/create_session_form" method="post">
-    <fieldset>
-        <div id="legend">
-            <legend class="">Create Session</legend>
-        </div>
-        <div class="control-group">
-            <!-- patientId -->
-            <label class="control-label"  for="patientId">PatientId</label>
-            <div class="controls">
-                <input type="text" id="patientId" name="patientId"  class="input-xlarge">
-            </div>
-        </div>
-        <div class="control-group">
-            <!-- PatientName -->
-            <label class="control-label"  for="patientName">Patient Name</label>
-            <div class="controls">
-                <input type="text" id="patientName" name="patientName" placeholder="patientName get from searchPatient page" class="input-xlarge">
-            </div>
-        </div>
-        <div class="control-group">
-            <!-- scheduledTime -->
-            <label class="control-label" for="scheduledTime">scheduledTime</label>
-            <div class="controls">
-                <input type="text" id="scheduledTime" name="scheduledTime" placeholder="Will replace Text fields to other componenet like calendar selection"
-                       class="input-xlarge">
-            </div>
-        </div>
+    <th:block th:include="../fragments/navbar.html"></th:block>
+    <div class="d-flex justify-content-center">
+        <form action="/create_session_form" method="post">
+            <fieldset>
+                <h1>Create Session</h1>
+                <div class="form-group">
+                    <!-- Patient ID -->
+                    <label class="col-form-label" for="patientId">Patient ID</label>
+                    <div class="controls">
+                        <input type="text" id="patientId" name="patientId"
+                               class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <!-- Patient Name -->
+                    <label class="col-form-label" for="patientName">Patient Name</label>
+                    <div class="input-group mb-3">
+                        <input type="text" id="patientName" name="patientName"
+                               class="form-control" required>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button">Search Patients</button>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="control-group">
-            <!-- durationInMin -->
-            <label class="control-label"  for="durationInMin">durationInMin</label>
-            <div class="controls">
-                <input type="text" id="durationInMin" name="durationInMin" placeholder="Duration in Mins" class="input-xlarge">
-            </div>
-        </div>
+                <div class="form-group">
+                    <!-- Scheduled Date -->
+                    <label class="col-form-label" for="scheduledDate">Scheduled Date</label>
+                    <div class="controls">
+                        <input type="date" id="scheduledDate" name="scheduledDate"
+                               class="form-control" required>
+                    </div>
+                </div>
 
+                <div class="form-group">
+                    <!-- Scheduled Time -->
+                    <label class="col-form-label" for="scheduledTime">Scheduled Time</label>
+                    <div class="controls">
+                        <input type="time" id="scheduledTime" name="scheduledTime"
+                               class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <!-- Duration in Minutes -->
+                    <label class="col-form-label" for="durationInMin">Duration in Minutes</label>
+                    <div class="controls">
+                        <input type="number" id="durationInMin" name="durationInMin" placeholder="Appointment Length (Minutes)"
+                               class="form-control" required>
+                    </div>
+                </div>
 
-        <div class="control-group">
-            <!-- Button -->
-            <div class="controls">
-                <button class="btn btn-success">Create</button>
-            </div>
-        </div>
-    </fieldset>
-</form>
+                <div class="form-group">
+                    <div class="controls">
+                        <button class="btn btn-success">Create</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
 </body>
 </html>
