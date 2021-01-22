@@ -7,7 +7,7 @@
 <body>
     <th:block th:include="../fragments/navbar.html"></th:block>
     <div class="d-flex justify-content-center">
-        <form action="/create_session_form" method="post">
+        <form action="/create_session_form" id="session-form" method="post">
             <fieldset>
                 <h1>Create Session</h1>
                 <div class="form-group">
@@ -25,10 +25,13 @@
                         <input type="text" id="patientName" name="patientName"
                                class="form-control" required>
                         <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button">Search Patients</button>
+                            <button class="btn btn-outline-secondary" type="button"
+                                    data-toggle="modal" data-target="#searchPatientModal" >Search Patients</button>
                         </div>
                     </div>
                 </div>
+
+                <th:block th:include="../fragments/search_patient.html"></th:block>
 
                 <div class="form-group">
                     <!-- Scheduled Date -->
@@ -58,7 +61,7 @@
 
                 <div class="form-group">
                     <div class="controls">
-                        <button class="btn btn-success">Create</button>
+                        <button type="submit" class="btn btn-success" form="session-form">Create</button>
                     </div>
                 </div>
             </fieldset>

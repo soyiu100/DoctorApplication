@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div class="modal fade" id="searchPatientModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Search Patient</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="patient-name" action="/search_patient" method="post">
+                        <div class="form-group">
+                            <label for="firstName" class="col-form-label">First Name:</label>
+                            <input name="firstName" type="text" class="form-control" id="firstName">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName" class="col-form-label">Last Name:</label>
+                            <input name="lastName" type="text" class="form-control" id="lastName">
+                        </div>
+                        <button form="patient-name" id="submit-search" class="btn btn-primary">Search Patient</button>
+                    </form>
+                    <!-- This is the div that will be populated with search results -->
+                    <div id="results" style="padding-top: 20px;">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    var searchRequest = document.getElementById('submit-search');
+
+    searchRequest.addEventListener('click', function() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'search_patient/?firstName=' + document.getElementById("firstName").value
+            + '&lastName=' + document.getElementById("lastName").value, true);
+
+        // Here is where we receive a List<> of patients, given that the post endpoint has @ResponseBody tag
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Response will be a string: '[{...}, ...]'
+                var res = JSON.parse(xhr.response);
+
+                if (res === undefined || res.length == 0) {
+                    $("#results").html("No results.");
+                } else {
+                    $("#results").append('<table class=\"table\"></table>');
+                    $(".table").append(
+                        '<thead class="thead-dark">' +
+                            '<tr>' +
+                                '<th>Name</th>' +
+                                '<th>Patient ID</th>' +
+                                '<th>DOB</th>' +
+                                '<th></th>' +
+                            '</tr>' +
+                        '</thead>');
+                    for (const person of res) {
+                        $(".table").append(
+                            '<tr>' +
+                                '<td>' + person.firstName + ' ' + person.lastName + '</td>' +
+                                '<td>' + person.patientId + '</td>' +
+                                '<td>' + person.dob + '</td>' +
+                                '<td id="' + person.patientId  + '" class="table-link" data-dismiss="modal">Select</td>' +
+                            '</tr>');
+                        $("#" + person.patientId).on("click", function() {
+                            $("#patientName").val(person.firstName + ' ' + person.lastName)
+                            $("#patientId").val(person.patientId)
+                        });
+                    }
+                }
+            }
+        };
+        xhr.send();
+    }, false);
+
+    $(document).ready(function() {
+        $("#searchPatientModal").on("click", function() {
+            if (!$("#searchPatientModal").hasClass("show")) {
+                $("table").remove();
+                $("#firstName").val('');
+                $("#lastName").val('');
+            }
+        })
+    });
+
+
+</script>
+</html>
