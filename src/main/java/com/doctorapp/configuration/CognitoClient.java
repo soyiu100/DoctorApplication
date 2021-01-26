@@ -1,4 +1,4 @@
-package com.doctorapp.client;
+package com.doctorapp.configuration;
 
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
@@ -7,7 +7,6 @@ import com.amazonaws.services.cognitoidp.model.*;
 import com.doctorapp.model.Doctor;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -40,6 +39,7 @@ public class CognitoClient {
         try {
             authResult = awsCognitoIdentityProvider.adminInitiateAuth(authRequest);
         } catch (Exception e) {
+            log.error("Failed to validate user" + e.getMessage(), e);
             throw new AWSCognitoIdentityProviderException("Failed to validate user");
         }
         return authResult;
@@ -67,14 +67,14 @@ public class CognitoClient {
 
 
     public void createNewUser(final Doctor doctor) throws AWSCognitoIdentityProviderException {
-        final String emailAddr = doctor.getEmailAddress();
-        final String title = doctor.getTitle();
-        final String firstName = doctor.getFirstName();
-        final String lastName = doctor.getLastName();
-        final String partnerName = doctor.getPartnerName();
+        final String emailAddr = doctor.getEmailAddress().trim();
+        final String title = doctor.getTitle().trim();
+        final String firstName = doctor.getFirstName().trim();
+        final String lastName = doctor.getLastName().trim();
+        final String partnerName = doctor.getPartnerName().trim();
         AdminCreateUserRequest createUserRequest = new AdminCreateUserRequest()
                 .withUserPoolId(DOCTOR_POOL_ID)
-                .withUsername(doctor.getUserName())
+                .withUsername(doctor.getUserName().trim())
                 .withUserAttributes(
                         new AttributeType()
                                 .withName(EMAIL)
@@ -107,19 +107,17 @@ public class CognitoClient {
 
     /**
      * Find users by input filters
-     * @param paramMaps
+     * @param attrName filter attribute name
+     * @param attrValue filter attribute value
      * @return a list of users
      */
-    public ListUsersResult getUsersByFilter(Map<String, String> paramMaps)
+    public ListUsersResult getUsersByFilter(String attrName, String attrValue, String userPoolId)
             throws AWSCognitoIdentityProviderException {
         ListUsersRequest listUsersRequest = new ListUsersRequest()
-                .withUserPoolId(DOCTOR_POOL_ID);
-        paramMaps.forEach((filter, param) -> {
-            String query = String.format(DOCTOR_FILTER_QUERY, filter, param);
-            log.info("Start to fetch user list by query {}", query);
-            listUsersRequest.setFilter(query);
-        });
-
+                .withUserPoolId(userPoolId);
+        String query = String.format(USERPOOL_FILTER_QUERY, attrName, attrValue);
+        log.info("Start to fetch user list by query {}", query);
+        listUsersRequest.setFilter(query);
         ListUsersResult usersResults;
         try {
             usersResults = awsCognitoIdentityProvider.listUsers(listUsersRequest);

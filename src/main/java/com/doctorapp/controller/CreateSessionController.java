@@ -1,20 +1,18 @@
 package com.doctorapp.controller;
 
-import com.doctorapp.dao.ScheduledSessionDao;
-import com.doctorapp.dto.ScheduledSession;
-import com.doctorapp.model.Doctor;
-import com.doctorapp.model.ParticipantStatus;
+import com.doctorapp.configuration.ScheduledSessionDao;
+import com.doctorapp.model.ScheduledSession;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
-import static com.doctorapp.constant.DoctorApplicationConstant.ParticipantStatus_NOTCONNECTTED;
+import static com.doctorapp.constant.DoctorApplicationConstant.*;
 
 /**
  * MVC Controller for {@link CreateSessionController}
@@ -27,7 +25,14 @@ public class CreateSessionController {
     ScheduledSessionDao scheduledSessionDao;
 
     @RequestMapping("/create_sessions")
-    public String createSessionPage() {
+    public String createSessionPage(HttpServletRequest request) {
+        log.info("HTTP Session userName is {}",
+                request.getSession().getAttribute(HTTP_SESSIONS_USERNAME));
+
+        if(request.getSession().getAttribute(HTTP_SESSIONS_USERNAME) == null) {
+            log.info("Session is null, return to login");
+            return "redirect:login";
+        }
         return "create_sessions";
     }
 
@@ -35,10 +40,10 @@ public class CreateSessionController {
     public String register(@RequestParam("patientId") final String patientId,
                            @RequestParam("scheduledTime") final String scheduledTime,
                            @RequestParam("durationInMin") final int durationInMin,
-                           RedirectAttributes redirect ) throws Exception {
-        String newPage = "redirect:create_session_form";
+                           HttpServletRequest request) throws Exception {
+        String newPage = "redirect:create_sessions";
         log.info("Creating sessions");
-        //todo: replace patientId info from searchPatient Page
+        //todo: replace patient info from searchPatient Page
         ScheduledSession scheduledSession = new ScheduledSession().toBuilder()
                 .patientId(patientId)
                 .scheduledTime(scheduledTime)
@@ -50,7 +55,8 @@ public class CreateSessionController {
         scheduledSessionDao.putScheduledSession(scheduledSession);
         try {
             scheduledSessionDao.putScheduledSession(scheduledSession);
-            newPage = "redirect:sessions";
+            //todo: add create session succeed confirmation
+            newPage = "redirect:view_sessions";
         } catch (Exception e) {
             log.error("Failed to create session: {}", e.getMessage(), e);
             //todo: promote error message on frontend

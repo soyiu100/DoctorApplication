@@ -1,4 +1,4 @@
-package com.doctorapp.dto;
+package com.doctorapp.model;
 
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;

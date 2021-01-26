@@ -1,7 +1,7 @@
 package com.doctorapp.controller;
 
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
-import com.doctorapp.client.CognitoClient;
+import com.doctorapp.configuration.CognitoClient;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -36,7 +36,7 @@ public class ChangePasswordController {
     }
 
     @PostMapping("/change_password_form")
-    public String register(@RequestParam("username") final String username,
+    public String changePassword(@RequestParam("username") final String username,
                            @RequestParam("old_password") final String old_Password,
                            @RequestParam("new_password") final String new_password,
                            @RequestParam("verify_password") final String verify_password,
@@ -49,7 +49,8 @@ public class ChangePasswordController {
             authParams.put("USERNAME", username);
             authParams.put("PASSWORD", old_Password);
 
-            log.info("Start calling cogonito");
+            log.info("Start calling cogonito to verify user credential for changing password username {}, password {}",
+                    username, old_Password);
             AdminInitiateAuthResult authResult = cognitoClient.getAuthResult(authParams);
             String authSession = authResult.getSession();
 
@@ -61,6 +62,7 @@ public class ChangePasswordController {
             cognitoClient.changeFromTemporaryPassword(challengeResponses, authSession);
             newPage = "redirect:login";
         } catch (Exception e) {
+            log.error("Failed to change password" + e.getMessage(), e);
             redirect.addFlashAttribute("createUserError", "Error creating new user: " + e.getLocalizedMessage());
 
         }
