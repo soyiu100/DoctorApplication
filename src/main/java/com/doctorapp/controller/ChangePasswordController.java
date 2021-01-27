@@ -1,6 +1,9 @@
 package com.doctorapp.controller;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.services.cognitoidp.model.AWSCognitoIdentityProviderException;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
+import com.amazonaws.services.cognitoidp.model.InvalidPasswordException;
 import com.doctorapp.configuration.CognitoClient;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.doctorapp.constant.ErrorCodeConstants;
 
 /**
  * MVC Controller for {@link ChangePasswordController}
@@ -61,9 +66,14 @@ public class ChangePasswordController {
 
             cognitoClient.changeFromTemporaryPassword(challengeResponses, authSession);
             newPage = "redirect:login";
+        } catch (InvalidPasswordException ex) {
+            log.error("Bad password offered with error type? " + ex.getErrorType());
+            log.error("Failed to change password: " + ex.getMessage(), ex);
+
+            redirect.addFlashAttribute("createUserError", ErrorCodeConstants.BAD_PASSWORD_UNKNOWN);
         } catch (Exception e) {
-            log.error("Failed to change password" + e.getMessage(), e);
-            redirect.addFlashAttribute("createUserError", "Error creating new user: " + e.getLocalizedMessage());
+            log.error("Failed to change password: " + e.getMessage(), e);
+            redirect.addFlashAttribute("createUserError", ErrorCodeConstants.BAD_PASSWORD_UNKNOWN);
 
         }
         return newPage;

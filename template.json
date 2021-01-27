@@ -15,7 +15,7 @@
                         "AttributeType": "S"
                     },
                     {
-                        "AttributeName": "roomeId",
+                        "AttributeName": "roomId",
                         "AttributeType": "S"
                     }
                 ],
@@ -35,7 +35,7 @@
                         "IndexName": "roomId-index",
                         "KeySchema": [
                             {
-                                "AttributeName": "roomeId",
+                                "AttributeName": "roomId",
                                 "KeyType": "HASH"
                             }
                         ],

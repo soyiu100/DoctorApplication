@@ -47,7 +47,7 @@ public class CognitoClient {
 
 
     public void changeFromTemporaryPassword(final Map<String, String> challengeResponses, @NonNull final String authSession)
-            throws AWSCognitoIdentityProviderException {
+            throws InvalidPasswordException, AWSCognitoIdentityProviderException {
         AdminRespondToAuthChallengeRequest changePasswordRequest = new AdminRespondToAuthChallengeRequest()
                 .withChallengeName(ChallengeNameType.NEW_PASSWORD_REQUIRED)
                 .withChallengeResponses(challengeResponses)
@@ -59,6 +59,9 @@ public class CognitoClient {
             log.info("start to change user password");
             awsCognitoIdentityProvider.adminRespondToAuthChallenge(changePasswordRequest);
             log.info("succeed to change user password");
+        } catch (InvalidPasswordException pwEx) {
+            log.error("Bad password offered with error type? " + pwEx.getErrorType());
+            throw pwEx;
         } catch (Exception e) {
             log.info("Error to change user password", e);
             throw new AWSCognitoIdentityProviderException("Error to change user password");
