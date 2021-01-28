@@ -60,11 +60,11 @@ public class CognitoClient {
             awsCognitoIdentityProvider.adminRespondToAuthChallenge(changePasswordRequest);
             log.info("succeed to change user password");
         } catch (InvalidPasswordException pwEx) {
-            log.error("Bad password offered with error type? " + pwEx.getErrorType());
+            log.error("Bad password offered with error type? " + pwEx.getMessage());
             throw pwEx;
         } catch (Exception e) {
             log.info("Error to change user password", e);
-            throw new AWSCognitoIdentityProviderException("Error to change user password");
+            throw e;
         }
     }
 

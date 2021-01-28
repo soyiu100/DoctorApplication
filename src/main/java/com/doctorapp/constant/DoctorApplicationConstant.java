@@ -34,9 +34,8 @@ public class DoctorApplicationConstant {
     /**
      * Constant for Meeting Sessions
      */
-    // TODO: change logic for participant status to boolean, so that the text only needs to be reworked on the front end if needed
-    public final static String ParticipantStatus_NOTCONNECTTED = "NOT CONNECTED";
-    public final static String ParticipantStatus_JOINED = "JOINED";
+    public final static boolean ParticipantStatus_NOTCONNECTED = false;
+    public final static boolean ParticipantStatus_JOINED = true;
 
     /**
      * Constant for Data Access

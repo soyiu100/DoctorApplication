@@ -33,7 +33,7 @@ public class ScheduledSession {
 
     private int durationInMin;
 
-    private String doctorStatus;
+    private boolean doctorStatus;
 
-    private String patientStatus;
+    private boolean patientStatus;
 }

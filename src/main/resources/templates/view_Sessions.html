@@ -52,9 +52,11 @@
                     <td th:if="${sess.scheduledTime}" th:text="${sess.scheduledTime}">...</td>
                     <td th:if="${sess.durationInMin}" th:text="${sess.durationInMin}">...</td>
 
-                    <td th:if="${sess.doctorStatus}" th:text="${sess.doctorStatus}">...</td>
+                    <td th:if="${sess.doctorStatus}">Connected</td>
+                    <td th:unless="${sess.doctorStatus}">Not Connected</td>
 
-                    <td th:if="${sess.patientStatus}" th:text="${sess.patientStatus}">...</td>
+                    <td th:if="${sess.patientStatus}">Connected</td>
+                    <td th:unless="${sess.patientStatus}"> Not Connected</td>
 
                     <td th:classappend="${sess.doctorStatus != 'JOINED'} ? table-link">
                         <div th:if="${sess.doctorStatus != 'JOINED'}" onclick="location.href='/sessionCall'">

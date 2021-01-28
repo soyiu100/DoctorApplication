@@ -18,6 +18,9 @@
                      th:text="${'Registration success! Your user name is ' + user_name_val +
                         '. Please check your email for your temporary password.'}">
                 </div>
+                <div class="alert alert-info" th:if="${passwordChanged}">
+                    Your password was changed successfully. Please log in again.
+                </div>
             </div>
             <h1>Login page</h1>
             <form id="login-form" action="login_do" method="post">

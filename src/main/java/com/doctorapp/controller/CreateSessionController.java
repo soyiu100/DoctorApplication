@@ -49,8 +49,8 @@ public class CreateSessionController {
                 .scheduledTime(scheduledTime)
                 .durationInMin(durationInMin)
                 .roomId(UUID.randomUUID().toString())
-                .doctorStatus(ParticipantStatus_NOTCONNECTTED)
-                .patientStatus(ParticipantStatus_NOTCONNECTTED)
+                .doctorStatus(ParticipantStatus_NOTCONNECTED)
+                .patientStatus(ParticipantStatus_NOTCONNECTED)
                 .build();
         scheduledSessionDao.putScheduledSession(scheduledSession);
         try {

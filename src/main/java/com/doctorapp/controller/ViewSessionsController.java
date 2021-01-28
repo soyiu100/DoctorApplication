@@ -27,6 +27,12 @@ public class ViewSessionsController {
     @Autowired
     private ScheduledSessionDao scheduledSessionDao;
 
+
+    @RequestMapping(value = "/")
+    public String indexPage(Model model, HttpServletRequest request) {
+        return "redirect:view_sessions";
+    }
+
     @RequestMapping(value = "/view_sessions")
     public String viewSessionPage(Model model, HttpServletRequest request) {
         //if httpSession  is null, return to login
@@ -64,14 +70,14 @@ public class ViewSessionsController {
 
                 String sessionTemplate = String.format("Session info is PatientId is %s," +
                                 " roomId is %s, scheduled Date is %s, scheduled Time is %s, " +
-                                "duration is %s, doctorStatus is %s, " +
-                                "patientStatus is %s, joinButton is enabled {}\n", session.getPatientId(),
+                                "duration is %s, doctorStatus is %b, " +
+                                "patientStatus is %b {}\n", session.getPatientId(),
                         session.getRoomId(),
                         date, time,
                         session.getDurationInMin(),
-                        session.getDoctorStatus(),
-                        session.getPatientStatus(),
-                        ParticipantStatus_NOTCONNECTTED.equals(session.getDoctorStatus()));
+                        session.isDoctorStatus(),
+                        session.isPatientStatus(),
+                        session.isDoctorStatus() == ParticipantStatus_NOTCONNECTED);
 
                 sessionInfo.append(sessionTemplate);
             } catch (ParseException e) {

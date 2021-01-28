@@ -65,16 +65,27 @@ public class ChangePasswordController {
             challengeResponses.put(NEW_PASSWORD, new_password);
 
             cognitoClient.changeFromTemporaryPassword(challengeResponses, authSession);
+            redirect.addFlashAttribute("passwordChanged", true);
+
             newPage = "redirect:login";
         } catch (InvalidPasswordException ex) {
-            log.error("Bad password offered with error type? " + ex.getErrorType());
-            log.error("Failed to change password: " + ex.getMessage(), ex);
+            log.error("Bad password offered: " + ex.getMessage());
+            if (ex.getMessage().contains("uppercase")) {
+                redirect.addFlashAttribute("passwordChangeErr", ErrorCodeConstants.BAD_PASSWORD_UPPER);
+            } else if (ex.getMessage().contains("numeric")) {
+                redirect.addFlashAttribute("passwordChangeErr", ErrorCodeConstants.BAD_PASSWORD_NUMERIC);
+            } else if (ex.getMessage().contains("symbol")) {
+                redirect.addFlashAttribute("passwordChangeErr", ErrorCodeConstants.BAD_PASSWORD_SPECIAL);
+            } else if (ex.getMessage().contains("long enough")) {
+                redirect.addFlashAttribute("passwordChangeErr", ErrorCodeConstants.BAD_PASSWORD_SHORT);
+            } else {
+                redirect.addFlashAttribute("passwordChangeErr", ex.getMessage());
+            }
 
-            redirect.addFlashAttribute("createUserError", ErrorCodeConstants.BAD_PASSWORD_UNKNOWN);
         } catch (Exception e) {
             log.error("Failed to change password: " + e.getMessage(), e);
-            redirect.addFlashAttribute("createUserError", ErrorCodeConstants.BAD_PASSWORD_UNKNOWN);
 
+            redirect.addFlashAttribute("passwordChangeErr", e.getMessage());
         }
         return newPage;
     }
