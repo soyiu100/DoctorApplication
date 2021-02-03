@@ -56,6 +56,8 @@ public class LoginController {
                     authResult.getChallengeName().equals("NEW_PASSWORD_REQUIRED")) {
                 log.info("Direct user to change temporary password");
                 newPage = "redirect:change_password";
+                redirect.addFlashAttribute("username", userName);
+                redirect.addFlashAttribute("temp_password", password);
             } else {
                 newPage = "redirect:view_sessions";
                 //put doctor username into http sessions as access control

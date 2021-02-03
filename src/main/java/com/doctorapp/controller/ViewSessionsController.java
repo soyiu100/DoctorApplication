@@ -1,6 +1,13 @@
 package com.doctorapp.controller;
 
+import com.amazonaws.services.cognitoidp.model.AttributeType;
+import com.amazonaws.services.cognitoidp.model.ListUsersResult;
+import com.amazonaws.services.cognitoidp.model.UserType;
+import com.amazonaws.services.identitymanagement.model.User;
+import com.doctorapp.configuration.CognitoClient;
+import com.doctorapp.configuration.PatientDao;
 import com.doctorapp.configuration.ScheduledSessionDao;
+import com.doctorapp.model.Patient;
 import com.doctorapp.model.ScheduledSession;
 import com.doctorapp.model.TimeRange;
 import lombok.extern.log4j.Log4j2;
@@ -12,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +35,11 @@ public class ViewSessionsController {
     @Autowired
     private ScheduledSessionDao scheduledSessionDao;
 
+    @Autowired
+    private PatientDao patientDao;
+
+    @Autowired
+    private CognitoClient cognitoClient;
 
     @RequestMapping(value = "/")
     public String indexPage(Model model, HttpServletRequest request) {
@@ -42,48 +55,88 @@ public class ViewSessionsController {
         if(request.getSession().getAttribute(HTTP_SESSIONS_USERNAME) == null) {
             return "redirect:login";
         }
+        // TODO: wat the fack
         String startTime = "2020-01-01";
-        String endTime = "2021-01-03";
-        List<ScheduledSession> sessions = scheduledSessionDao.
+        String endTime = "2022-01-03";
+        List<ScheduledSession> sessionsFromDDB = scheduledSessionDao.
                 getScheduledSessionsByTimeRange(new TimeRange(startTime, endTime));
 
-        log.info("get Sessions number: " + sessions.size());
+        log.info("get Sessions number: " + sessionsFromDDB.size());
         StringBuilder sessionInfo = new StringBuilder();
 
+        // These will be the list of sessions shown on the website.
+        List<ScheduledSession> visibleSessions = new ArrayList<>();
+
         //todo : replace the iteration with fill in form
-        sessions.forEach(session -> {
-            parseSessionInfo(session, sessionInfo);
+        sessionsFromDDB.forEach(session -> {
+            visibleSessions.add(parseSessionInfo(session, sessionInfo));
         });
 
+        // Local testing case
+//        visibleSessions.add(ScheduledSession.builder()
+//                .roomId("session.getRoomId()")
+//                .patientId("session.getPatientId()")
+//                .doctorStatus(false)
+//                .patientStatus(false)
+//                .durationInMin(45)
+//                .date("date")
+//                .time("time")
+//                .patient(new Patient("session.getPatientId()", "firstName", "lastName", "dob"))
+//                .build());
+
         log.info(sessionInfo);
-        model.addAttribute("sessions", sessions);
+        model.addAttribute("sessions", visibleSessions);
         return "view_Sessions";
     }
 
-    private void parseSessionInfo(ScheduledSession session, StringBuilder sessionInfo) {
-            // original date format would be in format"yyyy-MM-dd HH:mm:ss"
-            // extract date and time out from scheduledTime
-            try {
-                Date scheduledTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(session.getScheduledTime());
-                String date = new SimpleDateFormat("yyyy-MM-dd").format(scheduledTime);
-                String time = new SimpleDateFormat("HH:mm").format(scheduledTime);
+    private ScheduledSession parseSessionInfo(ScheduledSession session, StringBuilder sessionInfo) {
+        String date = "";
+        String time = "";
+        // original date format would be in format"yyyy-MM-dd HH:mm:ss"
+        // extract date and time out from scheduledTime
+        try {
+            Date scheduledTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(session.getScheduledTime());
+            date = new SimpleDateFormat("yyyy-MM-dd").format(scheduledTime);
+            time = new SimpleDateFormat("hh:mm aaa").format(scheduledTime);
 
-                String sessionTemplate = String.format("Session info is PatientId is %s," +
-                                " roomId is %s, scheduled Date is %s, scheduled Time is %s, " +
-                                "duration is %s, doctorStatus is %b, " +
-                                "patientStatus is %b {}\n", session.getPatientId(),
-                        session.getRoomId(),
-                        date, time,
-                        session.getDurationInMin(),
-                        session.isDoctorStatus(),
-                        session.isPatientStatus(),
-                        session.isDoctorStatus() == ParticipantStatus_NOTCONNECTED);
+            String sessionTemplate = String.format("Session info is PatientId is %s," +
+                            " roomId is %s, scheduled Date is %s, scheduled Time is %s, " +
+                            "duration is %s, doctorStatus is %b, " +
+                            "patientStatus is %b {}\n", session.getPatientId(),
+                    session.getRoomId(),
+                    date, time,
+                    session.getDurationInMin(),
+                    session.isDoctorStatus(),
+                    session.isPatientStatus(),
+                    session.isDoctorStatus() == ParticipantStatus_NOTCONNECTED);
 
-                sessionInfo.append(sessionTemplate);
-            } catch (ParseException e) {
-                log.error("Failed to parse session info", e);
-                //todo : add an error prompt for session;
-            }
+            sessionInfo.append(sessionTemplate);
+
+            /* This line doesn't work, because Cognito cannot search users by custom attributes,
+            * other than the standard attributes provided by Cognito. */
+//            ListUsersResult listUsersResult = cognitoClient.getUsersByFilter("custom:patientId",
+//                    session.getPatientId(), PATIENT_POOL_ID);
+
+            // find the patient in the Patients DDB table
+            Patient patient = patientDao.getPatientById(session.getPatientId());
+
+            return ScheduledSession.builder()
+                    .roomId(session.getRoomId())
+                    .patientId(session.getPatientId())
+                    .doctorStatus(session.isDoctorStatus())
+                    .patientStatus(session.isPatientStatus())
+                    .durationInMin(session.getDurationInMin())
+                    .date(date)
+                    .time(time)
+                    .patient(patient)
+                    .build();
+        } catch (ParseException e) {
+            log.error("Failed to parse session time", e);
+            //todo : add an error prompt for session;
+
+            // TODO: this is a bad idea but for now
+            return null;
+        }
     }
 
 }

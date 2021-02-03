@@ -39,14 +39,17 @@ public class CreateSessionController {
     @PostMapping("/create_session_form")
     public String register(@RequestParam("patientId") final String patientId,
                            @RequestParam("scheduledTime") final String scheduledTime,
+                           @RequestParam("scheduledDate") final String scheduledDate,
                            @RequestParam("durationInMin") final int durationInMin,
-                           HttpServletRequest request) throws Exception {
+                           HttpServletRequest request) {
         String newPage = "redirect:create_sessions";
         log.info("Creating sessions");
+        log.info(scheduledDate);
+        log.info(scheduledTime);
         //todo: replace patient info from searchPatient Page
         ScheduledSession scheduledSession = new ScheduledSession().toBuilder()
                 .patientId(patientId)
-                .scheduledTime(scheduledTime)
+                .scheduledTime(scheduledDate + " " + scheduledTime)
                 .durationInMin(durationInMin)
                 .roomId(UUID.randomUUID().toString())
                 .doctorStatus(ParticipantStatus_NOTCONNECTED)

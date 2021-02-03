@@ -84,19 +84,33 @@ public class SearchPatientController {
             List<AttributeType> attributes = patient.getAttributes();
             //iterate all attributes to check if firstName matches
             String patientId = "";
-            boolean matched = false;
-            for(AttributeType attr : attributes) {
+            String dob = "";
+            boolean firstNameMatched = false;
+            boolean lastNameMatched = false;
+
+            for (AttributeType attr : attributes) {
                 //Because lastName filter in cognito is not case sensitive
                 //set firstName matching here not case sensitive as well
-                if(StringUtils.equals(FIRSTNAME, attr.getName())
-                        && StringUtils.equals(firstName.toLowerCase(), attr.getValue().toLowerCase())) {
-                    matched = true;
-                } else if(StringUtils.equals(PATIENT_ID, attr.getName())) {
-                    patientId = attr.getValue();
+
+                // TODO: not sure if the above makes sense... it would make sense to check every field if it matches
+                switch (attr.getName()) {
+                    case FIRSTNAME:
+                        firstNameMatched = attr.getValue().toLowerCase().equals(firstName.toLowerCase());
+                        break;
+                    case LASTNAME:
+                        lastNameMatched = attr.getValue().toLowerCase().equals(lastName.toLowerCase());
+                        break;
+                    case DOB:
+                        dob = attr.getValue();
+                        break;
+                    case PATIENT_ID:
+                        patientId = attr.getValue();
+                        break;
+                    default:
                 }
             }
-            if(matched) {
-                matchedPatients.add(new Patient(patientId, firstName, lastName));
+            if(firstNameMatched && lastNameMatched) {
+                matchedPatients.add(new Patient(patientId, firstName, lastName, dob));
             }
         });
         return matchedPatients;

@@ -22,11 +22,11 @@
         <table class="table">
             <thead class="thead-dark">
             <tr>
-                <th>Room ID</th>
+                <th>Patient DOB</th>
                 <th>Patient Name</th>
                 <th>Date</th>
                 <th>Time</th>
-                <th>Duration</th>
+                <th>Duration in Minutes</th>
                 <th>Doctor Status</th>
                 <th>Patient Status</th>
                 <th style="background-color: #fff;
@@ -37,19 +37,18 @@
 
             <th:block th:each="sess : ${sessions}">
                 <tr>
-                    <td th:if="${sess.roomId}" th:text="${sess.roomId}">...</td>
+                    <!-- Request was made to not have room ID, as it was not neccessary -->
+<!--                    <td th:if="${sess.roomId}" th:text="${sess.roomId}">...</td>-->
 
-                    <!-- Placeholder for patient name: -->
-                    <!-- In theory, this would be hidden somewhere else,
-                    and the line commented out below would be here -->
-                    <td th:if="${sess.patientId}" th:text="${sess.patientId}">...</td>
-<!--                    <td th:text="${sess.patientName}">...</td>-->
+                    <td th:if="${sess.patient.getDob()}" th:text="${sess.patient.getDob()}">...</td>
+                    <th:block th:if="${sess.patient.getFirstName()}" >
+                        <td th:if="${sess.patient.getLastName()}"
+                            th:text="${sess.patient.getFirstName() + ' ' + sess.patient.getLastName()}">...</td>
+                    </th:block>
 
-                    <!-- Placeholder for the date -->
-                    <td>January 25, 2021</td>
-<!--                    <td th:if="${sess.date}" th:text="${sess.date}">...</td>-->
+                    <td th:if="${sess.date}" th:text="${sess.date}">...</td>
 
-                    <td th:if="${sess.scheduledTime}" th:text="${sess.scheduledTime}">...</td>
+                    <td th:if="${sess.time}" th:text="${sess.time}">...</td>
                     <td th:if="${sess.durationInMin}" th:text="${sess.durationInMin}">...</td>
 
                     <td th:if="${sess.doctorStatus}">Connected</td>

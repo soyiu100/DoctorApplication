@@ -124,11 +124,18 @@ public class CognitoClient {
         ListUsersResult usersResults;
         try {
             usersResults = awsCognitoIdentityProvider.listUsers(listUsersRequest);
+            return usersResults;
         } catch (Exception e) {
             log.error("Failed to fetch user lists", e);
             throw new AWSCognitoIdentityProviderException("Failed to fetch user lists");
         }
-        return usersResults;
+    }
+
+    public AdminGetUserResult getPatientDetails() {
+        AdminGetUserRequest adminGetUserRequest =
+                new AdminGetUserRequest().withUsername("").withUserPoolId("");
+        AdminGetUserResult adminGetUserResult = awsCognitoIdentityProvider.adminGetUser(adminGetUserRequest);
+        return adminGetUserResult;
     }
 
 }
