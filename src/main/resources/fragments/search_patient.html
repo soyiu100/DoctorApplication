@@ -48,7 +48,10 @@
             if (xhr.readyState === 4 && xhr.status === 200) {
                 // Response will be a string: '[{...}, ...]'
                 var res = JSON.parse(xhr.response);
-
+                // If the results div is not empty, flush it
+                if ($.trim($("#results").html())) {
+                    $("#results").empty();
+                }
                 if (res === undefined || res.length == 0) {
                     $("#results").html("No results.");
                 } else {
@@ -73,6 +76,7 @@
                         $("#" + person.patientId).on("click", function() {
                             $("#patientName").val(person.firstName + ' ' + person.lastName)
                             $("#patientId").val(person.patientId)
+                            $("#patientDOB").val(person.dob)
                         });
                     }
                 }
@@ -83,6 +87,14 @@
 
     $(document).ready(function() {
         $("#searchPatientModal").on("click", function() {
+            if (!$("#searchPatientModal").hasClass("show")) {
+                $("table").remove();
+                $("#firstName").val('');
+                $("#lastName").val('');
+            }
+        })
+
+        $("#openModal").on("click", function() {
             if (!$("#searchPatientModal").hasClass("show")) {
                 $("table").remove();
                 $("#firstName").val('');

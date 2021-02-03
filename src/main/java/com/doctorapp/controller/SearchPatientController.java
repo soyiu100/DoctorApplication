@@ -4,6 +4,7 @@ import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.amazonaws.services.cognitoidp.model.ListUsersResult;
 import com.amazonaws.services.cognitoidp.model.UserType;
 import com.doctorapp.configuration.CognitoClient;
+import com.doctorapp.configuration.PatientDao;
 import com.doctorapp.exception.DependencyException;
 import com.doctorapp.model.Patient;
 import lombok.extern.log4j.Log4j2;
@@ -14,9 +15,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.doctorapp.constant.DoctorApplicationConstant.*;
@@ -30,87 +33,72 @@ import static com.doctorapp.constant.DoctorApplicationConstant.*;
 public class SearchPatientController {
 
     @Autowired
+    private PatientDao patientDao;
+
+    @Autowired
     CognitoClient cognitoClient;
 
-    @RequestMapping("/search_patient")
-    public String registerPage(HttpServletRequest request) {
-        log.info("HTTP Session userName is {}",
-                request.getSession().getAttribute(HTTP_SESSIONS_USERNAME));
-
-        if(request.getSession().getAttribute(HTTP_SESSIONS_USERNAME) == null) {
-            log.info("Session is null, return to login");
-            return "redirect:login";
-        }
-        //todo: map the page to search_patient fragments
-        return "search_patient_temp";
-    }
-
-    @PostMapping("/search_patient_form")
-    public String searchPatient(@RequestParam("patientFirstName") final String patientFirstName,
-                        @RequestParam("patientLastName") final String patientLastName,
+    @ResponseBody
+    @PostMapping("/search_patient")
+    public List<Patient> searchPatient(@RequestParam("firstName") final String firstName,
+                        @RequestParam("lastName") final String lastName,
                         HttpServletRequest request) {
         // as current cognito only support for 1 attribute as filter
         // search all patients with input last and filter by first name
-        log.info("Start to search patient for lastName: {} ", patientLastName);
-        Validate.notBlank(patientFirstName, "patient FirstName cannot be blank.");
-        Validate.notBlank(patientLastName, "patient LastName cannot be blank.");
+        log.info("Start to search patient for lastName: {} ", lastName);
+        Validate.notBlank(firstName, "patient FirstName cannot be blank.");
+        Validate.notBlank(lastName, "patient LastName cannot be blank.");
 
         try {
             ListUsersResult userResult =
-                    cognitoClient.getUsersByFilter(LASTNAME, patientLastName.trim(), PATIENT_POOL_ID);
+                    cognitoClient.getPatientIdsByFilter(LASTNAME, lastName.trim(), PATIENT_POOL_ID);
             log.info("Find {} lastName matched patients", userResult.getUsers().size());
             List<Patient> matchedPatients =
-                    filterPatientsByFirstName(userResult.getUsers(), patientFirstName.trim(), patientLastName);
+                    filterPatientsByFirstName(userResult.getUsers(), firstName.trim(), lastName.trim());
+
+//             Local testing list
+//            List<Patient> matchedPatients = new ArrayList<>();
+//            matchedPatients.add(new Patient("fakeid", "jeff", "bezos", "01/12/1964"));
+//            matchedPatients.add(new Patient("fakeid2", "jeff", "bezos", "01/22/1977"));
+//            matchedPatients.add(new Patient("fakeid3", "jeff", "bezos", "02/09/1977"));
 
             //todo: fill the patient info into table and return to createSession frontend
             log.info("Find {} matched patients", matchedPatients.size());
-            matchedPatients.forEach(patient -> {
-                log.info("Patient FirstName is {}, LastName is {}, patientId is {}",
-                        patient.getFirstName(), patient.getLastName(), patient.getPatientId());
-            });
-
+//            matchedPatients.forEach(patient -> {
+//                log.info("Patient FirstName is {}, LastName is {}, patientId is {}",
+//                        patient.getFirstName(), patient.getLastName(), patient.getPatientId());
+//            });
+            return matchedPatients;
         } catch (Exception e) {
             //todo: add error for searchPatient
             log.error("Failed to search patient" + e.getMessage(), e);
             throw new DependencyException("Failed to search patient", e);
         }
-        return "redirect:create_sessions";
     }
 
+    /**
+     * Given a list of patient IDs matching the last name given in the last name parameter, finds patients that could match.
+     *
+     *
+     * @param patients
+     * @param firstName
+     * @param lastName
+     * @return
+     */
     private List<Patient> filterPatientsByFirstName(List<UserType> patients,
                                                     String firstName, String lastName) {
         List<Patient> matchedPatients = new ArrayList<>();
-        patients.forEach(patient -> {
-            List<AttributeType> attributes = patient.getAttributes();
-            //iterate all attributes to check if firstName matches
-            String patientId = "";
-            String dob = "";
-            boolean firstNameMatched = false;
-            boolean lastNameMatched = false;
+        patients.forEach(patientAttr -> {
+            List<AttributeType> attributes = patientAttr.getAttributes();
 
-            for (AttributeType attr : attributes) {
-                //Because lastName filter in cognito is not case sensitive
-                //set firstName matching here not case sensitive as well
+            assert(attributes.size() == 1);
 
-                // TODO: not sure if the above makes sense... it would make sense to check every field if it matches
-                switch (attr.getName()) {
-                    case FIRSTNAME:
-                        firstNameMatched = attr.getValue().toLowerCase().equals(firstName.toLowerCase());
-                        break;
-                    case LASTNAME:
-                        lastNameMatched = attr.getValue().toLowerCase().equals(lastName.toLowerCase());
-                        break;
-                    case DOB:
-                        dob = attr.getValue();
-                        break;
-                    case PATIENT_ID:
-                        patientId = attr.getValue();
-                        break;
-                    default:
-                }
-            }
-            if(firstNameMatched && lastNameMatched) {
-                matchedPatients.add(new Patient(patientId, firstName, lastName, dob));
+            String patientId = attributes.get(0).getValue();
+
+            Patient patient = patientDao.getPatientById(patientId);
+
+            if (patient.getFirstName().equals(firstName) && patient.getLastName().equals(lastName)) {
+                matchedPatients.add(patient);
             }
         });
         return matchedPatients;

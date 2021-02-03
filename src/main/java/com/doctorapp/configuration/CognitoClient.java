@@ -114,10 +114,27 @@ public class CognitoClient {
      * @param attrValue filter attribute value
      * @return a list of users
      */
-    public ListUsersResult getUsersByFilter(String attrName, String attrValue, String userPoolId)
-            throws AWSCognitoIdentityProviderException {
+    public ListUsersResult getUsersByFilter(String attrName, String attrValue, String userPoolId) {
         ListUsersRequest listUsersRequest = new ListUsersRequest()
                 .withUserPoolId(userPoolId);
+        return queryUserPool(attrName, attrValue, listUsersRequest);
+    }
+
+    /**
+     * Find users by input filters
+     * @param attrName filter attribute name
+     * @param attrValue filter attribute value
+     * @return a list of users
+     */
+    public ListUsersResult getPatientIdsByFilter(String attrName, String attrValue, String userPoolId) {
+        ListUsersRequest listUsersRequest = new ListUsersRequest()
+                .withUserPoolId(userPoolId)
+                .withAttributesToGet(new String[]{PATIENT_ID});
+        return queryUserPool(attrName, attrValue, listUsersRequest);
+    }
+
+    private ListUsersResult queryUserPool(String attrName, String attrValue, ListUsersRequest listUsersRequest)
+            throws AWSCognitoIdentityProviderException {
         String query = String.format(USERPOOL_FILTER_QUERY, attrName, attrValue);
         log.info("Start to fetch user list by query {}", query);
         listUsersRequest.setFilter(query);

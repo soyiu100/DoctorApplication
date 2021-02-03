@@ -10,28 +10,45 @@
         <form action="/create_session_form" id="session-form" method="post">
             <fieldset>
                 <h1>Create Session</h1>
-                <div class="form-group">
-                    <!-- Patient ID -->
-                    <label class="col-form-label" for="patientId">Patient ID</label>
-                    <div class="controls">
-                        <input type="text" id="patientId" name="patientId"
-                               class="form-control" required>
-                    </div>
-                </div>
+                <h2>Patient Information</h2>
+                <small>Search for the patient you are looking for using 'Search Patients'.</small>
+
                 <div class="form-row">
                     <!-- Patient Name -->
                     <label class="col-form-label" for="patientName">Patient Name</label>
                     <div class="input-group mb-3">
                         <input type="text" id="patientName" name="patientName"
-                               class="form-control" required>
+                               class="form-control" required disabled>
                         <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button"
+                            <button class="btn btn-outline-secondary" id="openModal" type="button"
                                     data-toggle="modal" data-target="#searchPatientModal" >Search Patients</button>
                         </div>
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col">
+                        <!-- Patient ID -->
+                        <label class="col-form-label" for="patientId">Patient ID</label>
+                        <div class="controls">
+                            <input type="text" id="patientId" name="patientId"
+                                   class="form-control" required disabled>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <!-- Patient DOB -->
+                        <label class="col-form-label" for="patientDOB">Patient Date of Birth</label>
+                        <div class="controls">
+                            <input type="text" id="patientDOB" name="patientDOB"
+                                   class="form-control" required disabled>
+                        </div>
+                    </div>
+                </div>
+
+
                 <th:block th:include="../fragments/search_patient.html"></th:block>
+
+                <h2>Appointment Information</h2>
 
                 <div class="form-group">
                     <!-- Scheduled Date -->

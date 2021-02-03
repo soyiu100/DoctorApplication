@@ -18,7 +18,7 @@
         <h1>Scheduled Sessions</h1>
     </div>
 
-    <div th:if="sessions" style="display: block;">
+    <div th:if="${sessions.size() != 0}" style="display: block;">
         <table class="table">
             <thead class="thead-dark">
             <tr>
@@ -65,9 +65,16 @@
                 </tr>
             </th:block>
         </table>
+    </div>
 
+    <div th:unless="${sessions.size() != 0}">
+        No sessions are available yet. Try scheduling a session with the 'Create Session' button.
+    </div>
+
+    <div style="display: block; padding-top: 10px;">
         <a class="btn btn-outline-secondary" href="/create_sessions" style="float:right;">Create New Session</a>
     </div>
+
 </div>
 
 </body>

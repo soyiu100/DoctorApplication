@@ -67,6 +67,7 @@ public class ViewSessionsController {
         // These will be the list of sessions shown on the website.
         List<ScheduledSession> visibleSessions = new ArrayList<>();
 
+        // TODO: no idea what the below todo means
         //todo : replace the iteration with fill in form
         sessionsFromDDB.forEach(session -> {
             visibleSessions.add(parseSessionInfo(session, sessionInfo));
@@ -86,7 +87,7 @@ public class ViewSessionsController {
 
         log.info(sessionInfo);
         model.addAttribute("sessions", visibleSessions);
-        return "view_Sessions";
+        return "view_sessions";
     }
 
     private ScheduledSession parseSessionInfo(ScheduledSession session, StringBuilder sessionInfo) {
