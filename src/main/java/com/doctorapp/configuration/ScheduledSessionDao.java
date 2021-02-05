@@ -102,9 +102,9 @@ public class ScheduledSessionDao {
     }
 
     /**
-     * Get a list of scheduledSessions by patientId;
+     * Get a list of scheduledSessions by room ID;
      *
-     *  @param roomId the patientId
+     *  @param roomId the room ID
      */
     public ScheduledSession getScheduledSessionByRoomId(@NonNull String roomId)  {
         try {
