@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Appointment with Patient</title>
+    <th:block th:include="../fragments/header.html"></th:block>
+</head>
+<body>
+<div class="d-flex justify-content-center"
+     style="padding-top: 2%;
+     padding-left:20%;
+     padding-right:20%;
+     display: block !important;">
+    <th:block th:if="${error404}">
+        This page doesn't exist.
+    </th:block>
+    <th:block th:unless="${error404}">
+        <span th:text="${errMessage} ?: 'Something went wrong.'"></span>
+    </th:block>
+    <div class="text-center" style="padding-top: 20px;">
+        <a href="/">Go Home</a>
+
+    </div>
+</div>
+
+</body>
+</html>

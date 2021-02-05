@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Register</title>
+    <title>Appointment with Patient</title>
     <th:block th:include="../fragments/header.html"></th:block>
 </head>
 <body>
@@ -18,10 +18,25 @@
     <canvas id="videoPlaceholder" width="800" height="640" style="border:1px solid #d3d3d3;">
         Your browser does not support the HTML5 canvas tag.</canvas>
 
-    <form action="/disconnect_session" method="post">
-        <input type="hidden" id="roomId" name="roomId" th:value="${param.roomId}">
-        <input type="submit" class="btn" value="Leave Session">
-    </form>
+    <div class="text-center" style="padding-top: 20px;">
+        <form action="/disconnect_session" method="post">
+            <input type="hidden" id="roomId" name="roomId" th:value="${param.roomId}">
+            <input type="submit" class="btn btn-outline-danger" value="Leave Session">
+        </form>
+    </div>
 </div>
 </body>
+<script>
+    var canvas = document.getElementById("videoPlaceholder");
+    var ctx = canvas.getContext("2d");
+    ctx.font = "12px Arial";
+    ctx.fillText("Placeholder for video stream window", 10, 20);
+
+    const image = new Image();
+    image.onload = () => {
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(image, 300, 220,200,200);
+    };
+    image.src = 'https://static.thenounproject.com/png/1813969-200.png';
+</script>
 </html>

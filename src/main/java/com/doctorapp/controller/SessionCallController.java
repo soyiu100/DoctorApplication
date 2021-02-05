@@ -46,11 +46,12 @@ public class SessionCallController {
 
     @RequestMapping("/session_call")
     public String sessionCall(@RequestParam(value="roomId", required=false, defaultValue="") final String roomId,
-                              HttpServletRequest request) {
+                              HttpServletRequest request, RedirectAttributes redirectAttributes) {
         if (roomId.length() != 0) {
             return "session_call";
         }
-        return "error";
+        redirectAttributes.addFlashAttribute("errMessage", "No session ID is linked to this session call.");
+        return "redirect:error";
     }
 
 
