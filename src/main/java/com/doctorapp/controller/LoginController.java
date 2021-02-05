@@ -37,7 +37,7 @@ public class LoginController {
         return "redirect:register";
     }
 
-    @PostMapping("/login_do")
+    @PostMapping("/login")
     public String login(@RequestParam("username") final String userName,
                            @RequestParam("password") final String password,
                            HttpServletRequest request,
@@ -67,8 +67,17 @@ public class LoginController {
         } catch (Exception e) {
             log.error("Failed to login" + e.getMessage(), e);
             //todo: Error message like : failed to validate your user credential
+            redirect.addFlashAttribute("error", true);
         }
         return newPage;
     }
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request,
+                         RedirectAttributes redirect) {
+        request.getSession().setAttribute(HTTP_SESSIONS_USERNAME, null);
+        return "redirect:login";
+    }
+
 
 }

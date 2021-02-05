@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register</title>
+    <th:block th:include="../fragments/header.html"></th:block>
+</head>
+<body>
+<th:block th:include="../fragments/navbar.html"></th:block>
+<!-- If flash attribute 'bad' exists, then make an error message that says the session doesn't exist. -->
+<div th:if="${badSession}">
+    Session may not exist. Please go back and try selecting the session again?
+</div>
+<div th:unless="${badSession}" class="d-flex justify-content-center"
+     style="padding-top: 2%;
+     padding-left:20%;
+     padding-right:20%;
+     display: block !important;">
+    <canvas id="videoPlaceholder" width="800" height="640" style="border:1px solid #d3d3d3;">
+        Your browser does not support the HTML5 canvas tag.</canvas>
+
+    <form action="/disconnect_session" method="post">
+        <input type="hidden" id="roomId" name="roomId" th:value="${param.roomId}">
+        <input type="submit" class="btn" value="Leave Session">
+    </form>
+</div>
+</body>
+</html>

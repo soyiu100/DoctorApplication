@@ -12,7 +12,7 @@
         <div class="col-lg-6 offset-md-3">
             <div id="error-message">
                 <!-- Attribute/param 'error' is passed here -->
-                <div class="alert alert-danger" th:if="${param.error}">Invalid username or password.</div>
+                <div class="alert alert-danger" th:if="${error}">Invalid username or password.</div>
                 <!-- Flash attribute 'user_name_val' is passed here -->
                 <div class="alert alert-info" th:if="${user_name_val}"
                      th:text="${'Registration success! Your user name is ' + user_name_val +
@@ -23,7 +23,7 @@
                 </div>
             </div>
             <h1>Login page</h1>
-            <form id="login-form" action="login_do" method="post">
+            <form id="login-form" action="login" method="post">
                 <div class="form-group">
                     <label for="username">Username</label>:
                     <input type="text" id="username" class="form-control"
@@ -57,6 +57,9 @@
                 event.preventDefault();
             }
         });
+    });
+    $(document).ready(function() {
+        $("#logout").remove();
     });
 </script>
 </html>

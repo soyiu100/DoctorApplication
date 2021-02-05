@@ -35,6 +35,11 @@ public class ScheduledSessionDao {
         dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
     }
 
+    /**
+     * Both updates and creates sessions.
+     * @param scheduledSession The scheduled session.
+     * @return The scheduled session.
+     */
     public ScheduledSession putScheduledSession(@NonNull ScheduledSession scheduledSession) {
         try {
             dynamoDBMapper.save(scheduledSession);
@@ -91,6 +96,38 @@ public class ScheduledSessionDao {
 
         } catch (DynamoDBMappingException e) {
             String errorMessage = String.format("Failed to get scheduledSessions in DynamoDB for patient %s", patientId);
+            log.error(errorMessage, e);
+            throw new DependencyException(errorMessage, e);
+        }
+    }
+
+    /**
+     * Get a list of scheduledSessions by patientId;
+     *
+     *  @param roomId the patientId
+     */
+    public ScheduledSession getScheduledSessionByRoomId(@NonNull String roomId)  {
+        try {
+            HashMap<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+            eav.put(":v_roomId", new AttributeValue().withS(roomId));
+            final DynamoDBQueryExpression<ScheduledSession> queryExpression =
+                    new DynamoDBQueryExpression<ScheduledSession>()
+                            .withIndexName("roomId-index").withConsistentRead(false)
+                            .withScanIndexForward(false)
+                            .withKeyConditionExpression("roomId = :v_roomId")
+                            .withExpressionAttributeValues(eav);
+            List<ScheduledSession> targetSessionList =  dynamoDBMapper
+                    .query(ScheduledSession.class, queryExpression);
+
+            assert(targetSessionList.size() <= 1);
+
+            if (targetSessionList.size() == 1) {
+                return targetSessionList.get(0);
+            } else {
+                return null;
+            }
+        } catch (DynamoDBMappingException e) {
+            String errorMessage = String.format("Failed to get scheduledSessions in DynamoDB for room ID %s", roomId);
             log.error(errorMessage, e);
             throw new DependencyException(errorMessage, e);
         }

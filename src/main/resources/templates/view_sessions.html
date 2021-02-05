@@ -58,8 +58,13 @@
                     <td th:unless="${sess.patientStatus}"> Not Connected</td>
 
                     <td th:classappend="${sess.doctorStatus != 'JOINED'} ? table-link">
-                        <div th:if="${sess.doctorStatus != 'JOINED'}" onclick="location.href='/sessionCall'">
-                            Join Session
+                        <div th:if="${sess.doctorStatus != 'JOINED'}">
+<!--                             th:onclick="updateSessionManager([[${sess.roomId}]])">-->
+                            <form action="/connect_session" method="post">
+                                <input type="hidden" id="roomId" name="roomId" th:value="${sess.roomId}">
+                                <input type="submit" class="btn btn-link table-link" value="Join Session">
+                            </form>
+
                         </div>
                     </td>
                 </tr>

@@ -29,10 +29,10 @@ public class CreateSessionController {
         log.info("HTTP Session userName is {}",
                 request.getSession().getAttribute(HTTP_SESSIONS_USERNAME));
 
-//        if(request.getSession().getAttribute(HTTP_SESSIONS_USERNAME) == null) {
-//            log.info("Session is null, return to login");
-//            return "redirect:login";
-//        }
+        if(request.getSession().getAttribute(HTTP_SESSIONS_USERNAME) == null) {
+            log.info("Session is null, return to login");
+            return "redirect:login";
+        }
         return "create_sessions";
     }
 

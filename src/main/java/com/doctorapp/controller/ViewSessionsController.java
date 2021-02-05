@@ -1,9 +1,5 @@
 package com.doctorapp.controller;
 
-import com.amazonaws.services.cognitoidp.model.AttributeType;
-import com.amazonaws.services.cognitoidp.model.ListUsersResult;
-import com.amazonaws.services.cognitoidp.model.UserType;
-import com.amazonaws.services.identitymanagement.model.User;
 import com.doctorapp.configuration.CognitoClient;
 import com.doctorapp.configuration.PatientDao;
 import com.doctorapp.configuration.ScheduledSessionDao;
@@ -14,7 +10,10 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
@@ -75,19 +74,58 @@ public class ViewSessionsController {
 
         // Local testing case
 //        visibleSessions.add(ScheduledSession.builder()
-//                .roomId("session.getRoomId()")
-//                .patientId("session.getPatientId()")
+//                .roomId("s1123k1lm3")
+//                .patientId("s13j1k2n3")
 //                .doctorStatus(false)
 //                .patientStatus(false)
 //                .durationInMin(45)
 //                .date("date")
 //                .time("time")
-//                .patient(new Patient("session.getPatientId()", "firstName", "lastName", "dob"))
+//                .patient(new Patient("s13j1k2n3", "firstName", "lastName", "dob"))
+//                .build());
+//        visibleSessions.add(ScheduledSession.builder()
+//                .roomId("192k129k12")
+//                .patientId("jkner9202o3p2")
+//                .doctorStatus(false)
+//                .patientStatus(false)
+//                .durationInMin(45)
+//                .date("date")
+//                .time("time")
+//                .patient(new Patient("jkner9202o3p2", "firstName", "lastName", "dob"))
 //                .build());
 
         log.info(sessionInfo);
         model.addAttribute("sessions", visibleSessions);
         return "view_sessions";
+    }
+
+
+    /**
+     * tfw (the function when) the doctor joins the session
+     *
+     * @param roomId Session ID pretty much
+     * @param request For setting a session open I think
+     * @return
+     */
+    @PostMapping("/connect_session")
+    public String updateSession(@RequestParam("roomId") final String roomId,
+                                HttpServletRequest request,
+                                RedirectAttributes redirect) {
+
+
+        log.info("Request to join room with room ID: " + roomId);
+        // using room ID since patients could have multiple sessions
+        ScheduledSession session = scheduledSessionDao.getScheduledSessionByRoomId(roomId);
+        if (session == null) {
+            redirect.addFlashAttribute("badSession", true);
+        } else {
+            session.setDoctorStatus(true);
+            scheduledSessionDao.putScheduledSession(session);
+            redirect.addAttribute("roomId", roomId);
+            // todo: left off here
+        }
+
+        return "redirect:session_call";
     }
 
     private ScheduledSession parseSessionInfo(ScheduledSession session, StringBuilder sessionInfo) {
@@ -114,7 +152,7 @@ public class ViewSessionsController {
             sessionInfo.append(sessionTemplate);
 
             /* This line doesn't work, because Cognito cannot search users by custom attributes,
-            * other than the standard attributes provided by Cognito. */
+             * other than the standard attributes provided by Cognito. */
 //            ListUsersResult listUsersResult = cognitoClient.getUsersByFilter("custom:patientId",
 //                    session.getPatientId(), PATIENT_POOL_ID);
 

@@ -3,6 +3,7 @@ package com.doctorapp.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel.DynamoDBAttributeType;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
@@ -29,6 +30,7 @@ public class ScheduledSession {
     @DynamoDBHashKey
     private String patientId;
 
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "roomId-index", attributeName = "roomId")
     private String roomId;
 
     @DynamoDBRangeKey
