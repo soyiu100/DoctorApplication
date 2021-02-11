@@ -8,10 +8,8 @@ package com.doctorapp.controller;
 import com.doctorapp.controller.editor.SplitCollectionEditor;
 import com.doctorapp.dto.OAuthPartner;
 import com.doctorapp.dao.DynamoDBPartnerDetailsDAO;
-
 import java.util.Collection;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;

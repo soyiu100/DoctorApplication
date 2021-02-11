@@ -1,4 +1,4 @@
-package com.oauth.server;
+package com.doctorapp;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class AuthorizationServerApplicationTests {
+public class DoctorApplicationTests {
 
 	@Test
 	public void contextLoads() {

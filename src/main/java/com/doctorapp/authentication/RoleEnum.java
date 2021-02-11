@@ -13,8 +13,7 @@ package com.doctorapp.authentication;
 public enum RoleEnum {
     ROLE_USER_ADMIN, //A role for administrators to manage clients and partners.
     ROLE_CLIENT_ADMIN, //A role for an internal administration OAuth client.
-    ROLE_UNVERIFIED_PATIENT, //A role requires to reset the password
-    ROLE_UNVERIFIED_DOCTOR, //A role requires to reset the password
-    ROLE_PATIENT, //A role requires to reset the password
-    ROLE_DOCTOR //A role requires to reset the password
+    ROLE_DOCTOR, //A role for an internal administration OAuth client.
+    ROLE_PATIENT, //A role for an internal administration OAuth client.
+    UNVERIFIED_USER //A role requires to reset the password
 }

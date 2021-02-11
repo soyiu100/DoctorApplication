@@ -23,8 +23,8 @@ public class DynamoDBConfiguration {
     @Bean
     public AmazonDynamoDB amazonDynamoDB() {
         return AmazonDynamoDBClientBuilder.standard()
-                .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
-                .build();
+                   .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
+                   .build();
     }
 
     @Bean

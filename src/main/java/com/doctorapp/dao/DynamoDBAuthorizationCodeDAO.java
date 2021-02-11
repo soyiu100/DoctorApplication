@@ -26,7 +26,7 @@ public class DynamoDBAuthorizationCodeDAO extends RandomValueAuthorizationCodeSe
     /**
      * Store the authorization code for a authenticated user.
      *
-     * @param code           authorization code.
+     * @param code authorization code.
      * @param authentication authentication for the user.
      */
     @Override

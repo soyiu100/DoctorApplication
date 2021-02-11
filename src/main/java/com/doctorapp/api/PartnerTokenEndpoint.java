@@ -6,13 +6,11 @@
 
 package com.doctorapp.api;
 
+import com.doctorapp.authentication.UserIDAuthenticationToken;
 import com.doctorapp.dao.DynamoDBPartnerTokenDAO;
 import com.doctorapp.dto.OAuthPartner;
-import com.doctorapp.authentication.UserIDAuthenticationToken;
 import com.doctorapp.dao.DynamoDBPartnerDetailsDAO;
-
 import java.util.Map;
-
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
@@ -61,7 +59,7 @@ public class PartnerTokenEndpoint {
         OAuth2ProtectedResourceDetails resourceDetails = partner.toProtectedResourceDetails();
 
         OAuth2AccessToken accessToken = partnerTokenService.getAccessToken(resourceDetails,
-                new UserIDAuthenticationToken(userID));
+            new UserIDAuthenticationToken(userID));
 
         if (accessToken == null) {
             throw new OAuth2Exception("No token found for user: " + userID);
@@ -86,7 +84,7 @@ public class PartnerTokenEndpoint {
         tokenProvider.setStateMandatory(false);
 
         return tokenProvider.refreshAccessToken(resourceDetails,
-                accessToken.getRefreshToken(), AccessTokenRequest);
+            accessToken.getRefreshToken(), AccessTokenRequest);
     }
 
 }

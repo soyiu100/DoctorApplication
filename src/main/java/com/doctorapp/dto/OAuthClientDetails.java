@@ -56,7 +56,7 @@ public class OAuthClientDetails {
         clientDetails.setAccessTokenValiditySeconds(accessTokenValidity);
         clientDetails.setRefreshTokenValiditySeconds(refreshTokenValidity);
         clientDetails.setAutoApproveScopes(StringUtils
-                .commaDelimitedListToSet(autoapprove));
+            .commaDelimitedListToSet(autoapprove));
 
         return clientDetails;
     }

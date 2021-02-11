@@ -26,11 +26,11 @@ public class DoctorApplication {
         SpringApplication.run(DoctorApplication.class, args);
     }
 
-//    /**
-//     * TODO: Remove the sample data when testing is completed.
-//     */
-//    @EventListener(ApplicationReadyEvent.class)
-//    public void applicationReady() {
-//        sampleDataLoader.loadSampleData();
-//    }
+    /**
+     * TODO: Remove the sample data when testing is completed.
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void applicationReady() {
+        sampleDataLoader.loadSampleData();
+    }
 }

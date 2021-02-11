@@ -5,13 +5,11 @@
  */
 package com.doctorapp.controller;
 
-import com.doctorapp.controller.editor.AuthorityPropertyEditor;
 import com.doctorapp.controller.editor.SplitCollectionEditor;
+import com.doctorapp.controller.editor.AuthorityPropertyEditor;
 import com.doctorapp.dao.DynamoDBClientDetailsDAO;
-
 import java.util.Collection;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
@@ -63,7 +61,7 @@ public class ClientsController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String editClient(
-            @ModelAttribute BaseClientDetails clientDetails) {
+        @ModelAttribute BaseClientDetails clientDetails) {
 
         clientsDetailsService.addOrUpdateClientDetails(clientDetails);
 

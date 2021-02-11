@@ -8,9 +8,7 @@ package com.doctorapp.dao;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.doctorapp.dto.OAuthPartnerToken;
-
 import java.util.List;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.ClientKeyGenerator;
@@ -37,7 +35,7 @@ public class DynamoDBPartnerTokenDAO implements ClientTokenServices {
     /**
      * Get the {@link OAuth2AccessToken} of a protected resource for the {@link Authentication} provided.
      *
-     * @param resource       partner protected resource.
+     * @param resource partner protected resource.
      * @param authentication user authentication.
      * @return oauth access token.
      */
@@ -52,9 +50,9 @@ public class DynamoDBPartnerTokenDAO implements ClientTokenServices {
     /**
      * Save the {@link OAuth2AccessToken} of a partner protected resource for the {@link Authentication} provided.
      *
-     * @param resource       partner protected resource.
+     * @param resource partner protected resource.
      * @param authentication user authentication.
-     * @param accessToken    oauth access token.
+     * @param accessToken oauth access token.
      */
     @Override
     public void saveAccessToken(OAuth2ProtectedResourceDetails resource,
@@ -64,12 +62,12 @@ public class DynamoDBPartnerTokenDAO implements ClientTokenServices {
         String userName = authentication != null ? authentication.getName() : null;
 
         OAuthPartnerToken oauthPartnerToken = OAuthPartnerToken.builder()
-                .tokenId(accessToken.getValue())
-                .token(accessToken)
-                .authenticationId(keyGenerator.extractKey(resource, authentication))
-                .userName(userName)
-                .clientId(resource.getClientId())
-                .build();
+            .tokenId(accessToken.getValue())
+            .token(accessToken)
+            .authenticationId(keyGenerator.extractKey(resource, authentication))
+            .userName(userName)
+            .clientId(resource.getClientId())
+            .build();
 
         dynamoDBMapper.save(oauthPartnerToken);
     }
@@ -77,7 +75,7 @@ public class DynamoDBPartnerTokenDAO implements ClientTokenServices {
     /**
      * Remove the all the access token of the partner protected resource for the {@link Authentication} provided.
      *
-     * @param resource       partner protected resource.
+     * @param resource partner protected resource.
      * @param authentication user authentication.
      */
     @Override
@@ -90,11 +88,11 @@ public class DynamoDBPartnerTokenDAO implements ClientTokenServices {
 
     private List<OAuthPartnerToken> getOAuthPartnerTokensByAuthenticationId(String authenticationId) {
         DynamoDBQueryExpression query = new DynamoDBQueryExpression<OAuthPartnerToken>()
-                .withIndexName("authenticationId-index")
-                .withConsistentRead(Boolean.FALSE)
-                .withHashKeyValues(OAuthPartnerToken.builder()
-                        .authenticationId(authenticationId)
-                        .build());
+            .withIndexName("authenticationId-index")
+            .withConsistentRead(Boolean.FALSE)
+            .withHashKeyValues(OAuthPartnerToken.builder()
+                .authenticationId(authenticationId)
+                .build());
         return dynamoDBMapper.query(OAuthPartnerToken.class, query);
     }
 

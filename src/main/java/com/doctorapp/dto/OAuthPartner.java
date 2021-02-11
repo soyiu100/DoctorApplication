@@ -7,10 +7,8 @@ package com.doctorapp.dto;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-
 import java.io.Serializable;
 import java.util.stream.Collectors;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -64,8 +62,8 @@ public class OAuthPartner implements Serializable {
 
         if (scopes != null) {
             resourceDetails.setScope(StringUtils.commaDelimitedListToSet(scopes)
-                    .stream()
-                    .collect(Collectors.toList()));
+                .stream()
+                .collect(Collectors.toList()));
         }
 
         resourceDetails.setClientAuthenticationScheme(AuthenticationScheme.header);

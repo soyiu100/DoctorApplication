@@ -106,10 +106,10 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints
-                .approvalStore(approvalStore())
-                .authorizationCodeServices(authorizationCodeServices())
-                .tokenStore(tokenStore())
-                .authenticationManager(authenticationServiceProvider())
-                .userDetailsService(authenticationServiceProvider());
+            .approvalStore(approvalStore())
+            .authorizationCodeServices(authorizationCodeServices())
+            .tokenStore(tokenStore())
+            .authenticationManager(authenticationServiceProvider())
+            .userDetailsService(authenticationServiceProvider());
     }
 }

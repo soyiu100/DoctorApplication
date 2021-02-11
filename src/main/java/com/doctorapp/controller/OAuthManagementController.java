@@ -9,7 +9,6 @@ import static java.util.Arrays.asList;
 
 import com.doctorapp.authentication.RoleEnum;
 import com.doctorapp.dao.DynamoDBPartnerDetailsDAO;
-
 import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -60,9 +58,9 @@ public class OAuthManagementController {
             model.put("partners", partnerDetailsService.listPartners());
         } else {
             List<Approval> approvals = clientRegistrationService.listClientDetails().stream()
-                    .map(clientDetails -> approvalStore.getApprovals(principal.getName(), clientDetails.getClientId()))
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
+                .map(clientDetails -> approvalStore.getApprovals(principal.getName(), clientDetails.getClientId()))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
             model.put("approvals", approvals);
         }
 
@@ -77,7 +75,7 @@ public class OAuthManagementController {
 
         approvalStore.revokeApprovals(asList(approval));
         tokenStore.findTokensByClientIdAndUserName(approval.getClientId(), approval.getUserId())
-                .forEach(tokenStore::removeAccessToken);
+            .forEach(tokenStore::removeAccessToken);
         return "redirect:/";
     }
 }

@@ -32,7 +32,6 @@ public class LoginController {
 
     @RequestMapping("/login")
     public String loginPage() {
-        Map<String, String> authParams = new HashMap<>();
         log.info("hsart");
         return "login";
     }
@@ -44,6 +43,8 @@ public class LoginController {
         return "redirect:/login";
     }
 
+
+    // TODO: dep
     @PostMapping("/login")
     public String login(@RequestParam("username") final String userName,
                         @RequestParam("password") final String password,

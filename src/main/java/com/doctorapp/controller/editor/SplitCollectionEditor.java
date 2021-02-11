@@ -6,7 +6,6 @@
 package com.doctorapp.controller.editor;
 
 import java.util.Collection;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 

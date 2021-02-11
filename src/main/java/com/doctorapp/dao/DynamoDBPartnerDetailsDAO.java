@@ -8,9 +8,7 @@ package com.doctorapp.dao;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.doctorapp.dto.OAuthPartner;
-
 import java.util.List;
-
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 

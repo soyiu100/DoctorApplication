@@ -11,11 +11,9 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.SaveBehavior;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.doctorapp.dto.OAuthClientDetails;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -49,8 +47,8 @@ public class DynamoDBClientDetailsDAO implements ClientDetailsService, ClientReg
     @Override
     public ClientDetails loadClientByClientId(String clientId) throws NoSuchClientException {
         return Optional.ofNullable(dynamoDBMapper.load(OAuthClientDetails.class, clientId))
-                .map(OAuthClientDetails::toClientDetails)
-                .orElseThrow(() -> new NoSuchClientException("Client: " + clientId + " not found."));
+            .map(OAuthClientDetails::toClientDetails)
+            .orElseThrow(() -> new NoSuchClientException("Client: " + clientId + " not found."));
     }
 
     /**
@@ -63,7 +61,7 @@ public class DynamoDBClientDetailsDAO implements ClientDetailsService, ClientReg
     public void addClientDetails(ClientDetails clientDetails) throws ClientAlreadyExistsException {
 
         OAuthClientDetails oAuthClientDetails = dynamoDBMapper.load(OAuthClientDetails.class,
-                clientDetails.getClientId());
+            clientDetails.getClientId());
 
         if (oAuthClientDetails != null) {
             throw new ClientAlreadyExistsException("client already exists: " + clientDetails.getClientId());
@@ -81,7 +79,7 @@ public class DynamoDBClientDetailsDAO implements ClientDetailsService, ClientReg
     @Override
     public void updateClientDetails(@NonNull ClientDetails clientDetails) throws NoSuchClientException {
         OAuthClientDetails oAuthClientDetails = dynamoDBMapper.load(OAuthClientDetails.class,
-                clientDetails.getClientId());
+            clientDetails.getClientId());
 
         if (oAuthClientDetails == null) {
             throw new NoSuchClientException("client not exists: " + clientDetails.getClientId());
@@ -97,28 +95,28 @@ public class DynamoDBClientDetailsDAO implements ClientDetailsService, ClientReg
      */
     public void addOrUpdateClientDetails(@NonNull ClientDetails clientDetails) {
         List<String> autoApproveList = clientDetails.getScope().stream()
-                .filter(scope -> clientDetails.isAutoApprove(scope))
-                .collect(Collectors.toList());
+            .filter(scope -> clientDetails.isAutoApprove(scope))
+            .collect(Collectors.toList());
 
         OAuthClientDetails oAuthClientDetails = OAuthClientDetails
-                .builder()
-                .clientId(clientDetails.getClientId())
-                .authorities(StringUtils.collectionToCommaDelimitedString(clientDetails.getAuthorities()))
-                .authorizedGrantTypes(
-                        StringUtils.collectionToCommaDelimitedString(clientDetails.getAuthorizedGrantTypes()))
-                .scopes(StringUtils.collectionToCommaDelimitedString(clientDetails.getScope()))
-                .webServerRedirectUri(
-                        StringUtils.collectionToCommaDelimitedString(clientDetails.getRegisteredRedirectUri()))
-                .accessTokenValidity(clientDetails.getAccessTokenValiditySeconds())
-                .refreshTokenValidity(clientDetails.getRefreshTokenValiditySeconds())
-                .autoapprove(StringUtils.collectionToCommaDelimitedString(autoApproveList))
-                .build();
+            .builder()
+            .clientId(clientDetails.getClientId())
+            .authorities(StringUtils.collectionToCommaDelimitedString(clientDetails.getAuthorities()))
+            .authorizedGrantTypes(
+                StringUtils.collectionToCommaDelimitedString(clientDetails.getAuthorizedGrantTypes()))
+            .scopes(StringUtils.collectionToCommaDelimitedString(clientDetails.getScope()))
+            .webServerRedirectUri(
+                StringUtils.collectionToCommaDelimitedString(clientDetails.getRegisteredRedirectUri()))
+            .accessTokenValidity(clientDetails.getAccessTokenValiditySeconds())
+            .refreshTokenValidity(clientDetails.getRefreshTokenValiditySeconds())
+            .autoapprove(StringUtils.collectionToCommaDelimitedString(autoApproveList))
+            .build();
 
         DynamoDBMapperConfig dynamoDBMapperConfig = DynamoDBMapperConfig
-                .builder()
-                .withSaveBehavior(
-                        SaveBehavior.UPDATE_SKIP_NULL_ATTRIBUTES)
-                .build();
+            .builder()
+            .withSaveBehavior(
+                SaveBehavior.UPDATE_SKIP_NULL_ATTRIBUTES)
+            .build();
 
         dynamoDBMapper.save(oAuthClientDetails, dynamoDBMapperConfig);
     }
@@ -127,7 +125,7 @@ public class DynamoDBClientDetailsDAO implements ClientDetailsService, ClientReg
      * Update the client secret for a specific client id.
      *
      * @param clientId client id.
-     * @param secret   client secret.
+     * @param secret client secret.
      * @throws NoSuchClientException if client not exist.
      */
     @Override
@@ -139,7 +137,7 @@ public class DynamoDBClientDetailsDAO implements ClientDetailsService, ClientReg
         }
 
         OAuthClientDetails updatedItem = oAuthClientDetails.toBuilder().clientSecret(passwordEncoder.encode(secret))
-                .build();
+            .build();
         dynamoDBMapper.save(updatedItem);
     }
 
@@ -167,8 +165,8 @@ public class DynamoDBClientDetailsDAO implements ClientDetailsService, ClientReg
     @Override
     public List<ClientDetails> listClientDetails() {
         return dynamoDBMapper.scan(OAuthClientDetails.class, new DynamoDBScanExpression())
-                .stream()
-                .map(OAuthClientDetails::toClientDetails)
-                .collect(Collectors.toList());
+            .stream()
+            .map(OAuthClientDetails::toClientDetails)
+            .collect(Collectors.toList());
     }
 }

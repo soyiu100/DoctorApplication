@@ -9,7 +9,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.doctorapp.dto.OAuthAccessToken;
 import com.doctorapp.dto.OAuthRefreshToken;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -18,7 +17,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
@@ -49,11 +47,11 @@ public class DynamoDBTokenDAO implements TokenStore {
         String authenticationId = authenticationKeyGenerator.extractKey(authentication);
 
         DynamoDBQueryExpression query = new DynamoDBQueryExpression<OAuthAccessToken>()
-                .withIndexName("authenticationId-index")
-                .withConsistentRead(Boolean.FALSE)
-                .withHashKeyValues(OAuthAccessToken.builder()
-                        .authenticationId(authenticationId)
-                        .build());
+            .withIndexName("authenticationId-index")
+            .withConsistentRead(Boolean.FALSE)
+            .withHashKeyValues(OAuthAccessToken.builder()
+                .authenticationId(authenticationId)
+                .build());
 
         List<OAuthAccessToken> accessTokens = dynamoDBMapper.query(OAuthAccessToken.class, query);
 
@@ -69,14 +67,14 @@ public class DynamoDBTokenDAO implements TokenStore {
         }
 
         OAuthAccessToken accessToken = OAuthAccessToken.builder()
-                .tokenId(extractTokenKey(token.getValue()))
-                .token(token)
-                .authenticationId(authenticationKeyGenerator.extractKey(authentication))
-                .authentication(authentication)
-                .clientId(authentication.getOAuth2Request().getClientId())
-                .refreshToken(extractTokenKey(refreshToken))
-                .userName(StringUtils.isNotBlank(authentication.getName()) ? authentication.getName() : "#")
-                .build();
+            .tokenId(extractTokenKey(token.getValue()))
+            .token(token)
+            .authenticationId(authenticationKeyGenerator.extractKey(authentication))
+            .authentication(authentication)
+            .clientId(authentication.getOAuth2Request().getClientId())
+            .refreshToken(extractTokenKey(refreshToken))
+            .userName(StringUtils.isNotBlank(authentication.getName()) ? authentication.getName() : "#")
+            .build();
 
         dynamoDBMapper.save(accessToken);
     }
@@ -85,8 +83,8 @@ public class DynamoDBTokenDAO implements TokenStore {
         String tokenId = extractTokenKey(tokenValue);
 
         return Optional.ofNullable(dynamoDBMapper.load(OAuthAccessToken.class, tokenId))
-                .map(OAuthAccessToken::getToken)
-                .orElse(null);
+            .map(OAuthAccessToken::getToken)
+            .orElse(null);
     }
 
     public void removeAccessToken(OAuth2AccessToken token) {
@@ -107,17 +105,17 @@ public class DynamoDBTokenDAO implements TokenStore {
     public OAuth2Authentication readAuthentication(String token) {
         String tokenId = extractTokenKey(token);
         return Optional.ofNullable(dynamoDBMapper.load(OAuthAccessToken.class, tokenId))
-                .map(OAuthAccessToken::getAuthentication)
-                .orElse(null);
+            .map(OAuthAccessToken::getAuthentication)
+            .orElse(null);
     }
 
     public void storeRefreshToken(OAuth2RefreshToken refreshToken, OAuth2Authentication authentication) {
 
         OAuthRefreshToken itemToSave = OAuthRefreshToken.builder()
-                .tokenId(extractTokenKey(refreshToken.getValue()))
-                .token(refreshToken)
-                .authentication(authentication)
-                .build();
+            .tokenId(extractTokenKey(refreshToken.getValue()))
+            .token(refreshToken)
+            .authentication(authentication)
+            .build();
 
         dynamoDBMapper.save(itemToSave);
     }
@@ -126,8 +124,8 @@ public class DynamoDBTokenDAO implements TokenStore {
         String tokenId = extractTokenKey(token);
 
         return Optional.ofNullable(dynamoDBMapper.load(OAuthRefreshToken.class, tokenId))
-                .map(OAuthRefreshToken::getToken)
-                .orElse(null);
+            .map(OAuthRefreshToken::getToken)
+            .orElse(null);
     }
 
     public void removeRefreshToken(OAuth2RefreshToken token) {
@@ -149,8 +147,8 @@ public class DynamoDBTokenDAO implements TokenStore {
         String tokenId = extractTokenKey(value);
 
         return Optional.ofNullable(dynamoDBMapper.load(OAuthRefreshToken.class, tokenId))
-                .map(OAuthRefreshToken::getAuthentication)
-                .orElse(null);
+            .map(OAuthRefreshToken::getAuthentication)
+            .orElse(null);
     }
 
     public void removeAccessTokenUsingRefreshToken(OAuth2RefreshToken refreshToken) {
@@ -161,11 +159,11 @@ public class DynamoDBTokenDAO implements TokenStore {
         String refreshTokenId = extractTokenKey(refreshToken);
 
         DynamoDBQueryExpression query = new DynamoDBQueryExpression<OAuthAccessToken>()
-                .withIndexName("refreshToken-index")
-                .withConsistentRead(Boolean.FALSE)
-                .withHashKeyValues(OAuthAccessToken.builder()
-                        .refreshToken(refreshTokenId)
-                        .build());
+            .withIndexName("refreshToken-index")
+            .withConsistentRead(Boolean.FALSE)
+            .withHashKeyValues(OAuthAccessToken.builder()
+                .refreshToken(refreshTokenId)
+                .build());
 
         List<OAuthAccessToken> accessTokens = dynamoDBMapper.query(OAuthAccessToken.class, query);
 
@@ -174,11 +172,11 @@ public class DynamoDBTokenDAO implements TokenStore {
 
     public Collection<OAuth2AccessToken> findTokensByClientId(String clientId) {
         DynamoDBQueryExpression query = new DynamoDBQueryExpression<OAuthAccessToken>()
-                .withIndexName("clientId-userName-index")
-                .withConsistentRead(Boolean.FALSE)
-                .withHashKeyValues(OAuthAccessToken.builder()
-                        .clientId(clientId)
-                        .build());
+            .withIndexName("clientId-userName-index")
+            .withConsistentRead(Boolean.FALSE)
+            .withHashKeyValues(OAuthAccessToken.builder()
+                .clientId(clientId)
+                .build());
 
         List<OAuthAccessToken> accessTokens = dynamoDBMapper.query(OAuthAccessToken.class, query);
         return accessTokens.stream().map(OAuthAccessToken::getToken).collect(Collectors.toList());
@@ -186,12 +184,12 @@ public class DynamoDBTokenDAO implements TokenStore {
 
     public Collection<OAuth2AccessToken> findTokensByClientIdAndUserName(String clientId, String userName) {
         DynamoDBQueryExpression query = new DynamoDBQueryExpression<OAuthAccessToken>()
-                .withIndexName("clientId-userName-index")
-                .withConsistentRead(Boolean.FALSE)
-                .withHashKeyValues(OAuthAccessToken.builder()
-                        .clientId(clientId)
-                        .userName(userName)
-                        .build());
+            .withIndexName("clientId-userName-index")
+            .withConsistentRead(Boolean.FALSE)
+            .withHashKeyValues(OAuthAccessToken.builder()
+                .clientId(clientId)
+                .userName(userName)
+                .build());
 
         List<OAuthAccessToken> accessTokens = dynamoDBMapper.query(OAuthAccessToken.class, query);
         return accessTokens.stream().map(OAuthAccessToken::getToken).collect(Collectors.toList());

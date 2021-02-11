@@ -44,15 +44,8 @@ public class ViewSessionsController {
 //        return "redirect:view_sessions";
 //    }
 
-    @RequestMapping(value = "/view_sessions")
+    @RequestMapping(value = "/doctor/view_sessions")
     public String viewSessionPage(Model model, HttpServletRequest request) {
-        //if httpSession  is null, return to login
-        log.info("HTTP Session userName is {}",
-                request.getSession().getAttribute(DoctorApplicationConstant.HTTP_SESSIONS_USERNAME));
-
-        if (request.getSession().getAttribute(DoctorApplicationConstant.HTTP_SESSIONS_USERNAME) == null) {
-            return "redirect:login";
-        }
         // TODO: wat the fack
         String startTime = "2020-01-01";
         String endTime = "2022-01-03";
