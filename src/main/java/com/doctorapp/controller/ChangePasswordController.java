@@ -1,10 +1,8 @@
 package com.doctorapp.controller;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.cognitoidp.model.AWSCognitoIdentityProviderException;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
 import com.amazonaws.services.cognitoidp.model.InvalidPasswordException;
-import com.doctorapp.configuration.CognitoClient;
+import com.doctorapp.client.CognitoClient;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -45,10 +43,10 @@ public class ChangePasswordController {
 
     @PostMapping("/change_password_form")
     public String changePassword(@RequestParam("username") final String username,
-                           @RequestParam("old_password") final String old_Password,
-                           @RequestParam("new_password") final String new_password,
-                           @RequestParam("verify_password") final String verify_password,
-                           RedirectAttributes redirect ) {
+                                 @RequestParam("old_password") final String old_Password,
+                                 @RequestParam("new_password") final String new_password,
+                                 @RequestParam("verify_password") final String verify_password,
+                                 RedirectAttributes redirect) {
         String newPage = "redirect:change_password";
         log.info("Change password for userName {}", username);
         try {

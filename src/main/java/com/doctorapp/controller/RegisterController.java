@@ -1,12 +1,11 @@
 package com.doctorapp.controller;
 
 import com.amazonaws.services.cognitoidp.model.ListUsersResult;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.doctorapp.configuration.CognitoClient;
-import com.doctorapp.configuration.PatientDao;
+import com.doctorapp.client.CognitoClient;
+import com.doctorapp.data.Patient;
+import com.doctorapp.client.PatientDao;
 import com.doctorapp.exception.DependencyException;
-import com.doctorapp.model.Doctor;
-import com.doctorapp.model.Patient;
+import com.doctorapp.data.Doctor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class RegisterController {
                            @RequestParam("lastname") final String lastname,
                            @RequestParam("title") final String title,
                            @RequestParam("partnername") final String partnername,
-                           RedirectAttributes redirect ) throws Exception {
+                           RedirectAttributes redirect) throws Exception {
         String newPage = "redirect:register";
         validateEmail(emailAddr);
         validateUsername(userName);
@@ -68,7 +67,6 @@ public class RegisterController {
         }
         return newPage;
     }
-
 
 
     @PostMapping("/create_patient_form")
@@ -102,13 +100,13 @@ public class RegisterController {
      * Check whether the userName has registered
      *
      * @param userName
-     * @exception InvalidParameterException
+     * @throws InvalidParameterException
      */
-    private void validateUsername(String userName) throws DependencyException{
+    private void validateUsername(String userName) throws DependencyException {
         try {
             Validate.notBlank(userName, "userName cannot be blank.");
             ListUsersResult userResult = cognitoClient.getUsersByFilter(USERNAME, userName, DOCTOR_POOL_ID);
-            if(userResult != null && userResult.getUsers().size() > 0) {
+            if (userResult != null && userResult.getUsers().size() > 0) {
                 throw new DependencyException("Duplicate user found for userName" + userName);
             }
             log.info("No duplicate user found for username: {}", userName);
@@ -124,14 +122,14 @@ public class RegisterController {
      * Check whether the email has registered
      *
      * @param emailAddr
-     * @exception InvalidParameterException
+     * @throws InvalidParameterException
      */
     private void validateEmail(String emailAddr) throws Exception {
         try {
             Validate.notBlank(emailAddr, "email cannot be blank.");
             Validate.isTrue(emailAddr.matches(EMAIL_PATTERN), "Invalid email address");
             ListUsersResult userResult = cognitoClient.getUsersByFilter(EMAIL, emailAddr, DOCTOR_POOL_ID);
-            if(userResult != null && userResult.getUsers().size() > 0) {
+            if (userResult != null && userResult.getUsers().size() > 0) {
                 throw new DependencyException("Duplicate user found for userName" + emailAddr);
             }
             log.info("No duplicate user found for username: {}", emailAddr);

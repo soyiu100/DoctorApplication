@@ -1,4 +1,4 @@
-package com.doctorapp.model;
+package com.doctorapp.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

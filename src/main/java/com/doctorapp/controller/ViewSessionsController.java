@@ -1,11 +1,12 @@
 package com.doctorapp.controller;
 
-import com.doctorapp.configuration.CognitoClient;
-import com.doctorapp.configuration.PatientDao;
-import com.doctorapp.configuration.ScheduledSessionDao;
-import com.doctorapp.model.Patient;
-import com.doctorapp.model.ScheduledSession;
-import com.doctorapp.model.TimeRange;
+import com.doctorapp.client.CognitoClient;
+import com.doctorapp.client.PatientDao;
+import com.doctorapp.client.ScheduledSessionDao;
+import com.doctorapp.constant.DoctorApplicationConstant;
+import com.doctorapp.data.Patient;
+import com.doctorapp.data.ScheduledSession;
+import com.doctorapp.data.TimeRange;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,8 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static com.doctorapp.constant.DoctorApplicationConstant.*;
 
 /**
  * MVC Controller for {@link ViewSessionsController}
@@ -40,18 +39,18 @@ public class ViewSessionsController {
     @Autowired
     private CognitoClient cognitoClient;
 
-    @RequestMapping(value = "/")
-    public String indexPage(Model model, HttpServletRequest request) {
-        return "redirect:view_sessions";
-    }
+//    @RequestMapping(value = "/")
+//    public String indexPage(Model model, HttpServletRequest request) {
+//        return "redirect:view_sessions";
+//    }
 
     @RequestMapping(value = "/view_sessions")
     public String viewSessionPage(Model model, HttpServletRequest request) {
         //if httpSession  is null, return to login
         log.info("HTTP Session userName is {}",
-                request.getSession().getAttribute(HTTP_SESSIONS_USERNAME));
+                request.getSession().getAttribute(DoctorApplicationConstant.HTTP_SESSIONS_USERNAME));
 
-        if(request.getSession().getAttribute(HTTP_SESSIONS_USERNAME) == null) {
+        if (request.getSession().getAttribute(DoctorApplicationConstant.HTTP_SESSIONS_USERNAME) == null) {
             return "redirect:login";
         }
         // TODO: wat the fack
@@ -103,7 +102,7 @@ public class ViewSessionsController {
     /**
      * tfw (the function when) the doctor joins the session
      *
-     * @param roomId Session ID pretty much
+     * @param roomId  Session ID pretty much
      * @param request For setting a session open I think
      * @return
      */
@@ -147,7 +146,7 @@ public class ViewSessionsController {
                     session.getDurationInMin(),
                     session.isDoctorStatus(),
                     session.isPatientStatus(),
-                    session.isDoctorStatus() == ParticipantStatus_NOTCONNECTED);
+                    session.isDoctorStatus() == DoctorApplicationConstant.ParticipantStatus_NOTCONNECTED);
 
             sessionInfo.append(sessionTemplate);
 

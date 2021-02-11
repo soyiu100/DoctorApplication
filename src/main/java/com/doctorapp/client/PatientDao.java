@@ -1,4 +1,4 @@
-package com.doctorapp.configuration;
+package com.doctorapp.client;
 
 
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
@@ -6,25 +6,14 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMappingException;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.doctorapp.constant.DoctorApplicationConstant;
+import com.doctorapp.data.Patient;
 import com.doctorapp.exception.DependencyException;
-import com.doctorapp.model.Patient;
-import com.doctorapp.model.ScheduledSession;
-import com.doctorapp.model.TimeRange;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.doctorapp.constant.DoctorApplicationConstant.FILTER_EXPRESSION;
-import static com.doctorapp.constant.DoctorApplicationConstant.REGION;
 
 @Log4j2
 @Repository
@@ -35,7 +24,7 @@ public class PatientDao {
     public void init() {
         AmazonDynamoDB amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
                 .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
-                .withRegion(REGION)
+                .withRegion(DoctorApplicationConstant.REGION)
                 .build();
         dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
     }
@@ -44,15 +33,16 @@ public class PatientDao {
      * Get patient by ID.
      * CRITICAL ASSUMPTION: every patient ID is unique
      *
-     *  @param id id
+     * @param id id
      */
-    public Patient getPatientById(@NonNull String id)  {
+    public Patient getPatientById(@NonNull String id) {
         return dynamoDBMapper.load(Patient.class, id);
     }
 
 
     /**
      * Both updates and creates sessions.
+     *
      * @param patient The scheduled session.
      * @return The scheduled session.
      */

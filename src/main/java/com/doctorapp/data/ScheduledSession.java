@@ -1,4 +1,4 @@
-package com.doctorapp.model;
+package com.doctorapp.data;
 
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
@@ -17,7 +17,6 @@ import lombok.experimental.FieldDefaults;
 
 /**
  * A DTO object represents a ScheduledSession
- *
  */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data

@@ -1,13 +1,13 @@
-package com.doctorapp.configuration;
+package com.doctorapp.client;
 
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.doctorapp.model.ScheduledSession;
+import com.doctorapp.data.ScheduledSession;
+import com.doctorapp.data.TimeRange;
 import com.doctorapp.exception.DependencyException;
-import com.doctorapp.model.TimeRange;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +37,7 @@ public class ScheduledSessionDao {
 
     /**
      * Both updates and creates sessions.
+     *
      * @param scheduledSession The scheduled session.
      * @return The scheduled session.
      */
@@ -55,13 +56,13 @@ public class ScheduledSessionDao {
     /**
      * Get a list of scheduledSessions by Time Range;
      *
-     *  @param timeRange the search time Range
+     * @param timeRange the search time Range
      */
-    public List<ScheduledSession> getScheduledSessionsByTimeRange(@NonNull TimeRange timeRange)  {
+    public List<ScheduledSession> getScheduledSessionsByTimeRange(@NonNull TimeRange timeRange) {
         try {
             Map<String, AttributeValue> expectedAttributes = new HashMap<>();
-            if(StringUtils.isBlank(timeRange.getStartTime()) || StringUtils.isBlank(timeRange.getEndTime())) {
-                throw new IllegalArgumentException("Invalid Input: StartTime or EndTime cannot be null" );
+            if (StringUtils.isBlank(timeRange.getStartTime()) || StringUtils.isBlank(timeRange.getEndTime())) {
+                throw new IllegalArgumentException("Invalid Input: StartTime or EndTime cannot be null");
             }
             expectedAttributes.put(":startTime", new AttributeValue().withS(timeRange.getStartTime()));
             expectedAttributes.put(":endTime", new AttributeValue().withS(timeRange.getEndTime()));
@@ -82,9 +83,9 @@ public class ScheduledSessionDao {
     /**
      * Get a list of scheduledSessions by patientId;
      *
-     *  @param patientId the patientId
+     * @param patientId the patientId
      */
-    public List<ScheduledSession> getScheduledSessionsByPatientId(@NonNull String patientId)  {
+    public List<ScheduledSession> getScheduledSessionsByPatientId(@NonNull String patientId) {
         try {
             final DynamoDBQueryExpression<ScheduledSession> queryExpression =
                     new DynamoDBQueryExpression<ScheduledSession>()
@@ -104,9 +105,9 @@ public class ScheduledSessionDao {
     /**
      * Get a list of scheduledSessions by room ID;
      *
-     *  @param roomId the room ID
+     * @param roomId the room ID
      */
-    public ScheduledSession getScheduledSessionByRoomId(@NonNull String roomId)  {
+    public ScheduledSession getScheduledSessionByRoomId(@NonNull String roomId) {
         try {
             HashMap<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
             eav.put(":v_roomId", new AttributeValue().withS(roomId));
@@ -116,10 +117,10 @@ public class ScheduledSessionDao {
                             .withScanIndexForward(false)
                             .withKeyConditionExpression("roomId = :v_roomId")
                             .withExpressionAttributeValues(eav);
-            List<ScheduledSession> targetSessionList =  dynamoDBMapper
+            List<ScheduledSession> targetSessionList = dynamoDBMapper
                     .query(ScheduledSession.class, queryExpression);
 
-            assert(targetSessionList.size() <= 1);
+            assert (targetSessionList.size() <= 1);
 
             if (targetSessionList.size() == 1) {
                 return targetSessionList.get(0);

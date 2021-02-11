@@ -1,7 +1,7 @@
 package com.doctorapp.controller;
 
-import com.doctorapp.configuration.ScheduledSessionDao;
-import com.doctorapp.model.ScheduledSession;
+import com.doctorapp.client.ScheduledSessionDao;
+import com.doctorapp.data.ScheduledSession;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,7 +23,7 @@ public class SessionCallController {
     /**
      * tfw (the function when) the doctor joins the session
      *
-     * @param roomId Session ID pretty much
+     * @param roomId  Session ID pretty much
      * @param request For setting a session open I think
      * @return
      */
@@ -45,7 +45,7 @@ public class SessionCallController {
 
 
     @RequestMapping("/session_call")
-    public String sessionCall(@RequestParam(value="roomId", required=false, defaultValue="") final String roomId,
+    public String sessionCall(@RequestParam(value = "roomId", required = false, defaultValue = "") final String roomId,
                               HttpServletRequest request, RedirectAttributes redirectAttributes) {
         if (roomId.length() != 0) {
             return "session_call";

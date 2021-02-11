@@ -1,11 +1,11 @@
-package com.doctorapp.configuration;
+package com.doctorapp.client;
 
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
 import com.amazonaws.services.cognitoidp.model.*;
-import com.doctorapp.model.Doctor;
-import com.doctorapp.model.Patient;
+import com.doctorapp.data.Doctor;
+import com.doctorapp.data.Patient;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;

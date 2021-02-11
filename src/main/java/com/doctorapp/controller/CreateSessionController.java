@@ -1,7 +1,8 @@
 package com.doctorapp.controller;
 
-import com.doctorapp.configuration.ScheduledSessionDao;
-import com.doctorapp.model.ScheduledSession;
+import com.doctorapp.client.ScheduledSessionDao;
+import com.doctorapp.constant.DoctorApplicationConstant;
+import com.doctorapp.data.ScheduledSession;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
-
-import static com.doctorapp.constant.DoctorApplicationConstant.*;
 
 /**
  * MVC Controller for {@link CreateSessionController}
@@ -27,9 +26,9 @@ public class CreateSessionController {
     @RequestMapping("/create_sessions")
     public String createSessionPage(HttpServletRequest request) {
         log.info("HTTP Session userName is {}",
-                request.getSession().getAttribute(HTTP_SESSIONS_USERNAME));
+                request.getSession().getAttribute(DoctorApplicationConstant.HTTP_SESSIONS_USERNAME));
 
-        if(request.getSession().getAttribute(HTTP_SESSIONS_USERNAME) == null) {
+        if (request.getSession().getAttribute(DoctorApplicationConstant.HTTP_SESSIONS_USERNAME) == null) {
             log.info("Session is null, return to login");
             return "redirect:login";
         }
@@ -52,8 +51,8 @@ public class CreateSessionController {
                 .scheduledTime(scheduledDate + " " + scheduledTime)
                 .durationInMin(durationInMin)
                 .roomId(UUID.randomUUID().toString())
-                .doctorStatus(ParticipantStatus_NOTCONNECTED)
-                .patientStatus(ParticipantStatus_NOTCONNECTED)
+                .doctorStatus(DoctorApplicationConstant.ParticipantStatus_NOTCONNECTED)
+                .patientStatus(DoctorApplicationConstant.ParticipantStatus_NOTCONNECTED)
                 .build();
         scheduledSessionDao.putScheduledSession(scheduledSession);
         try {
