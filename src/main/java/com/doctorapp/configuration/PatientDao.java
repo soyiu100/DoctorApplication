@@ -50,4 +50,22 @@ public class PatientDao {
         return dynamoDBMapper.load(Patient.class, id);
     }
 
+
+    /**
+     * Both updates and creates sessions.
+     * @param patient The scheduled session.
+     * @return The scheduled session.
+     */
+    public Patient putPatient(@NonNull Patient patient) {
+        try {
+            dynamoDBMapper.save(patient);
+            return patient;
+        } catch (DynamoDBMappingException e) {
+            String errorMessage = String.format("Failed to put record in DynamoDB for patientId %s",
+                    patient.getPatientId());
+            log.error(errorMessage, e);
+            throw new DependencyException(errorMessage, e);
+        }
+    }
+
 }

@@ -1,6 +1,8 @@
 package com.doctorapp.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,10 +25,17 @@ import lombok.experimental.FieldDefaults;
 @DynamoDBTable(tableName = "Patients")
 public class Patient {
 
+    @DynamoDBIgnore
+    String username;
+
     @DynamoDBHashKey
     String patientId;
+
+    @DynamoDBIgnore
+    String emailAddress;
 
     String firstName;
     String lastName;
     String dob;
+
 }

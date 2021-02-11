@@ -5,6 +5,7 @@ import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
 import com.amazonaws.services.cognitoidp.model.*;
 import com.doctorapp.model.Doctor;
+import com.doctorapp.model.Patient;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -29,11 +30,11 @@ public class CognitoClient {
 
     }
 
-    public AdminInitiateAuthResult getAuthResult(Map<String, String> authParams) {
+    public AdminInitiateAuthResult getAuthResult(String poolId, String poolClientId, Map<String, String> authParams) {
         AdminInitiateAuthRequest authRequest = new AdminInitiateAuthRequest()
                 .withAuthFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
-                .withUserPoolId(DOCTOR_POOL_ID)
-                .withClientId(DOCTOR_POOL_CLIENT_ID)
+                .withUserPoolId(poolId)
+                .withClientId(poolClientId)
                 .withAuthParameters(authParams);
         AdminInitiateAuthResult authResult = null;
         try {
@@ -65,6 +66,44 @@ public class CognitoClient {
         } catch (Exception e) {
             log.info("Error to change user password", e);
             throw e;
+        }
+    }
+
+    public void createNewUser(final Patient patient) throws AWSCognitoIdentityProviderException {
+        final String emailAddr = patient.getEmailAddress().trim();
+        final String patientId = patient.getPatientId().trim();
+        final String firstName = patient.getFirstName().trim();
+        final String lastName = patient.getLastName().trim();
+        final String dateOfBirth = patient.getDob().trim();
+        AdminCreateUserRequest cognitoRequest = new AdminCreateUserRequest()
+                .withUserPoolId(PATIENT_POOL_ID)
+                .withUsername(patient.getUsername())
+                .withUserAttributes(
+                        new AttributeType()
+                                .withName(EMAIL)
+                                .withValue(emailAddr),
+                        new AttributeType()
+                                .withName("email_verified")
+                                .withValue("true"),
+                        new AttributeType()
+                                .withName(DOB)
+                                .withValue(dateOfBirth),
+                        new AttributeType()
+                                .withName(FIRSTNAME)
+                                .withValue(firstName),
+                        new AttributeType()
+                                .withName(LASTNAME)
+                                .withValue(lastName),
+                        new AttributeType()
+                                .withName(PATIENT_ID)
+                                .withValue(patientId)
+                );
+        try {
+            awsCognitoIdentityProvider.adminCreateUser(cognitoRequest);
+            log.info("succeed in creating patient");
+        } catch (Exception e) {
+            log.info("Error in creating patient", e);
+            throw new AWSCognitoIdentityProviderException("Error in creating patient");
         }
     }
 

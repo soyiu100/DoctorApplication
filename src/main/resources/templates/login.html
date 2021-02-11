@@ -23,6 +23,13 @@
                 </div>
             </div>
             <h1>Login page</h1>
+            <th:block th:if="${param.doctor}">
+                <h2>Doctor Login</h2>
+            </th:block>
+
+            <th:block th:unless="${param.doctor}">
+                <h2>Patient Login</h2>
+            </th:block>
             <form id="login-form" action="login" method="post">
                 <div class="form-group">
                     <label for="username">Username</label>:
@@ -37,7 +44,13 @@
                 <div>
                     <div class="d-block">
                         <input type="submit" name="login-submit" id="login-submit" class="btn btn-info" value="Log In">
-                        <div class="float-right"><a href="/new_user" class="btn btn btn-outline-info">Register New User</a></div>
+                        <th:block th:if="${param.doctor}">
+                            <div class="float-right"><a href="/register" class="btn btn btn-outline-info">Register New User</a></div>
+                        </th:block>
+
+                        <th:block th:unless="${param.doctor}">
+                            <div class="float-right"><a href="/patient/register" class="btn btn btn-outline-info">Register New User</a></div>
+                        </th:block>
                     </div>
                 </div>
             </form>

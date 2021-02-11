@@ -21,6 +21,9 @@ import java.util.Map;
 
 import com.doctorapp.constant.ErrorCodeConstants;
 
+import static com.doctorapp.constant.DoctorApplicationConstant.PATIENT_POOL_CLIENT_ID;
+import static com.doctorapp.constant.DoctorApplicationConstant.PATIENT_POOL_ID;
+
 /**
  * MVC Controller for {@link ChangePasswordController}
  */
@@ -56,7 +59,12 @@ public class ChangePasswordController {
 
             log.info("Start calling cogonito to verify user credential for changing password username {}, password {}",
                     username, old_Password);
-            AdminInitiateAuthResult authResult = cognitoClient.getAuthResult(authParams);
+            // TODO:?????
+            // TODO:?????
+            // TODO:?????
+            // TODO:?????
+            // TODO:?????
+            AdminInitiateAuthResult authResult = cognitoClient.getAuthResult(PATIENT_POOL_ID, PATIENT_POOL_CLIENT_ID, authParams);
             String authSession = authResult.getSession();
 
             Map<String, String> challengeResponses = new HashMap<>();
