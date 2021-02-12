@@ -47,9 +47,4 @@ public class AWSConfigConstants {
     public final static String FILTER_EXPRESSION = String.format("%s > :startTime and %s  < :endTime",
             SCHEDULED_TIME, SCHEDULED_TIME);
 
-    /**
-     * Constant for HTTP Sessions
-     */
-    public final static String HTTP_SESSIONS_USERNAME = "HTTP_SESSIONS_USERNAME";
-
 }

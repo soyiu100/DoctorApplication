@@ -6,6 +6,8 @@
 package com.doctorapp.configuration;
 
 import com.doctorapp.authentication.AuthenticationServiceProvider;
+import com.doctorapp.authentication.FailureHandler;
+import com.doctorapp.authentication.SuccessHandler;
 import com.doctorapp.constant.RoleEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,14 +18,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * Configuration for web security.
@@ -47,7 +42,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/webjars/**", "/resources/**",
                 // put POST endpoints here that you want the config to ignore
-                "/change_password_form", "/create_patient_form", "/create_doctor_form");
+                "/change_password_form", "/create_patient_form", "/create_doctor_form",
+                "/create_session_form",
+                "/connect_session", "/disconnect_session",
+                "/search_patient");
     }
 
     @Override
@@ -55,12 +53,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
             .authorizeRequests()
             .mvcMatchers("/login**", "/doctor/login", "/patient/register", "/logout.do", "/css/**", "/js/**", "/actuator/**",
-                    "/register",
-                    "/change_password**", "/change_password_form").permitAll()
+                    "/register", "/change_password**", "/error").permitAll()
             .mvcMatchers("/clients/**", "/partners/**").hasAuthority(RoleEnum.ROLE_USER_ADMIN.name())
-            .mvcMatchers("/view_sessions",
-                    "/connect_session", "/disconnect_session", "/session_call**",
-                    "/search_patient").hasAuthority(RoleEnum.ROLE_DOCTOR.name())
+            .mvcMatchers("/view_sessions", "/session_call**", "/create_session").hasAuthority(RoleEnum.ROLE_DOCTOR.name())
             .anyRequest().authenticated()
             .and()
             .formLogin()

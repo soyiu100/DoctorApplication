@@ -23,16 +23,9 @@ public class CreateSessionController {
     @Autowired
     ScheduledSessionDao scheduledSessionDao;
 
-    @RequestMapping("/create_sessions")
+    @RequestMapping("/create_session")
     public String createSessionPage(HttpServletRequest request) {
-        log.info("HTTP Session userName is {}",
-                request.getSession().getAttribute(AWSConfigConstants.HTTP_SESSIONS_USERNAME));
-
-        if (request.getSession().getAttribute(AWSConfigConstants.HTTP_SESSIONS_USERNAME) == null) {
-            log.info("Session is null, return to login");
-            return "redirect:login";
-        }
-        return "create_sessions";
+        return "create_session";
     }
 
     @PostMapping("/create_session_form")

@@ -6,6 +6,7 @@ import com.doctorapp.constant.AWSConfigConstants;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import static com.doctorapp.constant.RoleEnum.ROLE_CLIENT_ADMIN;
+import static com.doctorapp.constant.RoleEnum.ROLE_DOCTOR;
+import static com.doctorapp.constant.RoleEnum.ROLE_USER_ADMIN;
 
 /**
  * MVC Controller for {@link LoginController}
@@ -48,10 +54,17 @@ public class LoginController {
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String redirectPage = "redirect:/login?logout";
         if (auth != null) {
+            Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
+            if (roles.contains(ROLE_DOCTOR.name())) {
+                redirectPage += "?doctor";
+            } else if (roles.contains(ROLE_CLIENT_ADMIN.name()) || roles.contains(ROLE_USER_ADMIN.name())) {
+                redirectPage += "?admin";
+            }
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
-        return "redirect:/login?logout";
+        return redirectPage;
     }
 
 

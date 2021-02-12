@@ -1,4 +1,4 @@
-package com.doctorapp.configuration;
+package com.doctorapp.authentication;
 
 import com.doctorapp.constant.RoleEnum;
 import lombok.extern.log4j.Log4j2;
