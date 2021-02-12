@@ -7,19 +7,23 @@ package com.doctorapp.authentication;
 
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
 import com.doctorapp.client.CognitoClient;
-import com.doctorapp.constant.DoctorApplicationConstant;
+import com.doctorapp.constant.AWSConfigConstants;
+import com.doctorapp.constant.RoleEnum;
 import com.google.common.collect.ImmutableList;
+
+import static com.doctorapp.constant.UserTypeConstants.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.nimbusds.oauth2.sdk.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -67,32 +71,53 @@ public class AuthenticationServiceProvider implements AuthenticationProvider, Au
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        log.info("start verify username {}, password {} ", username, password);
+        log.info("Received username {}, password {} to verify", username, password);
         Map<String, String> authParams = new HashMap<>();
         authParams.put("USERNAME", username);
         authParams.put("PASSWORD", password);
 
         String userType = request.getParameter("userType");
-        log.info(userType);
+        if (userType.equals("") || userType == null) {
+            userType = NONE;
+        }
         userType.trim();
+        log.info("Determined user type: {}", userType);
 
-        log.info("Start calling cognito");
+        log.info("Calling Cognito");
 
+        AdminInitiateAuthResult authResult;
         try {
-            AdminInitiateAuthResult authResult = cognitoClient.getAuthResult(DoctorApplicationConstant.DOCTOR_POOL_ID, DoctorApplicationConstant.DOCTOR_POOL_CLIENT_ID, authParams);
-            if (authResult.getChallengeName() != null &&
-                    authResult.getChallengeName().equals("NEW_PASSWORD_REQUIRED")) {
+            if (userType.equals(PATIENT)) {
+                authResult = cognitoClient.getAuthResult(AWSConfigConstants.PATIENT_POOL_ID, AWSConfigConstants.PATIENT_POOL_CLIENT_ID, authParams);
                 return new UsernamePasswordAuthenticationToken(username, password,
-                        ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.UNVERIFIED_USER.name())));
+                        decideGrantedAuthorities(authResult, PATIENT));
+            } else if (userType.equals(DOCTOR)) {
+                authResult = cognitoClient.getAuthResult(AWSConfigConstants.DOCTOR_POOL_ID, AWSConfigConstants.DOCTOR_POOL_CLIENT_ID, authParams);
+                return new UsernamePasswordAuthenticationToken(username, password,
+                        decideGrantedAuthorities(authResult, DOCTOR));
+            } else if (userType.equals(ADMIN)) {
+                // TODO: replace with ADMIN pool id and clients
+                authResult = cognitoClient.getAuthResult(AWSConfigConstants.DOCTOR_POOL_ID, AWSConfigConstants.DOCTOR_POOL_CLIENT_ID, authParams);
+                return new UsernamePasswordAuthenticationToken(username, password,
+                        decideGrantedAuthorities(authResult, DOCTOR));
             } else {
-                log.info("steppin");
-                return new UsernamePasswordAuthenticationToken(username, password,
-                        ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.ROLE_DOCTOR.name())));
+                try {
+                    authResult = cognitoClient.getAuthResult(AWSConfigConstants.PATIENT_POOL_ID, AWSConfigConstants.PATIENT_POOL_CLIENT_ID, authParams);
+                    return new UsernamePasswordAuthenticationToken(username, password,
+                            decideGrantedAuthorities(authResult, PATIENT));
+                } catch (Exception e) {
+                    authResult = cognitoClient.getAuthResult(AWSConfigConstants.DOCTOR_POOL_ID, AWSConfigConstants.DOCTOR_POOL_CLIENT_ID, authParams);
+                    return new UsernamePasswordAuthenticationToken(username, password,
+                            decideGrantedAuthorities(authResult, DOCTOR));
+                }
             }
+
+
         } catch (Exception e) {
-            log.error("Failed to login" + e.getMessage(), e);
+            log.error("Failed to login: " + e.getMessage(), e);
             //todo: Error message like : failed to validate your user credential
 //            redirect.addFlashAttribute("error", true);
+            throw new BadCredentialsException(e.getMessage());
         }
 
 //        if(authResult.getChallengeName().equals("NEW_PASSWORD_REQUIRED")) {
@@ -108,8 +133,25 @@ public class AuthenticationServiceProvider implements AuthenticationProvider, Au
 //            return new UsernamePasswordAuthenticationToken(username, password,
 //                    ImmutableList.of());
 //        }
-        return new UsernamePasswordAuthenticationToken(username, password,
-                    ImmutableList.of());
+    }
+
+    private List<SimpleGrantedAuthority> decideGrantedAuthorities(AdminInitiateAuthResult authResult, String userType) {
+        if (authResult != null && authResult.getChallengeName() != null &&
+                authResult.getChallengeName().equals("NEW_PASSWORD_REQUIRED")) {
+            if (userType.equals(PATIENT)) {
+                return ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.UNVERIFIED_PATIENT.name()));
+            } else {
+                return ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.UNVERIFIED_DOCTOR.name()));
+            }
+        } else {
+            if (userType.equals(DOCTOR)) {
+                log.info("Authenticated a doctor B)");
+                return ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.ROLE_DOCTOR.name()));
+            } else {
+                return ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.ROLE_PATIENT.name()));
+            }
+
+        }
     }
 
     @Override

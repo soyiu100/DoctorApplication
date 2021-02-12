@@ -77,13 +77,14 @@
                             <div class="float-right"><a href="/patient/register" class="btn btn btn-outline-info">Register New User</a></div>
                         </th:block>
                     </div>
-
                 </div>
             </form>
         </div>
     </div>
 </div>
 </body>
+<th:block th:include="../fragments/remove_logout.html"></th:block>
+
 <script>
     $("#login-form").submit(function(event) {
         $(".form-group").each(function() {
@@ -96,9 +97,6 @@
                 event.preventDefault();
             }
         });
-    });
-    $(document).ready(function() {
-        $("#logout").remove();
     });
 </script>
 </html>

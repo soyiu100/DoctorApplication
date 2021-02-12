@@ -2,7 +2,7 @@ package com.doctorapp.constant;
 
 import com.amazonaws.regions.Regions;
 
-public class DoctorApplicationConstant {
+public class AWSConfigConstants {
 
     /**
      * Constant for User pools
@@ -12,9 +12,11 @@ public class DoctorApplicationConstant {
     //            = "us-west-2_OGomw736n";
     public final static String DOCTOR_POOL_CLIENT_ID = "5t3i8q2v58pu1ljr5jlas1kd6n";
     //        = "6kc7sfekf03aij3neap7600k92";
+
     public final static String PATIENT_POOL_ID = "us-west-2_GmiQVp1cs";
     //        = "us-west-2_fAsZAxMqF";
     public final static String PATIENT_POOL_CLIENT_ID = "v1l0i1he3o812th0rqgnfu5rh";
+
     public final static String EMAIL = "email";
     public final static String USERNAME = "username";
     public final static String TITLE = "custom:title";

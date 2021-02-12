@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.doctorapp.constant.DoctorApplicationConstant.*;
+import static com.doctorapp.constant.AWSConfigConstants.*;
 
 
 /**

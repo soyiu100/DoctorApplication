@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.doctorapp.constant.DoctorApplicationConstant.*;
+import static com.doctorapp.constant.AWSConfigConstants.*;
 
 @Log4j2
 @Repository

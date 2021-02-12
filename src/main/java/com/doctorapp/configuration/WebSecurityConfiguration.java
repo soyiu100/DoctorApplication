@@ -6,33 +6,24 @@
 package com.doctorapp.configuration;
 
 import com.doctorapp.authentication.AuthenticationServiceProvider;
-import com.doctorapp.authentication.RoleEnum;
+import com.doctorapp.constant.RoleEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Configuration for web security.
@@ -49,19 +40,27 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private SuccessHandler successHandler;
 
+    @Autowired
+    private FailureHandler failureHandler;
+
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/webjars/**", "/resources/**", "/create_user_form");
-
+        web.ignoring().antMatchers("/webjars/**", "/resources/**",
+                // put POST endpoints here that you want the config to ignore
+                "/change_password_form", "/create_patient_form", "/create_doctor_form");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-            .mvcMatchers("/login", "/doctor/login", "/patient/register", "/logout.do", "/css/**", "/js/**", "/actuator/**", "/register", "/create_user_form").permitAll()
+            .mvcMatchers("/login**", "/doctor/login", "/patient/register", "/logout.do", "/css/**", "/js/**", "/actuator/**",
+                    "/register",
+                    "/change_password**", "/change_password_form").permitAll()
             .mvcMatchers("/clients/**", "/partners/**").hasAuthority(RoleEnum.ROLE_USER_ADMIN.name())
-            .mvcMatchers("/doctor/**").hasAuthority(RoleEnum.ROLE_DOCTOR.name())
+            .mvcMatchers("/view_sessions",
+                    "/connect_session", "/disconnect_session", "/session_call**",
+                    "/search_patient").hasAuthority(RoleEnum.ROLE_DOCTOR.name())
             .anyRequest().authenticated()
             .and()
             .formLogin()
@@ -69,21 +68,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             .usernameParameter("username")
             .passwordParameter("password")
             .successHandler(successHandler)
-            .failureHandler(new SimpleUrlAuthenticationFailureHandler() {
-
-                @Override
-                public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                                                    AuthenticationException exception) throws IOException, ServletException {
-                    String userType = request.getParameter("userType");
-                    String username = request.getParameter("username");
-                    String error = exception.getMessage();
-                    System.out.println("A failed login attempt with user type: "
-                            + userType + ". Reason: " + error);
-
-                    super.setDefaultFailureUrl("/login?error");
-                    super.onAuthenticationFailure(request, response, exception);
-                }
-            })
+            .failureHandler(failureHandler)
             .loginProcessingUrl("/login.do")
             .and()
             .httpBasic()
@@ -94,7 +79,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(authenticationServiceProvider);
+        auth.authenticationProvider(authenticationServiceProvider)
+                // not sure if this is safe; but
+                .eraseCredentials(false);
     }
 
     @Override
@@ -102,7 +89,5 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
-
 
 }

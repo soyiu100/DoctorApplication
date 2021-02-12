@@ -6,7 +6,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMappingException;
-import com.doctorapp.constant.DoctorApplicationConstant;
+import com.doctorapp.constant.AWSConfigConstants;
 import com.doctorapp.data.Patient;
 import com.doctorapp.exception.DependencyException;
 import lombok.NonNull;
@@ -24,7 +24,7 @@ public class PatientDao {
     public void init() {
         AmazonDynamoDB amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
                 .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
-                .withRegion(DoctorApplicationConstant.REGION)
+                .withRegion(AWSConfigConstants.REGION)
                 .build();
         dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
     }

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.Map;
 
-import static com.doctorapp.constant.DoctorApplicationConstant.*;
+import static com.doctorapp.constant.AWSConfigConstants.*;
 
 @Service
 @Log4j2
@@ -47,13 +47,13 @@ public class CognitoClient {
     }
 
 
-    public void changeFromTemporaryPassword(final Map<String, String> challengeResponses, @NonNull final String authSession)
+    public void changeFromTemporaryPassword(String poolId, String poolClientId, final Map<String, String> challengeResponses, @NonNull final String authSession)
             throws InvalidPasswordException, AWSCognitoIdentityProviderException {
         AdminRespondToAuthChallengeRequest changePasswordRequest = new AdminRespondToAuthChallengeRequest()
                 .withChallengeName(ChallengeNameType.NEW_PASSWORD_REQUIRED)
                 .withChallengeResponses(challengeResponses)
-                .withClientId(DOCTOR_POOL_CLIENT_ID)
-                .withUserPoolId(DOCTOR_POOL_ID)
+                .withClientId(poolClientId)
+                .withUserPoolId(poolId)
                 .withSession(authSession);
 
         try {

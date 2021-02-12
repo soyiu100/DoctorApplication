@@ -8,7 +8,7 @@
 <body>
 <th:block th:include="../fragments/navbar.html"></th:block>
 <div class="d-flex justify-content-center">
-    <form action="/create_user_form" method="post">
+    <form action="/create_patient_form" method="post">
         <fieldset>
             <h1>Register</h1>
             <div class="form-group">
@@ -46,7 +46,7 @@
                 <!-- DOB-->
                 <label class="col-form-label" for="dob">Date of Birth</label>
                 <div class="controls">
-                    <input type="text" id="dob" name="dob" placeholder=""
+                    <input type="date" id="dob" name="dob" placeholder=""
                            class="form-control" required>
                 </div>
             </div>
@@ -58,4 +58,5 @@
     </form>
 </div>
 </body>
+<th:block th:include="../fragments/remove_logout.html"></th:block>
 </html>

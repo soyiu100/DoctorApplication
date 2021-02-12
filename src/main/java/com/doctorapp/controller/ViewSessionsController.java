@@ -3,7 +3,7 @@ package com.doctorapp.controller;
 import com.doctorapp.client.CognitoClient;
 import com.doctorapp.client.PatientDao;
 import com.doctorapp.client.ScheduledSessionDao;
-import com.doctorapp.constant.DoctorApplicationConstant;
+import com.doctorapp.constant.AWSConfigConstants;
 import com.doctorapp.data.Patient;
 import com.doctorapp.data.ScheduledSession;
 import com.doctorapp.data.TimeRange;
@@ -44,7 +44,7 @@ public class ViewSessionsController {
 //        return "redirect:view_sessions";
 //    }
 
-    @RequestMapping(value = "/doctor/view_sessions")
+    @RequestMapping(value = "/view_sessions")
     public String viewSessionPage(Model model, HttpServletRequest request) {
         // TODO: wat the fack
         String startTime = "2020-01-01";
@@ -63,28 +63,6 @@ public class ViewSessionsController {
         sessionsFromDDB.forEach(session -> {
             visibleSessions.add(parseSessionInfo(session, sessionInfo));
         });
-
-        // Local testing case
-//        visibleSessions.add(ScheduledSession.builder()
-//                .roomId("s1123k1lm3")
-//                .patientId("s13j1k2n3")
-//                .doctorStatus(false)
-//                .patientStatus(false)
-//                .durationInMin(45)
-//                .date("date")
-//                .time("time")
-//                .patient(new Patient("s13j1k2n3", "firstName", "lastName", "dob"))
-//                .build());
-//        visibleSessions.add(ScheduledSession.builder()
-//                .roomId("192k129k12")
-//                .patientId("jkner9202o3p2")
-//                .doctorStatus(false)
-//                .patientStatus(false)
-//                .durationInMin(45)
-//                .date("date")
-//                .time("time")
-//                .patient(new Patient("jkner9202o3p2", "firstName", "lastName", "dob"))
-//                .build());
 
         log.info(sessionInfo);
         model.addAttribute("sessions", visibleSessions);
@@ -139,7 +117,7 @@ public class ViewSessionsController {
                     session.getDurationInMin(),
                     session.isDoctorStatus(),
                     session.isPatientStatus(),
-                    session.isDoctorStatus() == DoctorApplicationConstant.ParticipantStatus_NOTCONNECTED);
+                    session.isDoctorStatus() == AWSConfigConstants.ParticipantStatus_NOTCONNECTED);
 
             sessionInfo.append(sessionTemplate);
 

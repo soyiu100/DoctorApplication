@@ -7,7 +7,7 @@ package com.doctorapp.controller;
 
 import static java.util.Arrays.asList;
 
-import com.doctorapp.authentication.RoleEnum;
+import com.doctorapp.constant.RoleEnum;
 import com.doctorapp.dao.DynamoDBPartnerDetailsDAO;
 import java.security.Principal;
 import java.util.Collection;
@@ -15,15 +15,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.ClientRegistrationService;
 import org.springframework.security.oauth2.provider.approval.Approval;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;

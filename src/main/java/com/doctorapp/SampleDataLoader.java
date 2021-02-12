@@ -5,7 +5,7 @@
  */
 package com.doctorapp;
 
-import com.doctorapp.authentication.RoleEnum;
+import com.doctorapp.constant.RoleEnum;
 import com.doctorapp.dto.OAuthClientDetails;
 import com.doctorapp.dto.OAuthPartner;
 import com.google.common.collect.ImmutableList;

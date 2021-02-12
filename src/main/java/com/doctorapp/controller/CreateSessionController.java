@@ -1,7 +1,7 @@
 package com.doctorapp.controller;
 
 import com.doctorapp.client.ScheduledSessionDao;
-import com.doctorapp.constant.DoctorApplicationConstant;
+import com.doctorapp.constant.AWSConfigConstants;
 import com.doctorapp.data.ScheduledSession;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +26,9 @@ public class CreateSessionController {
     @RequestMapping("/create_sessions")
     public String createSessionPage(HttpServletRequest request) {
         log.info("HTTP Session userName is {}",
-                request.getSession().getAttribute(DoctorApplicationConstant.HTTP_SESSIONS_USERNAME));
+                request.getSession().getAttribute(AWSConfigConstants.HTTP_SESSIONS_USERNAME));
 
-        if (request.getSession().getAttribute(DoctorApplicationConstant.HTTP_SESSIONS_USERNAME) == null) {
+        if (request.getSession().getAttribute(AWSConfigConstants.HTTP_SESSIONS_USERNAME) == null) {
             log.info("Session is null, return to login");
             return "redirect:login";
         }
@@ -51,8 +51,8 @@ public class CreateSessionController {
                 .scheduledTime(scheduledDate + " " + scheduledTime)
                 .durationInMin(durationInMin)
                 .roomId(UUID.randomUUID().toString())
-                .doctorStatus(DoctorApplicationConstant.ParticipantStatus_NOTCONNECTED)
-                .patientStatus(DoctorApplicationConstant.ParticipantStatus_NOTCONNECTED)
+                .doctorStatus(AWSConfigConstants.ParticipantStatus_NOTCONNECTED)
+                .patientStatus(AWSConfigConstants.ParticipantStatus_NOTCONNECTED)
                 .build();
         scheduledSessionDao.putScheduledSession(scheduledSession);
         try {
