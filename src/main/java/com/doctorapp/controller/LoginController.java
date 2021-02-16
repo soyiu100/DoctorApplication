@@ -37,7 +37,7 @@ public class LoginController {
     CognitoClient cognitoClient;
 
     @RequestMapping("/login")
-    public String loginPage() {
+    public String loginPage(HttpServletRequest request) {
         return "login";
     }
 
