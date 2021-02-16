@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <body>
     <div class="modal fade" id="searchPatientModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -39,39 +40,43 @@
     var searchRequest = document.getElementById('submit-search');
 
     searchRequest.addEventListener('click', function() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'search_patient/?firstName=' + document.getElementById("firstName").value
-            + '&lastName=' + document.getElementById("lastName").value, true);
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
 
-        // Here is where we receive a List<> of patients, given that the post endpoint has @ResponseBody tag
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                // Response will be a string: '[{...}, ...]'
-                var res = JSON.parse(xhr.response);
-                // If the results div is not empty, flush it
+        $.ajax({
+            type: "POST",
+            url: 'search_patient/?firstName=' + document.getElementById("firstName").value
+                + '&lastName=' + document.getElementById("lastName").value,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function (data, textStatus, jqXHR) {
+                var res = data;
+                // If the results _div_ is not empty, flush it
                 if ($.trim($("#results").html())) {
                     $("#results").empty();
                 }
+                // if data is an empty array or weird
                 if (res === undefined || res.length == 0) {
                     $("#results").html("No results.");
                 } else {
                     $("#results").append('<table class=\"table\"></table>');
                     $(".table").append(
                         '<thead class="thead-dark">' +
-                            '<tr>' +
-                                '<th>Name</th>' +
-                                '<th>Patient ID</th>' +
-                                '<th>DOB</th>' +
-                                '<th></th>' +
-                            '</tr>' +
+                        '<tr>' +
+                        '<th>Name</th>' +
+                        '<th>Patient ID</th>' +
+                        '<th>DOB</th>' +
+                        '<th></th>' +
+                        '</tr>' +
                         '</thead>');
                     for (const person of res) {
                         $(".table").append(
                             '<tr>' +
-                                '<td>' + person.firstName + ' ' + person.lastName + '</td>' +
-                                '<td>' + person.patientId + '</td>' +
-                                '<td>' + person.dob + '</td>' +
-                                '<td id="' + person.patientId  + '" class="table-link" data-dismiss="modal">Select</td>' +
+                            '<td>' + person.firstName + ' ' + person.lastName + '</td>' +
+                            '<td>' + person.patientId + '</td>' +
+                            '<td>' + person.dob + '</td>' +
+                            '<td id="' + person.patientId  + '" class="table-link" data-dismiss="modal">Select</td>' +
                             '</tr>');
                         $("#" + person.patientId).on("click", function() {
                             $("#patientName").val(person.firstName + ' ' + person.lastName)
@@ -80,9 +85,11 @@
                         });
                     }
                 }
+            },
+            error: function (request, status, error) {
+                alert(status);
             }
-        };
-        xhr.send();
+        });
     }, false);
 
     $(document).ready(function() {

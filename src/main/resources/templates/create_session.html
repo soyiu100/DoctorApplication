@@ -3,6 +3,9 @@
 <head>
     <title>Create Session</title>
     <th:block th:include="../fragments/header.html"></th:block>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <!-- default header name is X-CSRF-TOKEN -->
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
     <th:block th:include="../fragments/navbar.html"></th:block>
@@ -18,7 +21,7 @@
                     <label class="col-form-label" for="patientName">Patient Name</label>
                     <div class="input-group mb-3">
                         <input type="text" id="patientName" name="patientName"
-                               class="form-control" required disabled>
+                               class="form-control" required readonly="readonly">
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" id="openModal" type="button"
                                     data-toggle="modal" data-target="#searchPatientModal" >Search Patients</button>
@@ -32,7 +35,7 @@
                         <label class="col-form-label" for="patientId">Patient ID</label>
                         <div class="controls">
                             <input type="text" id="patientId" name="patientId"
-                                   class="form-control" required disabled>
+                                   class="form-control" required readonly="readonly">
                         </div>
                     </div>
                     <div class="col">
@@ -40,7 +43,7 @@
                         <label class="col-form-label" for="patientDOB">Patient Date of Birth</label>
                         <div class="controls">
                             <input type="text" id="patientDOB" name="patientDOB"
-                                   class="form-control" required disabled>
+                                   class="form-control" required readonly="readonly">
                         </div>
                     </div>
                 </div>

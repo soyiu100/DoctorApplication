@@ -58,9 +58,9 @@ public class LoginController {
         if (auth != null) {
             Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
             if (roles.contains(ROLE_DOCTOR.name())) {
-                redirectPage += "?doctor";
+                redirectPage += "&doctor";
             } else if (roles.contains(ROLE_CLIENT_ADMIN.name()) || roles.contains(ROLE_USER_ADMIN.name())) {
-                redirectPage += "?admin";
+                redirectPage += "&admin";
             }
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }

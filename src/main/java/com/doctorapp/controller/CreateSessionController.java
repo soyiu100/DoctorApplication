@@ -29,12 +29,12 @@ public class CreateSessionController {
     }
 
     @PostMapping("/create_session_form")
-    public String register(@RequestParam("patientId") final String patientId,
+    public String registerSession(@RequestParam("patientId") final String patientId,
                            @RequestParam("scheduledTime") final String scheduledTime,
                            @RequestParam("scheduledDate") final String scheduledDate,
                            @RequestParam("durationInMin") final int durationInMin,
                            HttpServletRequest request) {
-        String newPage = "redirect:create_sessions";
+        String newPage = "redirect:create_session";
         log.info("Creating sessions");
         log.info(scheduledDate);
         log.info(scheduledTime);

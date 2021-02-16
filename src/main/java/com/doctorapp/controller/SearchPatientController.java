@@ -53,18 +53,12 @@ public class SearchPatientController {
             List<Patient> matchedPatients =
                     filterPatientsByFirstName(userResult.getUsers(), firstName.trim(), lastName.trim());
 
-//             Local testing list
-//            List<Patient> matchedPatients = new ArrayList<>();
-//            matchedPatients.add(new Patient("fakeid", "jeff", "bezos", "01/12/1964"));
-//            matchedPatients.add(new Patient("fakeid2", "jeff", "bezos", "01/22/1977"));
-//            matchedPatients.add(new Patient("fakeid3", "jeff", "bezos", "02/09/1977"));
-
             //todo: fill the patient info into table and return to createSession frontend
             log.info("Find {} matched patients", matchedPatients.size());
-//            matchedPatients.forEach(patient -> {
-//                log.info("Patient FirstName is {}, LastName is {}, patientId is {}",
-//                        patient.getFirstName(), patient.getLastName(), patient.getPatientId());
-//            });
+            matchedPatients.forEach(patient -> {
+                log.info("Patient FirstName is {}, LastName is {}, patientId is {}",
+                        patient.getFirstName(), patient.getLastName(), patient.getPatientId());
+            });
             return matchedPatients;
         } catch (Exception e) {
             //todo: add error for searchPatient

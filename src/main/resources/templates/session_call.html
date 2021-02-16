@@ -5,7 +5,9 @@
     <th:block th:include="../fragments/header.html"></th:block>
 </head>
 <body>
-<th:block th:include="../fragments/navbar.html"></th:block>
+<!-- TODO: Need to think about how I want to modify this frag to adjust for session disconnection -->
+<!--<th:block th:include="../fragments/navbar.html"></th:block>-->
+
 <!-- If flash attribute 'bad' exists, then make an error message that says the session doesn't exist. -->
 <div th:if="${badSession}">
     Session may not exist. Please go back and try selecting the session again?
