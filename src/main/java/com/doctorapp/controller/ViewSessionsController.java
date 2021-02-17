@@ -1,5 +1,8 @@
 package com.doctorapp.controller;
 
+import com.amazonaws.services.cognitoidp.model.AttributeType;
+import com.amazonaws.services.cognitoidp.model.ListUsersResult;
+import com.amazonaws.services.cognitoidp.model.UserType;
 import com.doctorapp.client.CognitoClient;
 import com.doctorapp.client.PatientDao;
 import com.doctorapp.client.ScheduledSessionDao;
@@ -14,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +26,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.doctorapp.constant.AWSConfigConstants.LASTNAME;
+import static com.doctorapp.constant.AWSConfigConstants.PATIENT_POOL_ID;
+import static com.doctorapp.constant.AWSConfigConstants.USERNAME;
 
 /**
  * MVC Controller for {@link ViewSessionsController}
@@ -96,6 +104,39 @@ public class ViewSessionsController {
         }
 
         return "redirect:session_call";
+    }
+
+
+    /**
+     * TODO: untested but implemented
+     * As per documentation,
+     * 1) 3P Skill Handler receives the username of the patient and invokes (POST?) to the webapp
+     * 2) the webapp grabs the patient ID using the username
+     * 3) then searches a DDB table to get the sessions
+     *
+     * Possible requirements:
+     * - Valid CSRF token, as Spring Security is very picky about any POSTs that have a response body
+     */
+    @ResponseBody
+    public List<ScheduledSession> getSessionByPatientId(String username) {
+        try {
+            ListUsersResult userResult =
+                    cognitoClient.getPatientIdsByFilter(USERNAME, username.trim(), PATIENT_POOL_ID);
+            List<UserType> patientUserType = userResult.getUsers();
+            List<ScheduledSession> matchedSessions = new ArrayList<>();
+            assert (patientUserType.size() == 1);
+
+            List<AttributeType> attributes = patientUserType.get(0).getAttributes();
+
+            assert (attributes.size() == 1);
+
+            String patientId = attributes.get(0).getValue();
+
+            return scheduledSessionDao.getScheduledSessionsByPatientId(patientId);
+        } catch (Exception e) {
+            log.info("Error occurred while getting sessions by patient ID: {}", e.getMessage());
+            throw e;
+        }
     }
 
     private ScheduledSession parseSessionInfo(ScheduledSession session, StringBuilder sessionInfo) {

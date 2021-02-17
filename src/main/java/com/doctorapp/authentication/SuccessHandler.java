@@ -44,6 +44,7 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
                 throw new IOException("Who is this");
             }
         } else {
+            log.info("Redirecting to {}.", savedRequest.getRedirectUrl());
             response.sendRedirect(savedRequest.getRedirectUrl());
         }
 
