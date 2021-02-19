@@ -42,7 +42,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/webjars/**", "/resources/**",
                 // put POST endpoints here that you want the config to ignore
-                "/change_password_form", "/create_patient_form", "/create_doctor_form",
+                "/change_password_form",
+                "/create_patient_form", "/create_doctor_form", "/create_admin_form",
                 "/create_session_form",
                 "/connect_session", "/disconnect_session",
                 "/search_patient");
@@ -52,8 +53,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-            .mvcMatchers("/login**", "/doctor/login", "/patient/register", "/logout.do", "/css/**", "/js/**", "/actuator/**",
-                    "/register", "/change_password**", "/error", "/search_patient").permitAll()
+            .mvcMatchers("/login**", "/doctor/login", "/admin/login",
+                    "/logout.do", "/css/**", "/js/**", "/actuator/**",
+                    "/register", "/patient/register", "/admin/register",
+                    "/change_password**", "/error", "/search_patient").permitAll()
             .mvcMatchers("/clients/**", "/partners/**").hasAuthority(RoleEnum.ROLE_USER_ADMIN.name())
             .mvcMatchers("/view_sessions", "/session_call**", "/create_session", "/search_patient").hasAuthority(RoleEnum.ROLE_DOCTOR.name())
             .anyRequest().authenticated()

@@ -19,9 +19,6 @@ public class FailureHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
-        // TODO: haven't gotten this to work properly yet
-//        response.setHeader("Referer", request.getHeader("Referer"));
-
         log.info("User type found: " + request.getParameter("userType"));
         String userType = request.getParameter("userType");
         String failRedirectURI = "/login?error=true";

@@ -76,12 +76,6 @@ public class AuthenticationServiceProvider implements AuthenticationProvider, Au
         authParams.put("USERNAME", username);
         authParams.put("PASSWORD", password);
 
-        // TODO: remove after pool established
-        if(username.equals("admin")) {
-            return new UsernamePasswordAuthenticationToken(username, password,
-                    ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.ROLE_USER_ADMIN.name())));
-        }
-
         String userType = request.getParameter("userType");
         if (userType.equals("") || userType == null) {
             userType = NONE;
@@ -102,11 +96,12 @@ public class AuthenticationServiceProvider implements AuthenticationProvider, Au
                 return new UsernamePasswordAuthenticationToken(username, password,
                         decideGrantedAuthorities(authResult, DOCTOR));
             } else if (userType.equals(ADMIN)) {
-                // TODO: replace with ADMIN pool id and clients
-                authResult = cognitoClient.getAuthResult(AWSConfigConstants.DOCTOR_POOL_ID, AWSConfigConstants.DOCTOR_POOL_CLIENT_ID, authParams);
+                authResult = cognitoClient.getAuthResult(AWSConfigConstants.ADMIN_POOL_ID, AWSConfigConstants.ADMIN_POOL_CLIENT_ID, authParams);
                 return new UsernamePasswordAuthenticationToken(username, password,
-                        decideGrantedAuthorities(authResult, DOCTOR));
+                        decideGrantedAuthorities(authResult, ADMIN));
             } else {
+                log.info("Going into the fallback case for authentication");
+                // represents an edge case where no user type is passed. this would be a bug
                 try {
                     authResult = cognitoClient.getAuthResult(AWSConfigConstants.PATIENT_POOL_ID, AWSConfigConstants.PATIENT_POOL_CLIENT_ID, authParams);
                     return new UsernamePasswordAuthenticationToken(username, password,
@@ -117,40 +112,26 @@ public class AuthenticationServiceProvider implements AuthenticationProvider, Au
                             decideGrantedAuthorities(authResult, DOCTOR));
                 }
             }
-
-
         } catch (Exception e) {
             log.error("Failed to login: " + e.getMessage(), e);
-            //todo: Error message like : failed to validate your user credential
-//            redirect.addFlashAttribute("error", true);
             throw new BadCredentialsException(e.getMessage());
         }
-
-//        if(authResult.getChallengeName().equals("NEW_PASSWORD_REQUIRED")) {
-//            //todo : redirect to change password page
-//            return new UsernamePasswordAuthenticationToken(username, password,
-//                    ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.UNVERIFIED_USER.name())));
-//        }
-//
-//        if(StringUtils.equals(username, "admin")) {
-//            return new UsernamePasswordAuthenticationToken(username, password,
-//                    ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.ROLE_USER_ADMIN.name())));
-//        } else {
-//            return new UsernamePasswordAuthenticationToken(username, password,
-//                    ImmutableList.of());
-//        }
     }
 
     private List<SimpleGrantedAuthority> decideGrantedAuthorities(AdminInitiateAuthResult authResult, String userType) {
         if (authResult != null && authResult.getChallengeName() != null &&
                 authResult.getChallengeName().equals("NEW_PASSWORD_REQUIRED")) {
-            if (userType.equals(PATIENT)) {
-                return ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.UNVERIFIED_PATIENT.name()));
-            } else {
+            if (userType.equals(ADMIN)) {
+                return ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.UNVERIFIED_ADMIN.name()));
+            } else if (userType.equals(DOCTOR)) {
                 return ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.UNVERIFIED_DOCTOR.name()));
+            } else {
+                return ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.UNVERIFIED_PATIENT.name()));
             }
         } else {
-            if (userType.equals(DOCTOR)) {
+            if (userType.equals(ADMIN)) {
+                return ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.ROLE_USER_ADMIN.name()), new SimpleGrantedAuthority(RoleEnum.ROLE_CLIENT_ADMIN.name()));
+            } else if (userType.equals(DOCTOR)) {
                 log.info("Authenticated a doctor B)");
                 return ImmutableList.of(new SimpleGrantedAuthority(RoleEnum.ROLE_DOCTOR.name()));
             } else {
@@ -162,13 +143,7 @@ public class AuthenticationServiceProvider implements AuthenticationProvider, Au
 
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-
-        //TODO: Remove this code
-        return mockUsers.stream()
-            .filter(u -> u.getUsername().equals(username))
-            .findAny()
-            .map(u -> new User(u.getUsername(), u.getPassword(), u.getAuthorities()))
-            .orElseThrow(() -> new UsernameNotFoundException("User " + username + " cannot be found"));
+        return null;
     }
 
     @Override

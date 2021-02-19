@@ -25,14 +25,11 @@ import java.util.Set;
 
 import com.doctorapp.constant.ErrorCodeConstants;
 
-import static com.doctorapp.constant.AWSConfigConstants.DOCTOR_POOL_CLIENT_ID;
-import static com.doctorapp.constant.AWSConfigConstants.DOCTOR_POOL_ID;
 import static com.doctorapp.constant.RoleEnum.*;
+import static com.doctorapp.constant.AWSConfigConstants.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.doctorapp.constant.AWSConfigConstants.PATIENT_POOL_CLIENT_ID;
-import static com.doctorapp.constant.AWSConfigConstants.PATIENT_POOL_ID;
 
 /**
  * MVC Controller for {@link ChangePasswordController}
@@ -95,10 +92,15 @@ public class ChangePasswordController {
         } else if (request.getParameter("userType").equals("PATIENT")) {
             log.info("Is it a patient? : {}", request.getParameter("userType").equals("PATIENT"));
             newPage += "?patient";
+        } else if (request.getParameter("userType").equals("ADMIN")) {
+            log.info("Is it a admin? : {}", request.getParameter("userType").equals("ADMIN"));
+            newPage += "?admin";
 
+            poolID = ADMIN_POOL_ID;
+            poolClientID = ADMIN_POOL_CLIENT_ID;
         } else {
             // no? print an error
-            redirect.addFlashAttribute("passwordChangeErr", "No session or identifier was found. Go back and log in again");
+            redirect.addFlashAttribute("passwordChangeErr", "No valid session or identifier was found. Go back and log in again");
             return newPage;
         }
 
@@ -110,11 +112,6 @@ public class ChangePasswordController {
 
             log.info("Start calling cogonito to verify user credential for changing password username {}, password {}",
                     username, old_Password);
-            // TODO:?????
-            // TODO:?????
-            // TODO:?????
-            // TODO:?????
-            // TODO:?????
             AdminInitiateAuthResult authResult = cognitoClient.getAuthResult(poolID, poolClientID, authParams);
             String authSession = authResult.getSession();
 
@@ -128,6 +125,8 @@ public class ChangePasswordController {
 
             if (request.getParameter("userType").equals("DOCTOR")) {
                 newPage = "redirect:login?doctor";
+            } else if (request.getParameter("userType").equals("ADMIN")) {
+                newPage = "redirect:login?admin";
             } else if (request.getParameter("userType").equals("PATIENT")) {
                 newPage = "redirect:login";
             }

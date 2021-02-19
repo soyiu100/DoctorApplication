@@ -4,6 +4,7 @@ import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
 import com.amazonaws.services.cognitoidp.model.*;
+import com.doctorapp.data.Admin;
 import com.doctorapp.data.Doctor;
 import com.doctorapp.data.Patient;
 import lombok.NonNull;
@@ -107,7 +108,6 @@ public class CognitoClient {
         }
     }
 
-
     public void createNewUser(final Doctor doctor) throws AWSCognitoIdentityProviderException {
         final String emailAddr = doctor.getEmailAddress().trim();
         final String title = doctor.getTitle().trim();
@@ -143,6 +143,36 @@ public class CognitoClient {
         } catch (Exception e) {
             log.info("Error in creating doctor", e);
             throw new AWSCognitoIdentityProviderException("Error in creating doctor");
+        }
+    }
+
+    public void createNewUser(final Admin admin) throws AWSCognitoIdentityProviderException {
+        final String emailAddr = admin.getEmailAddress().trim();
+        final String firstName = admin.getFirstName().trim();
+        final String lastName = admin.getLastName().trim();
+        AdminCreateUserRequest createUserRequest = new AdminCreateUserRequest()
+                .withUserPoolId(ADMIN_POOL_ID)
+                .withUsername(admin.getUserName().trim())
+                .withUserAttributes(
+                        new AttributeType()
+                                .withName(EMAIL)
+                                .withValue(emailAddr),
+                        new AttributeType()
+                                .withName("email_verified")
+                                .withValue("true"),
+                        new AttributeType()
+                                .withName(FIRSTNAME)
+                                .withValue(firstName),
+                        new AttributeType()
+                                .withName(LASTNAME)
+                                .withValue(lastName)
+                );
+        try {
+            awsCognitoIdentityProvider.adminCreateUser(createUserRequest);
+            log.info("succeed in creating admin");
+        } catch (Exception e) {
+            log.info("Error in creating admin", e);
+            throw new AWSCognitoIdentityProviderException("Error in creating admin");
         }
     }
 

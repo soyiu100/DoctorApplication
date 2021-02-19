@@ -17,6 +17,9 @@ public class AWSConfigConstants {
     //        = "us-west-2_fAsZAxMqF";
     public final static String PATIENT_POOL_CLIENT_ID = "v1l0i1he3o812th0rqgnfu5rh";
 
+    public final static String ADMIN_POOL_ID = "us-west-2_dF0DeTVmC";
+    public final static String ADMIN_POOL_CLIENT_ID = "2r34dvddn2btt962j30cj62qku";
+
     public final static String EMAIL = "email";
     public final static String USERNAME = "username";
     public final static String TITLE = "custom:title";

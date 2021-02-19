@@ -16,5 +16,6 @@ public enum RoleEnum {
     ROLE_DOCTOR, //A role for an internal administration OAuth client.
     ROLE_PATIENT, //A role for an internal administration OAuth client.
     UNVERIFIED_PATIENT, //A role requires to reset the password
-    UNVERIFIED_DOCTOR //A role requires to reset the password
+    UNVERIFIED_DOCTOR, //A role requires to reset the password
+    UNVERIFIED_ADMIN //A role requires to reset the password
 }

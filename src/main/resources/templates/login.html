@@ -29,7 +29,12 @@
             </th:block>
 
             <th:block th:unless="${param.doctor}">
-                <h2>Patient Login</h2>
+                <th:block th:if="${param.admin}">
+                    <h2>Admin Login</h2>
+                </th:block>
+                <th:block th:unless="${param.admin}">
+                    <h2>Patient Login</h2>
+                </th:block>
             </th:block>
 
             <form id="login-form" action="login.do" method="post">
@@ -59,8 +64,14 @@
                         </th:block>
 
                         <th:block th:unless="${param.doctor}">
-                            <input type="hidden" id="userType" class="form-control"
-                                   name="userType" value="patient" required>
+                            <th:block th:if="${param.admin}">
+                                <input type="hidden" id="userType" class="form-control"
+                                       name="userType" value="admin" required>
+                            </th:block>
+                            <th:block th:unless="${param.admin}">
+                                <input type="hidden" id="userType" class="form-control"
+                                       name="userType" value="patient" required>
+                            </th:block>
                         </th:block>
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                         <input type="submit"
@@ -74,7 +85,12 @@
                         </th:block>
 
                         <th:block th:unless="${param.doctor}">
-                            <div class="float-right"><a href="/patient/register" class="btn btn btn-outline-info">Register New User</a></div>
+                            <th:block th:if="${param.admin}">
+                                <div class="float-right"><a href="/admin/register" class="btn btn btn-outline-info">Register New User</a></div>
+                            </th:block>
+                            <th:block th:unless="${param.admin}">
+                                <div class="float-right"><a href="/patient/register" class="btn btn btn-outline-info">Register New User</a></div>
+                            </th:block>
                         </th:block>
                     </div>
                 </div>

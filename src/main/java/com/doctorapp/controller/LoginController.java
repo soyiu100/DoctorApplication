@@ -42,11 +42,19 @@ public class LoginController {
     }
 
     @RequestMapping("/doctor/login")
-    public String adminLogin(RedirectAttributes redirect) {
+    public String doctorLogin(RedirectAttributes redirect) {
         redirect.addFlashAttribute("doctor", true);
         redirect.addAttribute("doctor", true);
         return "redirect:/login";
     }
+
+    @RequestMapping("/admin/login")
+    public String adminLogin(RedirectAttributes redirect) {
+        redirect.addFlashAttribute("admin", true);
+        redirect.addAttribute("admin", true);
+        return "redirect:/login";
+    }
+
 
     /**
      * Method to logout customer.

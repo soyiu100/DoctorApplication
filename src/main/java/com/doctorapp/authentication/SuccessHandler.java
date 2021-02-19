@@ -22,15 +22,16 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         log.info("Authentication success!");
+        // gets the referer url
         HttpSession session = request.getSession();
         SavedRequest savedRequest = (SavedRequest) session.getAttribute("SPRING_SECURITY_SAVED_REQUEST");
-        if (savedRequest == null || savedRequest.getRedirectUrl().contains("login")) {
 
-            Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+        Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 
-            if (roles.contains(ROLE_CLIENT_ADMIN.name())) {
-                response.sendRedirect("/api/partner/token");
-            } else if (roles.contains(ROLE_USER_ADMIN.name())) {
+        if (savedRequest == null || savedRequest.getRedirectUrl().contains("login")
+                || roles.contains(UNVERIFIED_DOCTOR.name()) || roles.contains(UNVERIFIED_PATIENT.name())
+                || roles.contains(UNVERIFIED_ADMIN.name())) {
+            if (roles.contains(ROLE_CLIENT_ADMIN.name()) || roles.contains(ROLE_USER_ADMIN.name())) {
                 response.sendRedirect("/partners/form");
             } else if (roles.contains(ROLE_DOCTOR.name())) {
                 response.sendRedirect("/view_sessions");
@@ -40,7 +41,10 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
                 response.sendRedirect("/change_password?doctor");
             } else if (roles.contains(UNVERIFIED_PATIENT.name())) {
                 response.sendRedirect("/change_password?patient");
+            } else if (roles.contains(UNVERIFIED_ADMIN.name())) {
+                response.sendRedirect("/change_password?admin");
             } else {
+                // Should not happen, a bug
                 throw new IOException("Who is this");
             }
         } else {

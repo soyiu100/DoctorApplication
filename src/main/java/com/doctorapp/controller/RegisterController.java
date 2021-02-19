@@ -4,6 +4,7 @@ import com.amazonaws.services.cognitoidp.model.ListUsersResult;
 import com.doctorapp.client.CognitoClient;
 import com.doctorapp.client.PatientDao;
 import com.doctorapp.constant.AWSConfigConstants;
+import com.doctorapp.data.Admin;
 import com.doctorapp.data.Doctor;
 import com.doctorapp.data.Patient;
 import com.doctorapp.exception.DependencyException;
@@ -44,8 +45,13 @@ public class RegisterController {
         return "patient_register";
     }
 
+    @RequestMapping("/admin/register")
+    public String adminRegister() {
+        return "admin_register";
+    }
+
     @PostMapping("/create_doctor_form")
-    public String register(@RequestParam("username") final String userName,
+    public String doctorRegister(@RequestParam("username") final String userName,
                            @RequestParam("email") final String emailAddr,
                            @RequestParam("firstname") final String firstname,
                            @RequestParam("lastname") final String lastname,
@@ -72,7 +78,7 @@ public class RegisterController {
 
 
     @PostMapping("/create_patient_form")
-    public String register(@RequestParam("username") final String username,
+    public String patientRegister(@RequestParam("username") final String username,
                            @RequestParam("email") final String emailAddr,
                            @RequestParam("firstName") final String firstName,
                            @RequestParam("lastName") final String lastName,
@@ -82,7 +88,7 @@ public class RegisterController {
         try {
             validateEmail(emailAddr, PATIENT);
             validateUsername(username, PATIENT);
-            log.info("Creating patient for userName {}, email address {}, dateOfBirth {}, firstname {}, " +
+            log.info("Creating patient for username {}, email address {}, dateOfBirth {}, firstname {}, " +
                     "lastname {}", username, emailAddr, dob, firstName, lastName);
             Patient patient = new Patient(username, UUID.randomUUID().toString(), emailAddr, firstName, lastName, dob);
             cognitoClient.createNewUser(patient);
@@ -90,6 +96,30 @@ public class RegisterController {
             redirect.addFlashAttribute("user_name_val", username);
             //todo: confirmation message like: register succeed and please check your mailbox for temporary password
             newPage = "redirect:login";
+        } catch (Exception e) {
+            log.error("Failed to create user" + e.getMessage(), e);
+            throw new Exception("Failed to create user", e);
+        }
+        return newPage;
+    }
+
+    @PostMapping("/create_admin_form")
+    public String adminRegister(@RequestParam("username") final String username,
+                           @RequestParam("email") final String emailAddr,
+                           @RequestParam("firstName") final String firstName,
+                           @RequestParam("lastName") final String lastName,
+                           RedirectAttributes redirect) throws Exception {
+        String newPage = "redirect:admin/register";
+        try {
+            validateEmail(emailAddr, ADMIN);
+            validateUsername(username, ADMIN);
+            log.info("Creating admin for username {}, email address {}, firstname {}, " +
+                    "lastname {}", username, emailAddr, firstName, lastName);
+            Admin admin = new Admin(username, emailAddr, firstName, lastName);
+            cognitoClient.createNewUser(admin);
+            redirect.addFlashAttribute("user_name_val", username);
+            //todo: confirmation message like: register succeed and please check your mailbox for temporary password
+            newPage = "redirect:login?admin";
         } catch (Exception e) {
             log.error("Failed to create user" + e.getMessage(), e);
             throw new Exception("Failed to create user", e);
@@ -111,6 +141,8 @@ public class RegisterController {
             String poolID = AWSConfigConstants.DOCTOR_POOL_ID;
             if (userType.equals(PATIENT)) {
                 poolID = AWSConfigConstants.PATIENT_POOL_ID;
+            } else if (userType.equals(ADMIN)) {
+                poolID = AWSConfigConstants.ADMIN_POOL_ID;
             }
             ListUsersResult userResult = cognitoClient.getUsersByFilter("username", username, poolID);
             if(userResult != null && userResult.getUsers().size() > 0) {

@@ -1,4 +1,4 @@
-<!-- Patient registration page : /patient/register -->
+<!-- Admin registration page : /admin/register -->
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -8,7 +8,7 @@
 <body>
 <th:block th:include="../fragments/navbar.html"></th:block>
 <div class="d-flex justify-content-center">
-    <form action="/create_patient_form" method="post">
+    <form action="/create_admin_form" method="post">
         <fieldset>
             <h1>Register</h1>
             <div class="form-group">
@@ -40,14 +40,6 @@
                 <label class="col-form-label" for="lastName">Last Name</label>
                 <div class="controls">
                     <input type="text" id="lastName" name="lastName" placeholder="" class="form-control" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <!-- DOB-->
-                <label class="col-form-label" for="dob">Date of Birth</label>
-                <div class="controls">
-                    <input type="date" id="dob" name="dob" placeholder=""
-                           class="form-control" required>
                 </div>
             </div>
             <!-- Button -->
