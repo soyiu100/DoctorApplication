@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head lang="en">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
     <title>Partner edit/add</title>
-    <link rel="stylesheet" href="/webjars/bootstrap/3.3.2/css/bootstrap.min.css"/>
-    <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
-    <script src="/webjars/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <th:block th:include="../fragments/header.html"></th:block>
     <script>
         $(function() {
             $('.glyphicon-question-sign').tooltip();
@@ -13,19 +10,19 @@
     </script>
 </head>
 <body>
-<div class="container">
+<div class="container" style="padding-top: 3%;">
     <h1 th:if="!${param.partnerId}" class="page-header">Add Partner</h1>
 
     <h1 th:if="${param.partnerId}" class="page-header">Edit Partner <span th:text="${param.partnerId}"></span></h1>
 
-    <div class="row">
-        <div class="col-xs-12 col-md-12">
-            <form th:action="'/partners/edit'" method="post">
+        <form th:action="'/partners/edit'" method="post">
+            <div class="form-row">
+
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <!-- signalize new Partner -->
                 <input type="hidden" th:if="!${param.partnerId}" name="newPartner" value="true"/>
 
-                <div class="col-md-4">
+                <div class="col-4">
                     <div class="form-group">
                         <label for="partnerId">Partner ID</label>
                         <input class="form-control" id="partnerId" type="text" name="partnerId" th:value="${partner.partnerId}"/>
@@ -42,7 +39,7 @@
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
 
-                <div class="col-xs-12 col-md-3">
+                <div class="col-3">
                     <div class="form-group">
                         <label for="accessTokenUri">Access Token Uri</label>
                         <input class="form-control" id="accessTokenUri" type="text" name="accessTokenUri" th:value="${partner.accessTokenUri}"/>
@@ -54,15 +51,14 @@
 
                     <div class="form-group">
                         <label for="scopes">Scopes
-                            <span data-toggle="tooltip" data-placement="bottom" class="glyphicon glyphicon-question-sign"
-                                  title="All scopes this client can access. If it is a client with authorization (implicit, authorization_code grant) the user can choose the scopes separately. Comma separated list."></span>
                         </label>
                         <input class="form-control" id="scopes" type="text" name="scopes" th:value="${#strings.setJoin(partner.scopes, ',')}"/>
+                        <small>
+                            All scopes this client can access. If it is a client with authorization (implicit, authorization_code grant) the user can choose the scopes separately. Comma separated list.</small>
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
+            </div>
+        </form>
 </div>
 </body>
 </html>

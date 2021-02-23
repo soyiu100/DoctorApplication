@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head lang="en">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Client edit/add</title>
-    <link rel="stylesheet" href="/webjars/bootstrap/3.3.2/css/bootstrap.min.css"/>
-    <script src="/webjars/jquery/1.11.1/jquery.min.js"></script>
-    <script src="/webjars/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <th:block th:include="../fragments/header.html"></th:block>
     <script>
         $(function() {
             $('.glyphicon-question-sign').tooltip();
@@ -13,18 +10,18 @@
     </script>
 </head>
 <body>
-<div class="container">
+<div class="container" style="padding-top: 3%;">
     <h1 th:if="!${param.client}" class="page-header">Add client</h1>
 
     <h1 th:if="${param.client}" class="page-header">Edit client <span th:text="${param.client[0]}"></span></h1>
 
-    <div class="row">
-        <div class="col-xs-12 col-md-12">
-            <div th:if="${param.client}" class="alert alert-warning">Editing a client will delete all user approvals and active tokens.</div>
-            <form th:action="'/clients/edit'" method="post">
+    <div th:if="${param.client}" class="alert alert-warning">Editing a client will delete all user approvals and active tokens.</div>
+    <form th:action="'/clients/edit'" method="post">
+        <div class="form-row">
+
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-                <div class="col-md-4">
+                <div class="col-4">
                     <div class="form-group">
                         <label for="clientId">Client ID</label>
                         <input class="form-control" id="clientId" type="text" name="clientId" th:value="${clientDetails.clientId}"/>
@@ -38,11 +35,11 @@
                     </div>
                     <div class="form-group">
                         <label for="registeredRedirectUri">Registered redirect URIs
-                            <span data-toggle="tooltip" data-placement="bottom" class="glyphicon glyphicon-question-sign"
-                                  title="Only these URIs can be used as redirect uris in an authorize request. Important so no other malicious client can get access to tokens by fooling the user! Used for implicit, authorization_code and refresh_token grants. Comma separated list."></span>
                         </label>
                         <input class="form-control" id="registeredRedirectUri" name="registeredRedirectUri" type="text"
                                th:value="${clientDetails.registeredRedirectUri} ? ${#strings.setJoin(clientDetails.registeredRedirectUri, ',')} : ''"/>
+                        <small>Only these URIs can be used as redirect uris in an authorize request. Important so no other malicious client can get access to tokens by fooling the user! Used for implicit, authorization_code and refresh_token grants. Comma separated list.</small>
+
                     </div>
                     <div class="form-group">
                         <label for="accessTokenValiditySeconds">Access token validity
@@ -63,46 +60,41 @@
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
 
-                <div class="col-xs-12 col-md-3">
+                <div class="col-3">
                     <div class="form-group">
                         <label for="resourceIds">Resource IDs
-                            <span data-toggle="tooltip" data-placement="bottom" class="glyphicon glyphicon-question-sign"
-                                  title="The resources this client can access, comma separated list."></span>
                         </label>
                         <input class="form-control" id="resourceIds" type="text" name="resourceIds" th:value="${#strings.setJoin(clientDetails.resourceIds, ',')}"/>
+                        <small>The resources this client can access, comma separated list.</small>
                     </div>
                     <div class="form-group">
                         <label for="scope">Scopes
-                            <span data-toggle="tooltip" data-placement="bottom" class="glyphicon glyphicon-question-sign"
-                                  title="All scopes this client can access. If it is a client with authorization (implicit, authorization_code grant) the user can choose the scopes separately. Comma separated list."></span>
                         </label>
                         <input class="form-control" id="scope" type="text" name="scope" th:value="${#strings.setJoin(clientDetails.scope, ',')}"/>
+                        <small>All scopes this client can access. If it is a client with authorization (implicit, authorization_code grant) the user can choose the scopes separately. Comma separated list.</small>
                     </div>
                     <div class="form-group">
                         <label for="authorities">Authorities
-                            <span data-toggle="tooltip" data-placement="bottom" class="glyphicon glyphicon-question-sign"
-                                  title="The authorities the client has, important for the client_secret grant. Comma separated list."></span>
                         </label>
                         <input class="form-control" id="authorities" type="text" name="authorities" th:value="${#strings.setJoin(clientDetails.authorities, ',')}"/>
+                        <small>The authorities the client has, important for the client_secret grant. Comma separated list.</small>
                     </div>
                 </div>
 
                 <div class="col-xs-12 col-md-5">
                     <label>Grant Types
-                    <span data-toggle="tooltip" data-placement="bottom" class="glyphicon glyphicon-question-sign"
-                          title="If you choose none, they default to authorization_code and refresh_token."></span>
                     </label>
+                    <br/>
+                    <small>If you choose none, they default to authorization_code and refresh_token.</small>
 
                     <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                    Description
-                                </a>
-                            </h4>
-                        </div>
-                        <div id="collapseOne" class="panel-collapse collapse">
-                            <div class="panel-body">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#collapseOne" role="button" aria-expanded="false" aria-controls="collapseOne">
+                                Description
+                            </a>
+                        </h4>
+                        <div id="collapseOne" class="collapse">
+                            <div class="card card-body">
                                 <ul>
                                     <li><b>client_credentials</b>
 

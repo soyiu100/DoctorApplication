@@ -27,6 +27,7 @@ import com.doctorapp.constant.ErrorCodeConstants;
 
 import static com.doctorapp.constant.RoleEnum.*;
 import static com.doctorapp.constant.AWSConfigConstants.*;
+import static com.doctorapp.constant.UserTypeConstants.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -82,18 +83,18 @@ public class ChangePasswordController {
         String poolID = PATIENT_POOL_ID;
         String poolClientID = PATIENT_POOL_CLIENT_ID;
 
-        if (request.getParameter("userType").equals("DOCTOR")) {
-            log.info("Is it a doctor? : {}", request.getParameter("userType").equals("DOCTOR"));
+        if (request.getParameter("userType").equals(DOCTOR)) {
+            log.info("Is it a doctor? : {}", request.getParameter("userType").equals(DOCTOR));
             newPage += "?doctor";
 
             poolID = DOCTOR_POOL_ID;
             poolClientID = DOCTOR_POOL_CLIENT_ID;
 
-        } else if (request.getParameter("userType").equals("PATIENT")) {
-            log.info("Is it a patient? : {}", request.getParameter("userType").equals("PATIENT"));
+        } else if (request.getParameter("userType").equals(PATIENT)) {
+            log.info("Is it a patient? : {}", request.getParameter("userType").equals(PATIENT));
             newPage += "?patient";
-        } else if (request.getParameter("userType").equals("ADMIN")) {
-            log.info("Is it a admin? : {}", request.getParameter("userType").equals("ADMIN"));
+        } else if (request.getParameter("userType").equals(ADMIN)) {
+            log.info("Is it a admin? : {}", request.getParameter("userType").equals(ADMIN));
             newPage += "?admin";
 
             poolID = ADMIN_POOL_ID;
