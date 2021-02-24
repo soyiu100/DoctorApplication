@@ -195,10 +195,17 @@ public class CognitoClient {
      * @param attrValue filter attribute value
      * @return a list of users
      */
-    public ListUsersResult getPatientIdsByFilter(String attrName, String attrValue, String userPoolId) {
+    public ListUsersResult getPatientIdsByFilter(String attrName, String attrValue) {
         ListUsersRequest listUsersRequest = new ListUsersRequest()
-                .withUserPoolId(userPoolId)
+                .withUserPoolId(PATIENT_POOL_ID)
                 .withAttributesToGet(new String[]{PATIENT_ID});
+        return queryUserPool(attrName, attrValue, listUsersRequest);
+    }
+
+    public ListUsersResult getDoctorNameByFilter(String attrName, String attrValue) {
+        ListUsersRequest listUsersRequest = new ListUsersRequest()
+                .withUserPoolId(DOCTOR_POOL_ID)
+                .withAttributesToGet(new String[]{FIRSTNAME, LASTNAME});
         return queryUserPool(attrName, attrValue, listUsersRequest);
     }
 

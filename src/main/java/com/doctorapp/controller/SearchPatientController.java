@@ -48,7 +48,7 @@ public class SearchPatientController {
 
         try {
             ListUsersResult userResult =
-                    cognitoClient.getPatientIdsByFilter(LASTNAME, lastName.trim(), PATIENT_POOL_ID);
+                    cognitoClient.getPatientIdsByFilter(LASTNAME, lastName.trim());
             log.info("Find {} lastName matched patients", userResult.getUsers().size());
             List<Patient> matchedPatients =
                     filterPatientsByFirstName(userResult.getUsers(), firstName.trim(), lastName.trim());

@@ -100,7 +100,6 @@ public class ViewSessionsController {
             session.setDoctorStatus(true);
             scheduledSessionDao.putScheduledSession(session);
             redirect.addAttribute("roomId", roomId);
-            // todo: left off here
         }
 
         return "redirect:session_call";
@@ -121,7 +120,7 @@ public class ViewSessionsController {
     public List<ScheduledSession> getSessionByPatientId(String username) {
         try {
             ListUsersResult userResult =
-                    cognitoClient.getPatientIdsByFilter(USERNAME, username.trim(), PATIENT_POOL_ID);
+                    cognitoClient.getPatientIdsByFilter(USERNAME, username.trim());
             List<UserType> patientUserType = userResult.getUsers();
             List<ScheduledSession> matchedSessions = new ArrayList<>();
             assert (patientUserType.size() == 1);
