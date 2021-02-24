@@ -3,7 +3,7 @@ server:
   tomcat:
     use-relative-redirects: true
   ssl:
-    key-store: "src/main/resources/keystore.jks"
+    key-store: "classpath:keystore.jks"
     key-store-password: "kurento"
     key-store-type: "JKS"
     key-alias: "kurento-selfsigned"
