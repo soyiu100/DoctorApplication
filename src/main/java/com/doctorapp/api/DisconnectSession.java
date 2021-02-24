@@ -1,9 +1,9 @@
-package mediaservice.api;
+package com.doctorapp.api;
 
 import lombok.extern.log4j.Log4j2;
-import mediaservice.data.TelehealthSessionRequest;
-import mediaservice.room.Room;
-import mediaservice.room.RoomManager;
+import com.doctorapp.data.TelehealthSessionRequest;
+import com.doctorapp.room.Room;
+import com.doctorapp.room.RoomManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

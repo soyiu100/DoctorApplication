@@ -1,4 +1,4 @@
-package mediaservice.data;
+package com.doctorapp.data;
 
 import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;

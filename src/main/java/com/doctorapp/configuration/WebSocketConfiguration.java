@@ -1,7 +1,7 @@
-package mediaservice.configuration;
+package com.doctorapp.configuration;
 
-import mediaservice.users.UserRegistry;
-import mediaservice.websocket.CallHandler;
+import com.doctorapp.data.users.UserRegistry;
+import com.doctorapp.websocket.CallHandler;
 import org.kurento.client.KurentoClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,6 +1,6 @@
-package mediaservice.configuration;
+package com.doctorapp.configuration;
 
-import mediaservice.room.RoomManager;
+import com.doctorapp.room.RoomManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

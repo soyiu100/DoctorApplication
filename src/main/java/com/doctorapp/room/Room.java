@@ -1,12 +1,12 @@
-package mediaservice.room;
+package com.doctorapp.room;
 
 import com.google.gson.JsonObject;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
-import mediaservice.users.AlexaUserSession;
-import mediaservice.users.WebUserSession;
+import com.doctorapp.data.users.AlexaUserSession;
+import com.doctorapp.data.users.WebUserSession;
 import org.kurento.client.EventListener;
 import org.kurento.client.GStreamerFilter;
 import org.kurento.client.IceCandidateFoundEvent;
@@ -14,8 +14,6 @@ import org.kurento.client.MediaPipeline;
 import org.kurento.client.PlayerEndpoint;
 import org.kurento.client.WebRtcEndpoint;
 import org.kurento.jsonrpc.JsonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Log4j2
 public class Room implements Closeable {

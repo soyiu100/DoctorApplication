@@ -1,13 +1,13 @@
-package mediaservice.api;
+package com.doctorapp.api;
 
 import com.google.gson.JsonObject;
 import java.io.IOException;
 import lombok.extern.log4j.Log4j2;
-import mediaservice.data.TelehealthSessionRequest;
-import mediaservice.data.TelehealthSessionResponse;
-import mediaservice.room.Room;
-import mediaservice.room.RoomManager;
-import mediaservice.users.AlexaUserSession;
+import com.doctorapp.data.TelehealthSessionRequest;
+import com.doctorapp.data.TelehealthSessionResponse;
+import com.doctorapp.room.Room;
+import com.doctorapp.room.RoomManager;
+import com.doctorapp.data.users.AlexaUserSession;
 import org.kurento.client.WebRtcEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

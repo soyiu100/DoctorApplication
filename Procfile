@@ -1,0 +1,1 @@
+web: java -Dkms.url=ws://KurentoMediaServerALB-2055266604.us-west-2.elb.amazonaws.com/kurento -jar demo-0.3.0-SNAPSHOT.jar

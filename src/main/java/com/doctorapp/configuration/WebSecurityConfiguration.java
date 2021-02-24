@@ -58,7 +58,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     "/register", "/patient/register", "/admin/register",
                     "/change_password**", "/error", "/search_patient").permitAll()
             .mvcMatchers("/clients/**", "/partners/**").hasAuthority(RoleEnum.ROLE_USER_ADMIN.name())
-            .mvcMatchers("/view_sessions", "/session_call**", "/create_session", "/search_patient").hasAuthority(RoleEnum.ROLE_DOCTOR.name())
+            .mvcMatchers( "/create_session", "/search_patient", "/view_sessions",
+                "/session_call", "/call", "/call/**", "/webjars/**").hasAuthority(RoleEnum.ROLE_DOCTOR.name())
             .anyRequest().authenticated()
             .and()
             .formLogin()

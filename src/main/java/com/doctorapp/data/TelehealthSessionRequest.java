@@ -1,4 +1,4 @@
-package mediaservice.data;
+package com.doctorapp.data;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

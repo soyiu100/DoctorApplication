@@ -1,4 +1,4 @@
-package mediaservice.users;
+package com.doctorapp.data.users;
 
 import java.util.ArrayList;
 import java.util.List;

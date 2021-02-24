@@ -1,4 +1,4 @@
-package mediaservice.websocket;
+package com.doctorapp.websocket;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -8,24 +8,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import mediaservice.room.Room;
-import mediaservice.room.RoomManager;
-import mediaservice.users.UserRegistry;
-import mediaservice.users.UserSession;
-import mediaservice.users.WebUserSession;
+import lombok.extern.log4j.Log4j2;
+import com.doctorapp.room.Room;
+import com.doctorapp.room.RoomManager;
+import com.doctorapp.data.users.UserRegistry;
+import com.doctorapp.data.users.UserSession;
+import com.doctorapp.data.users.WebUserSession;
 import org.kurento.client.IceCandidate;
 import org.kurento.client.WebRtcEndpoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+@Log4j2
 public class CallHandler extends TextWebSocketHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(CallHandler.class);
     private static final Gson gson = new GsonBuilder().create();
     private static final String tokenEndpoint = "https:///api/partner/token?user_id=user&partner_id=qiang_telehealth_skill_5";
     private String appToken = "Bearer b326f600-938d-4cc9-a80c-c51ea965f9c7";

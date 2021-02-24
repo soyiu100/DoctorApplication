@@ -1,16 +1,15 @@
-package mediaservice.api;
+package com.doctorapp.api;
 
-
+import com.doctorapp.data.users.AlexaUserSession;
+import com.doctorapp.data.users.UserRegistry;
+import com.doctorapp.room.Room;
+import com.doctorapp.room.RoomManager;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import lombok.extern.log4j.Log4j2;
-import mediaservice.data.TelehealthSessionRequest;
-import mediaservice.data.TelehealthSessionRequest.IceServer;
-import mediaservice.data.TelehealthSessionResponse;
-import mediaservice.room.Room;
-import mediaservice.room.RoomManager;
-import mediaservice.users.AlexaUserSession;
-import mediaservice.users.UserRegistry;
+import com.doctorapp.data.TelehealthSessionRequest;
+import com.doctorapp.data.TelehealthSessionRequest.IceServer;
+import com.doctorapp.data.TelehealthSessionResponse;
 import org.kurento.client.WebRtcEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

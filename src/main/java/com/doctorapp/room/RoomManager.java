@@ -1,4 +1,4 @@
-package mediaservice.room;
+package com.doctorapp.room;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;

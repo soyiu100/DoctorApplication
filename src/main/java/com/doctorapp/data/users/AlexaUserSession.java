@@ -1,4 +1,4 @@
-package mediaservice.users;
+package com.doctorapp.data.users;
 
 import com.google.gson.JsonObject;
 import java.io.IOException;

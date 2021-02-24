@@ -73,7 +73,7 @@ public class SessionCallController {
             log.info("Found session for the logged in doctor: {}", doctorUsername);
             if (doctorUsername != null && doctorUsername.length() != 0) {
                 ListUsersResult userResult =
-                        cognitoClient.getDoctorNameByFilter(USERNAME, doctorUsername.trim());
+                    cognitoClient.getDoctorNameByFilter(USERNAME, doctorUsername.trim());
 
                 assert (userResult.getUsers().size() <= 1);
 
@@ -83,26 +83,27 @@ public class SessionCallController {
 
                     assert (attributes.size() == 2);
 
-                    model.addAttribute("doctorName", attributes.get(0).getValue() + " " + attributes.get(1).getValue());
+                    model.addAttribute("roomId", roomId);
+                    model.addAttribute("doctorName",
+                        attributes.get(0).getValue() + " " + attributes.get(1).getValue());
                     return "session_call";
                 } else {
                     // No authenticated user found???
-                    log.info("No authenticated user was found. This is an issue with registering users in Cognito.");
+                    log.info(
+                        "No authenticated user was found. This is an issue with registering users in Cognito.");
                     return "redirect:login?doctor";
                 }
             } else {
                 // They aren't logged in?? Spring Security should catch this, but it's here just in case
-                log.info("Spring Security didn't catch that the user was NOT logged in. Check web security configs to make sure that session_call is behind a user role.");
+                log.info(
+                    "Spring Security didn't catch that the user was NOT logged in. Check web security configs to make sure that session_call is behind a user role.");
                 return "redirect:login?doctor";
             }
 
-
         }
-
         // ...or there is no room ID. This is an error; there should be a room ID linked to the session.
-        redirectAttributes.addFlashAttribute("errMessage", "No session ID is linked to this session call.");
+        redirectAttributes
+            .addFlashAttribute("errMessage", "No session ID is linked to this session call.");
         return "redirect:error";
     }
-
-
 }

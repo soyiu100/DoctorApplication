@@ -14,3 +14,39 @@ canvas {
     margin-right: auto;
     display: block;
 }
+
+/* css for session call page*/
+video {
+    display: block;
+    width: 100%;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -webkit-transition: border-color ease-in-out .15s, box-shadow
+    ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+#videoBig {
+    height: 480px;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+div#videoSmall {
+    width: 240px;
+    height: 180px;
+    padding: 0;
+    position: absolute;
+    top: 15px;
+    right: 30px;
+    cursor: pointer;
+    z-index: 10;
+}
