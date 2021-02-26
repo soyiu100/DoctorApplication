@@ -41,12 +41,24 @@ video {
 }
 
 div#videoSmall {
-    width: 240px;
-    height: 180px;
+    width: 300px;
+    height: 230px;
     padding: 0;
     position: absolute;
-    top: 15px;
+    top: 130px;
     right: 30px;
     cursor: pointer;
     z-index: 10;
+}
+
+#toggleMute {
+  position: absolute;
+  /*top:550px;*/
+  left: 250px;
+}
+
+#toggleVideo {
+  position: absolute;
+  /*top:550px;*/
+  left: 350px;
 }

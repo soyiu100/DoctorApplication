@@ -4,10 +4,13 @@
     <title>Appointment with Patient</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <th:block th:include="../fragments/header.html"></th:block>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+        integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+        crossorigin="anonymous" />
 </head>
 <body>
 <!-- TODO: Need to think about how I want to modify this frag to adjust for session disconnection -->
-<!--<th:block th:include="../fragments/navbar.html"></th:block>-->
+<th:block th:include="../fragments/navbar.html"></th:block>
 
 <!-- If flash attribute 'bad' exists, then make an error message that says the session doesn't exist. -->
 <div th:if="${badSession}">
@@ -24,21 +27,24 @@
     </div>
 
     <div id="call-container" class="row">
-      <div class="col-md-8 col-md-offset-2">
-        <div id="videoBig">
-          <video id="videoOutput" autoplay width="640px" height="480px"
-                 poster="img/webrtc.png"></video>
-        </div>
-        <div id="videoSmall">
-          <video id="videoInput" autoplay width="240px" height="180px"
-                 poster="img/alexa-logo1.jpg"></video>
-        </div>
-        <span id="roomId" style="display:none" th:text="${roomId}"></span>
+      <div class="col-md-12 col-md-offset-2">
+        <span id="room" style="display:none" th:text="${roomId}"></span>
+        <span id="providerName" style="display:none" th:text="${doctorName}"></span>
         <div>
           <button id="toggleMute" class="btn btn-success"><i class="fas fa-microphone"></i><span>Mute</span></button>
           <button id="toggleVideo" class="btn btn-success"><i class="fas fa-video"></i><span>Video Off</span></button>
-          <button id="leave" class="btn btn-danger"><i class="glyphicon glyphicon-stop"></i>Leave Room</button>
+          <form action="/disconnect_session" method="post">
+            <input type="hidden" id="roomId" name="roomId" th:value="${roomId}">
+            <input type="submit" id="leave" class="btn btn-danger" value="Leave Room">
+          </form>
           <button id="terminate" class="btn btn-danger"><i class="glyphicon glyphicon-stop"></i>End Meeting for All</button>
+        </div>
+
+        <div id="videoBig">
+          <video id="videoOutput" autoplay poster="img/webrtc.png"></video>
+        </div>
+        <div id="videoSmall">
+          <video id="videoInput" autoplay poster="img/alexa-logo1.jpg"></video>
         </div>
       </div>
     </div>
@@ -66,7 +72,7 @@
   var videoOutput;
   var webRtcPeer;
   var roomId;
-  var providerName = 'Doctor';
+  var providerName;
 
   window.onload = function() {
     enableButton('#toggleMute', 'toggleMute()');
@@ -75,7 +81,8 @@
     enableButton('#terminate', 'terminate()');
     videoInput = document.getElementById('videoInput');
     videoOutput = document.getElementById('videoOutput');
-    roomId = $('#roomId').text();
+    roomId = $('#room').text();
+    providerName = $('#doctorName').text();
 
     if (roomId === '') {
       window.alert('You must specify the room name');
