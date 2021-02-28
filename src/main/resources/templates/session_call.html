@@ -26,26 +26,26 @@
       <h1>Demo: Video Call with Telehealth</h1>
     </div>
 
-    <div id="call-container" class="row">
-      <div class="col-md-12 col-md-offset-2">
-        <span id="room" style="display:none" th:text="${roomId}"></span>
-        <span id="providerName" style="display:none" th:text="${doctorName}"></span>
-        <div>
-          <button id="toggleMute" class="btn btn-success"><i class="fas fa-microphone"></i><span>Mute</span></button>
-          <button id="toggleVideo" class="btn btn-success"><i class="fas fa-video"></i><span>Video Off</span></button>
-          <form action="/disconnect_session" method="post">
-            <input type="hidden" id="roomId" name="roomId" th:value="${roomId}">
-            <input type="submit" id="leave" class="btn btn-danger" value="Leave Room">
-          </form>
-          <button id="terminate" class="btn btn-danger"><i class="glyphicon glyphicon-stop"></i>End Meeting for All</button>
-        </div>
+    <div class="d-flex justify-content-center flex-column">
+      <span id="room" style="display:none" th:text="${roomId}"></span>
+      <span id="providerName" style="display:none" th:text="${doctorName}"></span>
 
+      <div style="position: relative">
         <div id="videoBig">
-          <video id="videoOutput" autoplay poster="img/webrtc.png"></video>
+          <video id="videoOutput" autoplay></video>
         </div>
         <div id="videoSmall">
-          <video id="videoInput" autoplay poster="img/alexa-logo1.jpg"></video>
+          <video id="videoInput" autoplay></video>
         </div>
+      </div>
+
+      <div id="call-actions" class="d-flex justify-content-center">
+        <button id="toggleMute" class="btn btn-outline-info btn-circle btn-xl"><i class="fas fa-microphone"></i><span style="display:none">Mute</span></button>
+        <button id="toggleVideo" class="btn btn-outline-info btn-circle btn-xl"><i class="fas fa-video"></i><span style="display:none">Video Off</span></button>
+        <form action="/disconnect_session" method="post">
+          <input type="hidden" id="roomId" name="roomId" th:value="${roomId}">
+          <button type="submit" id="leave" class="btn btn-outline-danger btn-circle btn-xl" value="Leave Room"><i class="fas fa-phone-slash"></i></button>
+        </form>
       </div>
     </div>
   </div>

@@ -34,31 +34,50 @@ video {
 }
 
 #videoBig {
-    height: 480px;
     top: 0;
     left: 0;
     z-index: 1;
 }
 
 div#videoSmall {
-    width: 300px;
-    height: 230px;
+    width: 20%;
     padding: 0;
     position: absolute;
-    top: 130px;
-    right: 30px;
-    cursor: pointer;
+    top: 20px;
+    right: 20px;
     z-index: 10;
 }
 
-#toggleMute {
-  position: absolute;
-  /*top:550px;*/
-  left: 250px;
+#call-actions {
+  margin-top: 20px;
 }
 
-#toggleVideo {
-  position: absolute;
-  /*top:550px;*/
-  left: 350px;
+#call-actions > button {
+  margin-right: 55px;
+}
+
+.btn-circle {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+}
+.btn-circle.btn-lg {
+  width: 50px;
+  height: 50px;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 25px;
+}
+.btn-circle.btn-xl {
+  width: 70px;
+  height: 70px;
+  padding: 10px 16px;
+  font-size: 24px;
+  line-height: 1.33;
+  border-radius: 35px;
 }

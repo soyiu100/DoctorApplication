@@ -178,7 +178,7 @@ public class Room implements Closeable {
 
     public void buildWelcomeConnection(WebRtcEndpoint webRtcEndpoint) {
         playerEndpoint = new PlayerEndpoint.Builder(pipeline,
-            "https://mumu-public.s3-us-west-2.amazonaws.com/Swedish_muted_trimmed.mov").build();
+            "https://mumu-public.s3-us-west-2.amazonaws.com/nationwide-720p-trimmed.mp4").build();
         playerEndpoint.connect(webRtcEndpoint);
         playerEndpoint.play();
         log.info("PlayerEndpoint has been connected and started playing");
