@@ -4,7 +4,7 @@ import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.amazonaws.services.cognitoidp.model.ListUsersResult;
 import com.amazonaws.services.cognitoidp.model.UserType;
 import com.doctorapp.client.CognitoClient;
-import com.doctorapp.client.ScheduledSessionDao;
+import com.doctorapp.dao.ScheduledSessionDao;
 import com.doctorapp.data.ScheduledSession;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

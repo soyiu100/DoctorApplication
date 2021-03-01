@@ -52,7 +52,6 @@ public class ChangePasswordController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
             log.info("Session exists with username {} and password {},", auth.getName(), auth.getCredentials().toString());
-            model.addAttribute("roles", auth.getAuthorities()); // TODO: not sure if this is needed at all
 
             model.addAttribute("username", auth.getName());
             model.addAttribute("temp_password", auth.getCredentials().toString());
@@ -111,7 +110,7 @@ public class ChangePasswordController {
             authParams.put("USERNAME", username);
             authParams.put("PASSWORD", old_Password);
 
-            log.info("Start calling cogonito to verify user credential for changing password username {}, password {}",
+            log.info("Start calling cognito to verify user credential for changing password username {}, password {}",
                     username, old_Password);
             AdminInitiateAuthResult authResult = cognitoClient.getAuthResult(poolID, poolClientID, authParams);
             String authSession = authResult.getSession();
@@ -124,17 +123,19 @@ public class ChangePasswordController {
             cognitoClient.changeFromTemporaryPassword(poolID, poolClientID, challengeResponses, authSession);
             redirect.addFlashAttribute("passwordChanged", true);
 
-            if (request.getParameter("userType").equals("DOCTOR")) {
+            if (request.getParameter("userType").equals(DOCTOR)) {
                 newPage = "redirect:login?doctor";
-            } else if (request.getParameter("userType").equals("ADMIN")) {
+            } else if (request.getParameter("userType").equals(ADMIN)) {
                 newPage = "redirect:login?admin";
-            } else if (request.getParameter("userType").equals("PATIENT")) {
+            } else if (request.getParameter("userType").equals(PATIENT)) {
                 newPage = "redirect:login";
             }
         } catch (InvalidPasswordException ex) {
             log.error("Bad password offered: " + ex.getMessage());
             if (ex.getMessage().contains("uppercase")) {
                 redirect.addFlashAttribute("passwordChangeErr", ErrorCodeConstants.BAD_PASSWORD_UPPER);
+            } else if (ex.getMessage().contains("lowercase")) {
+                redirect.addFlashAttribute("passwordChangeErr", ErrorCodeConstants.BAD_PASSWORD_LOWER);
             } else if (ex.getMessage().contains("numeric")) {
                 redirect.addFlashAttribute("passwordChangeErr", ErrorCodeConstants.BAD_PASSWORD_NUMERIC);
             } else if (ex.getMessage().contains("symbol")) {

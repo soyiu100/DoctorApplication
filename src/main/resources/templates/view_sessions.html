@@ -16,10 +16,11 @@
 
     <div>
         <h1>Scheduled Sessions</h1>
+        <h3 th:text="${param.startTime != null || param.endTime != null} ? 'For Requested Time Frame' : 'For this Week'"></h3>
     </div>
 
     <div th:if="${sessions.size() != 0}" style="display: block;">
-        <table class="table">
+        <table class="table table-bordered">
             <thead class="thead-dark">
             <tr>
                 <th>Patient DOB</th>
@@ -57,9 +58,8 @@
                     <td th:if="${sess.patientStatus}">Connected</td>
                     <td th:unless="${sess.patientStatus}"> Not Connected</td>
 
-                    <td th:classappend="${sess.doctorStatus != 'JOINED'} ? table-link">
-                        <div th:if="${sess.doctorStatus != 'JOINED'}">
-<!--                             th:onclick="updateSessionManager([[${sess.roomId}]])">-->
+                    <td th:classappend="${!sess.doctorStatus} ? table-link" style="border-color: #fff;">
+                        <div th:if="${!sess.doctorStatus}">
                             <form action="/connect_session" method="post">
                                 <input type="hidden" id="roomId" name="roomId" th:value="${sess.roomId}">
                                 <input type="submit" class="btn btn-link table-link" value="Join Session">
@@ -76,8 +76,19 @@
         No sessions are available yet. Try scheduling a session with the 'Create Session' button.
     </div>
 
+    <span> See sessions for different time window:</span>
+    <form action="/view_sessions">
+        <label for="startTime">Start Time</label>:
+        <input type="date" id="startTime" name="startTime">
+        <label for="endTime">End Time</label>:
+        <input type="date" id="endTime" name="endTime">
+        <button class="btn btn-outline-info" type="submit">Get Sessions</button>
+
+    </form>
+    <p></p>
+
     <div style="display: block; padding-top: 10px;">
-        <a class="btn btn-outline-secondary" href="/create_session" style="float:right;">Create New Session</a>
+        <a class="btn btn-outline-info" href="/create_session" style="float:right;">Create New Session</a>
     </div>
 
 </div>

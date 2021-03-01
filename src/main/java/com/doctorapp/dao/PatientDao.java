@@ -1,4 +1,4 @@
-package com.doctorapp.client;
+package com.doctorapp.dao;
 
 
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;

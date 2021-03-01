@@ -4,7 +4,7 @@ import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.amazonaws.services.cognitoidp.model.ListUsersResult;
 import com.amazonaws.services.cognitoidp.model.UserType;
 import com.doctorapp.client.CognitoClient;
-import com.doctorapp.client.PatientDao;
+import com.doctorapp.dao.PatientDao;
 import com.doctorapp.data.Patient;
 import com.doctorapp.exception.DependencyException;
 import lombok.extern.log4j.Log4j2;
@@ -43,8 +43,8 @@ public class SearchPatientController {
         // as current cognito only support for 1 attribute as filter
         // search all patients with input last and filter by first name
         log.info("Start to search patient for lastName: {} ", lastName);
-        Validate.notBlank(firstName, "patient FirstName cannot be blank.");
-        Validate.notBlank(lastName, "patient LastName cannot be blank.");
+        Validate.notBlank(firstName, "The patient's first name cannot be blank.");
+        Validate.notBlank(lastName, "The patient's last name cannot be blank.");
 
         try {
             ListUsersResult userResult =
@@ -53,15 +53,13 @@ public class SearchPatientController {
             List<Patient> matchedPatients =
                     filterPatientsByFirstName(userResult.getUsers(), firstName.trim(), lastName.trim());
 
-            //todo: fill the patient info into table and return to createSession frontend
             log.info("Find {} matched patients", matchedPatients.size());
             matchedPatients.forEach(patient -> {
-                log.info("Patient FirstName is {}, LastName is {}, patientId is {}",
+                log.info("Patient first name is {}, last name is {}, patient ID is {}",
                         patient.getFirstName(), patient.getLastName(), patient.getPatientId());
             });
             return matchedPatients;
         } catch (Exception e) {
-            //todo: add error for searchPatient
             log.error("Failed to search patient" + e.getMessage(), e);
             throw new DependencyException("Failed to search patient", e);
         }

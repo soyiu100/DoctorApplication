@@ -4,8 +4,8 @@ import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.amazonaws.services.cognitoidp.model.ListUsersResult;
 import com.amazonaws.services.cognitoidp.model.UserType;
 import com.doctorapp.client.CognitoClient;
-import com.doctorapp.client.PatientDao;
-import com.doctorapp.client.ScheduledSessionDao;
+import com.doctorapp.dao.PatientDao;
+import com.doctorapp.dao.ScheduledSessionDao;
 import com.doctorapp.constant.AWSConfigConstants;
 import com.doctorapp.data.Patient;
 import com.doctorapp.data.ScheduledSession;
@@ -21,11 +21,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import static com.doctorapp.constant.AWSConfigConstants.LASTNAME;
 import static com.doctorapp.constant.AWSConfigConstants.PATIENT_POOL_ID;
@@ -54,9 +57,35 @@ public class ViewSessionsController {
 
     @RequestMapping(value = "/view_sessions")
     public String viewSessionPage(Model model, HttpServletRequest request) {
-        // TODO: wat the fack
-        String startTime = "2020-01-01";
-        String endTime = "2022-01-03";
+        Date date = new Date();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String startTime = "";
+        String endTime = "";
+
+        if (request.getParameter("startTime") != null && request.getParameter("startTime").length() != 0) {
+
+            log.info("Requested start time is: {}", request.getParameter("startTime"));
+            startTime = request.getParameter("startTime");
+
+        } else {
+            log.info("Time zone info: {}", TimeZone.getDefault());
+            df.setTimeZone(TimeZone.getDefault());
+
+            startTime = df.format(date);
+            log.info("Today is: {}", startTime);
+        }
+
+
+        if (request.getParameter("endTime") != null && request.getParameter("endTime").length() != 0) {
+
+            log.info("Requested end time is: {}", request.getParameter("endTime"));
+            endTime = request.getParameter("endTime");
+
+        } else {
+            endTime = df.format(new Date(System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(7, TimeUnit.DAYS)));
+            log.info("A week from today is: {}", endTime);
+        }
+
         List<ScheduledSession> sessionsFromDDB = scheduledSessionDao.
                 getScheduledSessionsByTimeRange(new TimeRange(startTime, endTime));
 
@@ -66,8 +95,6 @@ public class ViewSessionsController {
         // These will be the list of sessions shown on the website.
         List<ScheduledSession> visibleSessions = new ArrayList<>();
 
-        // TODO: no idea what the below todo means
-        //todo : replace the iteration with fill in form
         sessionsFromDDB.forEach(session -> {
             visibleSessions.add(parseSessionInfo(session, sessionInfo));
         });

@@ -25,7 +25,7 @@ public class SampleDataLoader {
     public void loadSampleData() {
         OAuthClientDetails testAlexaClient =
             OAuthClientDetails.builder()
-                .clientId("test_alexa_client")
+                .clientId("new_alexa_client")
                 .clientSecret(passwordEncoder.encode("test_client_secret"))
                 .scopes("profile")
                 .webServerRedirectUri("https://pitangui.amazon.com/api/skill/link/M1XIM5AKLYJGMM")
@@ -36,7 +36,7 @@ public class SampleDataLoader {
 
         OAuthClientDetails adminClient =
             OAuthClientDetails.builder()
-                .clientId("test_admin_client")
+                .clientId("new_admin_client")
                 .clientSecret(passwordEncoder.encode("test_client_secret"))
                 .scopes("test_scope")
                 .webServerRedirectUri("http://localhost:5000/redirect")
@@ -48,9 +48,9 @@ public class SampleDataLoader {
 
         OAuthPartner testAlexaPartner =
             OAuthPartner.builder()
-                .partnerId("test_alexa_client")
-                .clientId("amzn1.application-oa2-client.18342c491dde48389575e7149a4b0dc5")
-                .clientSecret("9c0325405f76ea64acc5ab7693bc82ac56423f6cbffb9dd588be4af36ce66e72")
+                .partnerId("new_alexa_client")
+                .clientId("amzn1.application-oa2-client.59a161140bbb49c8aa5c04bbff262db5")
+                .clientSecret("ba40f89db1f7b991e09b276ea81c2c25b93d0e81523f570351bef2410b77a6aa")
                 .scopes("alexa::health:profile:write")
                 .accessTokenUri("https://api.amazon.com/auth/o2/token")
                 .userAuthorizationUri("https://www.amazon.com/ap/oa")

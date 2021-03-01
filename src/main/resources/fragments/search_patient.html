@@ -87,7 +87,8 @@
                 }
             },
             error: function (request, status, error) {
-                alert(status);
+                var response = JSON.parse(request.responseText);
+                alert(response.message);
             }
         });
     }, false);

@@ -1,6 +1,6 @@
 package com.doctorapp.controller;
 
-import com.doctorapp.client.ScheduledSessionDao;
+import com.doctorapp.dao.ScheduledSessionDao;
 import com.doctorapp.constant.AWSConfigConstants;
 import com.doctorapp.data.ScheduledSession;
 import lombok.extern.log4j.Log4j2;

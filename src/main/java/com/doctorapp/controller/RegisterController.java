@@ -2,7 +2,7 @@ package com.doctorapp.controller;
 
 import com.amazonaws.services.cognitoidp.model.ListUsersResult;
 import com.doctorapp.client.CognitoClient;
-import com.doctorapp.client.PatientDao;
+import com.doctorapp.dao.PatientDao;
 import com.doctorapp.constant.AWSConfigConstants;
 import com.doctorapp.data.Admin;
 import com.doctorapp.data.Doctor;
@@ -168,6 +168,8 @@ public class RegisterController {
             String poolID = AWSConfigConstants.DOCTOR_POOL_ID;
             if (userType.equals(PATIENT)) {
                 poolID = AWSConfigConstants.PATIENT_POOL_ID;
+            } else if (userType.equals(ADMIN)) {
+                poolID = AWSConfigConstants.ADMIN_POOL_ID;
             }
             final String EMAIL_PATTERN =
                     "^[_A-Za-z0-9-+]+(.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$";
