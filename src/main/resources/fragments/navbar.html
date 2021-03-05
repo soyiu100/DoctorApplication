@@ -2,17 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
     <body>
         <nav class="navbar navbar-dark bg-dark navbar-static-top navbar-expand-md" style="margin-bottom:1%;">
-            <div class="container">
+            <div class="container offset-md-2">
                 <div id="navbar" class="collapse navbar-collapse">
+                    <a class="navbar-brand" href="#">
+                        <img th:src="@{/images/logo.png}" width="120" height="50">
+                    </a>
                     <ul class="nav navbar-nav">
-                        <li class="active nav-item" sec:authorize="hasAuthority('ROLE_DOCTOR')"> <a th:href="@{/view_sessions}" class="nav-link">Home</a></li>
-                        <li class="active nav-item" sec:authorize="hasAnyAuthority('ROLE_USER_ADMIN', 'ROLE_PATIENT', 'ROLE_CLIENT_ADMIN')"> <a th:href="@{/}" class="nav-link">Home</a></li>
+                        <li class="active navbar-text" sec:authorize="hasAuthority('ROLE_DOCTOR')"> <a th:href="@{/view_sessions}" id="home-link" class="nav-link">Home</a></li>
+                        <li class="active navbar-text" sec:authorize="hasAnyAuthority('ROLE_USER_ADMIN', 'ROLE_PATIENT', 'ROLE_CLIENT_ADMIN')"> <a th:href="@{/}" id="home-link" class="nav-link">Home</a></li>
                     </ul>
                 </div>
                 <span class="navbar-text" id="logout">
-                    <form action="/logout" method="get">
-                        <input type="submit" class="btn btn-dark" value="Log out">
-                    </form>
+                    <a href="/logout" id="logout-link" class="nav-link">Log out</a>
                 </span>
             </div>
         </nav>

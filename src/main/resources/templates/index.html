@@ -7,15 +7,9 @@
     <th:block th:include="../fragments/header.html"></th:block>
 </head>
 <body>
+<th:block th:include="../fragments/navbar.html"></th:block>
 <div class="container justify-content-center">
     <h1 class="page-header">OAuth Management Dashboard </h1>
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3" >
-            <span sec:authorize="isAuthenticated()" style="display: inline-block;">
-                    <a th:href="@{/logout}">Sign Out</a>
-                </span>
-        </div>
-    </div>
 
     <div class="row" th:if="${approvals != null}">
         <div class="col-md-6 col-md-offset-3">
@@ -42,7 +36,7 @@
                             <input type="hidden" name="clientId" th:value="${approval.clientId}"/>
                             <input type="hidden" name="scope" th:value="${approval.scope}"/>
                             <input type="hidden" name="status" th:value="${approval.status}"/>
-                            <button type="submit" class="btn btn-default btn-xs">
+                            <button type="submit" class="btn btn-danger">
                                 Remove
                             </button>
                         </form>
@@ -53,7 +47,7 @@
     </div>
 
     <div class="row" th:if="${clientDetails != null}">
-        <div class="col-lg-10 offset-md-1" sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="col-lg-10" sec:authorize="hasRole('ROLE_CLIENT_ADMIN')">
             <h2>Clients</h2>
             <table class="table table-bordered">
                 <tr>
@@ -62,7 +56,7 @@
                     <th>Scopes</th>
                     <th>Grant Types</th>
                     <th>Roles</th>
-                    <th>Actions</th>
+                    <th colspan=2>Actions</th>
                 </tr>
                 <tr th:each="client : ${clientDetails}">
                     <td th:text="${client.clientId}"></td>
@@ -71,19 +65,21 @@
                     <td th:text="${client.authorizedGrantTypes}"></td>
                     <td th:text="${client.authorities}"></td>
                     <td>
-                        <a class="btn btn-default btn-xs" th:href="@{/clients/form?client=__${client.clientId}__}">
-                            <span class="glyphicon glyphicon-edit"></span>
+                        <a class="btn btn-info" th:href="@{/clients/form?client=__${client.clientId}__}">
+                            Edit
                         </a>
-                        <a class="btn btn-default btn-xs" th:href="@{/clients/__${client.clientId}__/delete}">
-                            <span class="glyphicon glyphicon-trash"></span>
+                    </td>
+                    <td colspan=2>
+                        <a class="btn btn-danger" th:href="@{/clients/__${client.clientId}__/delete}">
+                            Delete
                         </a>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="6">
-                        <a class="btn btn-default btn-xs pull-right" href="/clients/form">
+                    <td colspan="7">
+                        <a class="btn btn-outline-info btn-circle" href="/clients/form">
                             +
-                        </a>
+                        </a> <a href="/clients/form">Add a Client</a>
                     </td>
                 </tr>
             </table>
@@ -91,7 +87,7 @@
     </div>
 
     <div class="row" th:if="${partners != null}">
-        <div class="col-md-10 col-md-offset-1" sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="col-md-10" sec:authorize="hasRole('ROLE_USER_ADMIN')">
             <h2>Partners</h2>
             <table class="table table-bordered">
                 <tr>
@@ -110,19 +106,21 @@
                     <td th:text="${partner.userAuthorizationUri}"></td>
                     <td th:text="${partner.scopes}"></td>
                     <td>
-                        <a class="btn btn-default btn-xs" th:href="@{/partners/form?partnerId=__${partner.partnerId}__}">
+                        <a class="btn btn-info" th:href="@{/partners/form?partnerId=__${partner.partnerId}__}">
                             Edit
                         </a>
-                        <a class="btn btn-default btn-xs" th:href="@{/partners/__${partner.partnerId}__/delete}">
+                    </td>
+                    <td colspan=2>
+                        <a class="btn btn-danger" th:href="@{/partners/__${partner.partnerId}__/delete}">
                             Remove
                         </a>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="6">
-                        <a class="btn btn-default btn-xs pull-right" href="/partners/form">
+                    <td colspan="8">
+                        <a class="btn btn-outline-info btn-circle" href="/partners/form">
                             +
-                        </a>
+                        </a> <a href="/partners/form">Add a Partner</a>
                     </td>
                 </tr>
             </table>

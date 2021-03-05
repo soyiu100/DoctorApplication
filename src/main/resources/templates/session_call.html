@@ -64,7 +64,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="js/kurento-utils.js"></script>
 <!--<script src="webjars/draggabilly/draggabilly.pkgd.min.js"></script>-->
-<script type="text/javascript">
+<script type="text/javascript" th:inline="javascript">
+  /*<![CDATA[*/
+
   // WebRTC requires https
   // SockJS is being used in order to set heartbeat on Server side
   var ws = new SockJS('https://' + location.host + '/call');
@@ -101,7 +103,13 @@
           }
           webRtcPeer.generateOffer(onOfferCall);
         });
+
+    $("#logout-link").attr('href', '/logout?roomId=' + /*[[${roomId}]]*/ '');
+    $('#home-link').attr('href', '/view_sessions?roomId=' + /*[[${roomId}]]*/ '');
   }
+
+  /*]]>*/
+
 
   window.onbeforeunload = function() {
     ws.close();

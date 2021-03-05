@@ -6,6 +6,7 @@
 package com.doctorapp.configuration;
 
 import com.doctorapp.authentication.AuthenticationServiceProvider;
+import com.doctorapp.authentication.CustomAccessDeniedHandler;
 import com.doctorapp.authentication.FailureHandler;
 import com.doctorapp.authentication.SuccessHandler;
 import com.doctorapp.constant.RoleEnum;
@@ -38,6 +39,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private FailureHandler failureHandler;
 
+
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/webjars/**", "/resources/**",
@@ -53,8 +58,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-            .mvcMatchers("/login**", "/doctor/login", "/admin/login",
-                    "/logout.do", "/css/**", "/js/**", "/actuator/**",
+            .mvcMatchers("/login**", "/doctor/login", "/admin/login", "/logout.do",
+                    "/css/**", "/js/**", "/images/**", "/actuator/**",
                     "/register", "/patient/register", "/admin/register",
                     "/change_password**", "/error", "/search_patient").permitAll()
             .mvcMatchers("/clients/**", "/partners/**").hasAuthority(RoleEnum.ROLE_USER_ADMIN.name())
@@ -73,13 +78,15 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             .httpBasic()
             .and()
             .logout()
-            .logoutRequestMatcher(new AntPathRequestMatcher("/logout.do"));
+            .logoutRequestMatcher(new AntPathRequestMatcher("/logout.do"))
+            .and()
+            .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(authenticationServiceProvider)
-                // not sure if this is safe; but
+                // needed for change_password
                 .eraseCredentials(false);
     }
 

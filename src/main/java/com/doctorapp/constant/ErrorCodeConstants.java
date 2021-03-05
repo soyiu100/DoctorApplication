@@ -17,6 +17,9 @@ public class ErrorCodeConstants {
     // When the password is bad. There is no numbers in the password.
     public static final String BAD_PASSWORD_SPECIAL = "passsword_special";
 
+    // When the password is bad. There is no numbers in the password.
+    public static final String INCORRECT_CREDS = "bad_creds";
+
     // Some unknown error (500)
     public static final String BAD_PASSWORD_UNKNOWN = "err_unknown";
 

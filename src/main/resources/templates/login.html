@@ -8,11 +8,13 @@
 <div layout:fragment="content" th:remove="tag">
 
     <th:block th:include="../fragments/navbar.html"></th:block>
-    <div class="row" style="padding-top: 2%;">
+    <div class="row" style="padding-top: 0.5%;">
         <div class="col-lg-6 offset-md-3">
             <div id="error-message">
                 <!-- Attribute/param 'error' is passed here -->
-                <div class="alert alert-danger" th:if="${error}">Invalid username or password.</div>
+                <div class="alert alert-danger" th:if="${param.error}">
+                    Invalid username or password.
+                </div>
                 <!-- Flash attribute 'user_name_val' is passed here -->
                 <div class="alert alert-info" th:if="${user_name_val}"
                      th:text="${'Registration success! Your user name is ' + user_name_val +
@@ -21,24 +23,20 @@
                 <div class="alert alert-info" th:if="${passwordChanged}">
                     Your password was changed successfully. Please log in again.
                 </div>
-                <div th:if="${param.error}">
-                    <div class="alert alert-danger">
-                        Invalid username or password.
-                    </div>
-                </div>
+
                 <div th:if="${param.logout}">
                     <div class="alert alert-info">
                         You have been logged out.
                     </div>
                 </div>
             </div>
-            <h1>Login page</h1>
+            <h1>AHEAD Clinic</h1>
             <hr/>
 
             <h3 class="float-right" th:text="${param.admin} ? 'Admin Login' : (${param.doctor} ? 'Doctor Login' : 'Patient Login')"></h3>
             <br/>
 
-            <form id="login-form" action="login.do" method="post" style="padding-top: 3%;">
+            <form id="login-form" action="login.do" method="post" style="padding-top: 2%;">
                 <div class="form-group">
                     <label for="username">Username</label>:
                     <input type="text" id="username" class="form-control" name="username" placeholder="Username"/>
@@ -57,7 +55,7 @@
                                class="btn btn-info"
                                value="Log In">
 
-                        <div class="float-right"><a th:href="${param.admin} ? '/admin/register' : (${param.doctor} ? '/register' : '/patient/register')" class="btn btn btn-outline-info">Register New User</a></div>
+                        <div class="float-right"><a th:href="${param.admin} ? '/admin/register' : (${param.doctor} ? '/register' : '/patient/register')" class="btn btn-outline-info">Register New User</a></div>
                 </div>
                 <div class="d-flex justify-content-center" style="padding-top: 3%;">
                     <div style="font-size: 0.9rem; padding-right: 50px;">
@@ -71,6 +69,13 @@
                             <span th:text="${param.admin} ? 'Log in as a doctor '
                                 : (${param.doctor} ? 'Log in as an admin ' : 'Log in as an admin ')">
                             </span><a th:href="${param.admin} ? '/doctor/login' : (${param.doctor} ? '/admin/login' : '/admin/login')">here</a>
+                    </div>
+                </div>
+                <hr/>
+
+                <div class="d-flex justify-content-center">
+                    <div style="font-size: 0.9rem; padding-right: 50px;">
+                        <a th:href="${param.admin} ? '/change_password?admin' : (${param.doctor} ? '/change_password?doctor' : '/change_password?patient')">Change your Password?</a>
                     </div>
                 </div>
 

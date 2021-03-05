@@ -14,7 +14,7 @@
         This page doesn't exist.
     </th:block>
     <th:block th:unless="${error404}">
-        <span th:text="${errMessage} ?: 'Something went wrong.'"></span>
+        <span id="error-message" th:text="${errMessage} ?: 'Something went wrong.'"></span>
     </th:block>
     <div class="text-center" style="padding-top: 20px;">
         <a href="/">Go Home</a>
@@ -23,4 +23,13 @@
 </div>
 
 </body>
+<script>
+
+    $(document).ready(function() {
+        if (window.location.href.indexOf("access_denied") > -1) {
+            $( "#error-message" ).text( 'Your account is not allowed to view this page.' );
+        }
+    });
+</script>
+
 </html>

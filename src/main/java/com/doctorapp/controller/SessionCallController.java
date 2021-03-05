@@ -51,7 +51,9 @@ public class SessionCallController {
         // using room ID since patients could have multiple sessions
         ScheduledSession session = scheduledSessionDao.getScheduledSessionByRoomId(roomId);
         if (session == null) {
-            redirect.addFlashAttribute("badSession", true);
+            redirect
+                    .addFlashAttribute("errMessage", "No session ID is linked to this session call.");
+            return "redirect:error";
         } else {
             session.setDoctorStatus(false);
             scheduledSessionDao.putScheduledSession(session);
@@ -86,6 +88,12 @@ public class SessionCallController {
                     model.addAttribute("roomId", roomId);
                     model.addAttribute("doctorName",
                         attributes.get(0).getValue() + " " + attributes.get(1).getValue());
+
+                    // This is just in case the doctor is able to access the session directly through the URL...somehow
+                    ScheduledSession session = scheduledSessionDao.getScheduledSessionByRoomId(roomId);
+
+                    session.setDoctorStatus(true);
+                    scheduledSessionDao.putScheduledSession(session);
                     return "session_call";
                 } else {
                     // No authenticated user found???

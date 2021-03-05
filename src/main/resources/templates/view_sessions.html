@@ -17,6 +17,11 @@
      padding-right:20%;
      display: block !important;">
 
+    <div id="message-div">
+        <div class="alert alert-info" th:if="${newSessionCreated}">
+            New session successfully created!
+        </div>
+    </div>
     <div>
         <h1>Scheduled Sessions</h1>
         <h3 th:text="${param.startTime != null || param.endTime != null} ? 'For Requested Time Frame' : 'For this Week'"></h3>
@@ -26,16 +31,14 @@
         <table class="table table-bordered">
             <thead class="thead-dark">
             <tr>
-                <th>Patient DOB</th>
+                <th>Patient Date of Birth</th>
                 <th>Patient Name</th>
-                <th>Date</th>
-                <th>Time</th>
+                <th>Appointment Date</th>
+                <th>Appointment Time</th>
                 <th>Duration in Minutes</th>
                 <th>Doctor Status</th>
                 <th>Patient Status</th>
-                <th style="background-color: #fff;
-                        color: #000;
-                        border-color: #fff;">Access Session</th>
+                <th>Access Session</th>
             </tr>
             </thead>
 
@@ -61,13 +64,16 @@
                     <td th:if="${sess.patientStatus}"><i class="fas fa-user-check fa-2x"></i>Connected</td>
                     <td th:unless="${sess.patientStatus}"><i class="fas fa-user fa-2x"></i>  Waiting</td>
 
-                    <td th:classappend="${!sess.doctorStatus} ? table-link" style="border-color: #fff;">
+                    <td th:classappend="${!sess.doctorStatus} ? table-link : table-disabled">
                         <div th:if="${!sess.doctorStatus}">
                             <form action="/connect_session" method="post">
                                 <input type="hidden" id="roomId" name="roomId" th:value="${sess.roomId}">
-                              <button type="submit" class="btn table-link" value="Join Session">Join</button>
+                                <input type="submit" class="btn btn-link table-text" value="Join Session">
                             </form>
 
+                        </div>
+                        <div th:unless="${!sess.doctorStatus}" style="color: #eb4034 !important; text-align: center;">
+                            Session in Progress
                         </div>
                     </td>
                 </tr>
@@ -82,9 +88,9 @@
     <span> See sessions for different time window:</span>
     <form action="/view_sessions">
         <label for="startTime">Start Time</label>:
-        <input type="date" id="startTime" name="startTime">
+        <input type="date" id="startTime" name="startTime"> &emsp;
         <label for="endTime">End Time</label>:
-        <input type="date" id="endTime" name="endTime">
+        <input type="date" id="endTime" name="endTime"> &emsp;
         <button class="btn btn-outline-info" type="submit">Get Sessions</button>
 
     </form>

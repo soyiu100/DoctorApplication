@@ -10,6 +10,7 @@
     </script>
 </head>
 <body>
+<th:block th:include="../fragments/navbar.html"></th:block>
 <div class="container" style="padding-top: 3%;">
     <h1 th:if="!${param.partnerId}" class="page-header">Add Partner</h1>
 
@@ -36,7 +37,7 @@
                         <input class="form-control" id="clientSecret" type="text" name="clientSecret" th:value="${partner.clientSecret}"/>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-info">Submit</button>
                 </div>
 
                 <div class="col-3">

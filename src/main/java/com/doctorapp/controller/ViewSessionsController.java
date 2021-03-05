@@ -34,6 +34,9 @@ import static com.doctorapp.constant.AWSConfigConstants.LASTNAME;
 import static com.doctorapp.constant.AWSConfigConstants.PATIENT_POOL_ID;
 import static com.doctorapp.constant.AWSConfigConstants.USERNAME;
 
+import com.doctorapp.controller.SessionCallController;
+
+
 /**
  * MVC Controller for {@link ViewSessionsController}
  */
@@ -56,14 +59,26 @@ public class ViewSessionsController {
 //    }
 
     @RequestMapping(value = "/view_sessions")
-    public String viewSessionPage(Model model, HttpServletRequest request) {
+    public String viewSessionPage(Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        log.info("Room ID is: {}", request.getParameter("roomId"));
+        if (request.getParameter("roomId") != null) {
+            ScheduledSession session = scheduledSessionDao.getScheduledSessionByRoomId(request.getParameter("roomId"));
+            if (session == null) {
+                redirectAttributes
+                        .addFlashAttribute("errMessage", "No session ID is linked to this session call.");
+                return "redirect:error";
+            } else {
+                session.setDoctorStatus(false);
+                scheduledSessionDao.putScheduledSession(session);
+            }
+        }
+
         Date date = new Date();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String startTime = "";
         String endTime = "";
 
         if (request.getParameter("startTime") != null && request.getParameter("startTime").length() != 0) {
-
             log.info("Requested start time is: {}", request.getParameter("startTime"));
             startTime = request.getParameter("startTime");
 
@@ -77,7 +92,6 @@ public class ViewSessionsController {
 
 
         if (request.getParameter("endTime") != null && request.getParameter("endTime").length() != 0) {
-
             log.info("Requested end time is: {}", request.getParameter("endTime"));
             endTime = request.getParameter("endTime");
 
@@ -85,23 +99,30 @@ public class ViewSessionsController {
             endTime = df.format(new Date(System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(7, TimeUnit.DAYS)));
             log.info("A week from today is: {}", endTime);
         }
+        try {
+            List<ScheduledSession> sessionsFromDDB = scheduledSessionDao.
+                    getScheduledSessionsByTimeRange(new TimeRange(startTime, endTime));
 
-        List<ScheduledSession> sessionsFromDDB = scheduledSessionDao.
-                getScheduledSessionsByTimeRange(new TimeRange(startTime, endTime));
+            log.info("get Sessions number: " + sessionsFromDDB.size());
+            StringBuilder sessionInfo = new StringBuilder();
 
-        log.info("get Sessions number: " + sessionsFromDDB.size());
-        StringBuilder sessionInfo = new StringBuilder();
+            // These will be the list of sessions shown on the website.
+            List<ScheduledSession> visibleSessions = new ArrayList<>();
 
-        // These will be the list of sessions shown on the website.
-        List<ScheduledSession> visibleSessions = new ArrayList<>();
+            sessionsFromDDB.forEach(session -> {
+                visibleSessions.add(parseSessionInfo(session, sessionInfo));
+            });
 
-        sessionsFromDDB.forEach(session -> {
-            visibleSessions.add(parseSessionInfo(session, sessionInfo));
-        });
+            log.info(sessionInfo);
+            model.addAttribute("sessions", visibleSessions);
+            return "view_sessions";
+        } catch (Exception e) {
+            redirectAttributes
+                    .addFlashAttribute("errMessage", "There was an error parsing session info information: \n" +
+                            e.getMessage() + ". Please contact the developers.");
+            return "redirect:error";
+        }
 
-        log.info(sessionInfo);
-        model.addAttribute("sessions", visibleSessions);
-        return "view_sessions";
     }
 
 
@@ -208,10 +229,15 @@ public class ViewSessionsController {
                     .build();
         } catch (ParseException e) {
             log.error("Failed to parse session time", e);
-            //todo : add an error prompt for session;
-
-            // TODO: this is a bad idea but for now
-            return null;
+            return ScheduledSession.builder()
+                    .roomId(session.getRoomId())
+                    .patientId(session.getPatientId())
+                    .doctorStatus(session.isDoctorStatus())
+                    .patientStatus(session.isPatientStatus())
+                    .durationInMin(session.getDurationInMin())
+                    .date(date)
+                    .time(time)
+                    .build();
         }
     }
 

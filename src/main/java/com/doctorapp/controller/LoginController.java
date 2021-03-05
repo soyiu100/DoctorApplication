@@ -3,6 +3,8 @@ package com.doctorapp.controller;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
 import com.doctorapp.client.CognitoClient;
 import com.doctorapp.constant.AWSConfigConstants;
+import com.doctorapp.dao.ScheduledSessionDao;
+import com.doctorapp.data.ScheduledSession;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -34,6 +36,9 @@ import static com.doctorapp.constant.RoleEnum.ROLE_USER_ADMIN;
 public class LoginController {
 
     @Autowired
+    private ScheduledSessionDao scheduledSessionDao;
+
+    @Autowired
     CognitoClient cognitoClient;
 
     @RequestMapping("/login")
@@ -60,7 +65,21 @@ public class LoginController {
      * Method to logout customer.
      */
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
+    public String logoutPage(HttpServletRequest request, HttpServletResponse response,
+                             RedirectAttributes redirect) {
+        log.info("Room ID is: {}", request.getParameter("roomId"));
+        if (request.getParameter("roomId") != null) {
+            ScheduledSession session = scheduledSessionDao.getScheduledSessionByRoomId(request.getParameter("roomId"));
+            if (session == null) {
+                redirect
+                        .addFlashAttribute("errMessage", "No session ID is linked to this session call.");
+                return "redirect:error";
+            } else {
+                session.setDoctorStatus(false);
+                scheduledSessionDao.putScheduledSession(session);
+            }
+        }
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String redirectPage = "redirect:/login?logout";
         if (auth != null) {

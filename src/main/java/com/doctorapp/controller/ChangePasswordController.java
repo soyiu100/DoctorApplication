@@ -56,13 +56,16 @@ public class ChangePasswordController {
             model.addAttribute("username", auth.getName());
             model.addAttribute("temp_password", auth.getCredentials().toString());
             for (GrantedAuthority role : auth.getAuthorities()) {
-                log.info(role.getAuthority());
-                if (role.getAuthority().equals(UNVERIFIED_DOCTOR) || role.getAuthority().equals(ROLE_DOCTOR)) {
+                String authority = role.getAuthority();
+                if (authority.equals(UNVERIFIED_DOCTOR.name()) || authority.equals(ROLE_DOCTOR.name())) {
                     model.addAttribute("doctor", "");
                     return "redirect:change_password?doctor";
-                } else if (role.getAuthority().equals(UNVERIFIED_PATIENT) || role.getAuthority().equals(ROLE_PATIENT)){
+                } else if (authority.equals(UNVERIFIED_PATIENT.name()) || authority.equals(ROLE_PATIENT.name())){
                     model.addAttribute("patient", "");
                     return "redirect::change_password?patient";
+                } else if (authority.equals(UNVERIFIED_ADMIN.name())
+                        || authority.equals(ROLE_CLIENT_ADMIN.name()) || authority.equals(ROLE_USER_ADMIN.name())) {
+                    return "redirect::change_password?admin";
                 }
             }
         }
@@ -100,7 +103,7 @@ public class ChangePasswordController {
             poolClientID = ADMIN_POOL_CLIENT_ID;
         } else {
             // no? print an error
-            redirect.addFlashAttribute("passwordChangeErr", "No valid session or identifier was found. Go back and log in again");
+            redirect.addFlashAttribute("passwordChangeErr", "No valid session or identifier was found.");
             return newPage;
         }
 
@@ -142,6 +145,8 @@ public class ChangePasswordController {
                 redirect.addFlashAttribute("passwordChangeErr", ErrorCodeConstants.BAD_PASSWORD_SPECIAL);
             } else if (ex.getMessage().contains("long enough")) {
                 redirect.addFlashAttribute("passwordChangeErr", ErrorCodeConstants.BAD_PASSWORD_SHORT);
+            } else if (ex.getMessage().contains("Failed to validate user")) {
+                redirect.addFlashAttribute("passwordChangeErr", ErrorCodeConstants.INCORRECT_CREDS);
             } else {
                 redirect.addFlashAttribute("passwordChangeErr", ex.getMessage());
             }

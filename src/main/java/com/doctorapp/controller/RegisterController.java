@@ -57,7 +57,7 @@ public class RegisterController {
                            @RequestParam("lastname") final String lastname,
                            @RequestParam("title") final String title,
                            @RequestParam("partnername") final String partnername,
-                           RedirectAttributes redirect) throws Exception {
+                           RedirectAttributes redirect) {
         String newPage = "redirect:register";
         try {
             validateEmail(emailAddr, DOCTOR);
@@ -67,11 +67,11 @@ public class RegisterController {
             Doctor doctor = new Doctor(userName, emailAddr, firstname, lastname, title, partnername);
             cognitoClient.createNewUser(doctor);
             redirect.addFlashAttribute("user_name_val", userName);
-            //todo: confirmatin message like: register succeed and please check your mailbox for temporary password
             newPage = "redirect:login?doctor";
         } catch (Exception e) {
             log.error("Failed to create user" + e.getMessage(), e);
-            throw new DependencyException("Failed to create user", e);
+            redirect.addFlashAttribute("errMessage", e.getMessage());
+            return "redirect:error";
         }
         return newPage;
     }
@@ -94,7 +94,6 @@ public class RegisterController {
             cognitoClient.createNewUser(patient);
             patientDao.putPatient(patient);
             redirect.addFlashAttribute("user_name_val", username);
-            //todo: confirmation message like: register succeed and please check your mailbox for temporary password
             newPage = "redirect:login";
         } catch (Exception e) {
             log.error("Failed to create user" + e.getMessage(), e);
@@ -118,7 +117,6 @@ public class RegisterController {
             Admin admin = new Admin(username, emailAddr, firstName, lastName);
             cognitoClient.createNewUser(admin);
             redirect.addFlashAttribute("user_name_val", username);
-            //todo: confirmation message like: register succeed and please check your mailbox for temporary password
             newPage = "redirect:login?admin";
         } catch (Exception e) {
             log.error("Failed to create user" + e.getMessage(), e);
@@ -135,8 +133,9 @@ public class RegisterController {
      * @param username
      * @exception InvalidParameterException
      */
-    private void validateUsername(String username, String userType) throws Exception{
+    private void validateUsername(String username, String userType) throws Exception {
         try {
+            Validate.isTrue(!username.equals("anonymousUser"), "Username cannot be 'anonymousUser'.");
             Validate.notBlank(username, "username cannot be blank.");
             String poolID = AWSConfigConstants.DOCTOR_POOL_ID;
             if (userType.equals(PATIENT)) {
@@ -150,7 +149,6 @@ public class RegisterController {
             }
             log.info("No duplicate user found for username: {}", username);
         } catch (IllegalArgumentException e) {
-            //todo: Error message like : username has existed
             throw new InvalidParameterException(e.getMessage());
         }
 
@@ -177,7 +175,7 @@ public class RegisterController {
             Validate.isTrue(emailAddr.matches(EMAIL_PATTERN), "Invalid email address");
             ListUsersResult userResult = cognitoClient.getUsersByFilter(AWSConfigConstants.EMAIL, emailAddr, poolID);
             if(userResult != null && userResult.getUsers().size() > 0) {
-                throw new Exception("Duplicate user found for email address" + emailAddr);
+                throw new Exception("Duplicate user found for email address: " + emailAddr);
             }
             log.info("No duplicate user found for email address: {}", emailAddr);
         } catch (IllegalArgumentException e) {

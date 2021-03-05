@@ -3,8 +3,29 @@
     text-decoration:none;
     cursor:pointer;
     text-align:center !important;
-    color:#f88192 !important;
-    background-color:#ffffbb !important;
+    background-color:#fff !important;
+    color:#17a2b8 !important;
+}
+
+.table-link:hover {
+    display:block;
+    text-decoration:none;
+    cursor:pointer;
+    text-align:center !important;
+    background-color:#17a2b8 !important;
+    color:#fff !important;
+}
+
+.table-text {
+    color:#17a2b8 !important;
+}
+
+.table-text:hover {
+    color:#fff !important;
+}
+
+.table-disabled {
+    background-color: #e9ecef !important;
 }
 
 canvas {

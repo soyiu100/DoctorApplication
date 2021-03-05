@@ -3,14 +3,10 @@
 <head lang="en">
     <title>Client edit/add</title>
     <th:block th:include="../fragments/header.html"></th:block>
-    <script>
-        $(function() {
-            $('.glyphicon-question-sign').tooltip();
-        });
-    </script>
 </head>
 <body>
-<div class="container" style="padding-top: 3%;">
+<th:block th:include="../fragments/navbar.html"></th:block>
+<div class="container" style="padding-top: 1%;">
     <h1 th:if="!${param.client}" class="page-header">Add client</h1>
 
     <h1 th:if="${param.client}" class="page-header">Edit client <span th:text="${param.client[0]}"></span></h1>
@@ -28,8 +24,7 @@
                     </div>
                     <div class="form-group">
                         <label for="clientSecret">Client Secret
-                            <span data-toggle="tooltip" data-placement="bottom" class="glyphicon glyphicon-question-sign"
-                                  title="Used for the grants client_secret, authorization_code, refresh_token. Will not be updated if left empty."></span>
+                            <small>Used for the grants client_secret, authorization_code, refresh_token. Will not be updated if left empty.</small>
                         </label>
                         <input class="form-control" id="clientSecret" type="password" name="clientSecret"/>
                     </div>
@@ -57,7 +52,7 @@
                         <input class="form-control" id="refreshTokenValiditySeconds" name="refreshTokenValiditySeconds" type="text"
                                th:value="${clientDetails.refreshTokenValiditySeconds}"/>
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-info">Submit</button>
                 </div>
 
                 <div class="col-3">

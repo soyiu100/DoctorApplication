@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
@@ -30,15 +31,14 @@ public class CreateSessionController {
 
     @PostMapping("/create_session_form")
     public String registerSession(@RequestParam("patientId") final String patientId,
-                           @RequestParam("scheduledTime") final String scheduledTime,
-                           @RequestParam("scheduledDate") final String scheduledDate,
-                           @RequestParam("durationInMin") final int durationInMin,
-                           HttpServletRequest request) {
+                                  @RequestParam("scheduledTime") final String scheduledTime,
+                                  @RequestParam("scheduledDate") final String scheduledDate,
+                                  @RequestParam("durationInMin") final int durationInMin,
+                                  HttpServletRequest request, RedirectAttributes redirectAttributes) {
         String newPage = "redirect:create_session";
         log.info("Creating sessions");
         log.info(scheduledDate);
         log.info(scheduledTime);
-        //todo: replace patient info from searchPatient Page
         ScheduledSession scheduledSession = new ScheduledSession().toBuilder()
                 .patientId(patientId)
                 .scheduledTime(scheduledDate + " " + scheduledTime)
@@ -50,7 +50,7 @@ public class CreateSessionController {
         scheduledSessionDao.putScheduledSession(scheduledSession);
         try {
             scheduledSessionDao.putScheduledSession(scheduledSession);
-            //todo: add create session succeed confirmation
+            redirectAttributes.addFlashAttribute("newSessionCreated", true);
             newPage = "redirect:view_sessions";
         } catch (Exception e) {
             log.error("Failed to create session: {}", e.getMessage(), e);

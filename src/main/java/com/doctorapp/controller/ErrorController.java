@@ -16,6 +16,7 @@ public class ErrorController {
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request, Model model) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+        log.info(status.toString());
 
         if (status != null) {
             Integer statusCode = Integer.valueOf(status.toString());
@@ -24,6 +25,11 @@ public class ErrorController {
                 model.addAttribute("error404", true);
             }
         }
+        return "error";
+    }
+
+    @RequestMapping("/access_denied")
+    public String accessDenied(Model model) {
         return "error";
     }
 

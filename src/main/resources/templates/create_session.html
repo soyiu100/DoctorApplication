@@ -13,7 +13,7 @@
         <form action="/create_session_form" id="session-form" method="post">
             <fieldset>
                 <h1>Create Session</h1>
-                <h2>Patient Information</h2>
+                <h3>Patient Information</h3>
                 <small>Search for the patient you are looking for using 'Search Patients'.</small>
 
                 <div class="form-row">
@@ -23,7 +23,7 @@
                         <input type="text" id="patientName" name="patientName"
                                class="form-control" required readonly="readonly">
                         <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" id="openModal" type="button"
+                            <button class="btn btn-outline-info" id="openModal" type="button"
                                     data-toggle="modal" data-target="#searchPatientModal" >Search Patients</button>
                         </div>
                     </div>
@@ -48,8 +48,8 @@
                     </div>
                 </div>
 
-
                 <th:block th:include="../fragments/search_patient.html"></th:block>
+                <hr/>
 
                 <h2>Appointment Information</h2>
 
@@ -81,7 +81,7 @@
 
                 <div class="form-group">
                     <div class="controls">
-                        <button type="submit" class="btn btn-success" form="session-form">Create</button>
+                        <button type="submit" class="btn btn-info" form="session-form">Create</button>
                     </div>
                 </div>
             </fieldset>

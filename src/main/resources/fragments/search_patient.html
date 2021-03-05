@@ -21,7 +21,7 @@
                             <label for="lastName" class="col-form-label">Last Name:</label>
                             <input name="lastName" type="text" class="form-control" id="lastName">
                         </div>
-                        <button form="patient-name" id="submit-search" class="btn btn-primary">Search Patient</button>
+                        <button form="patient-name" id="submit-search" class="btn btn-info">Search Patient</button>
                     </form>
                     <!-- This is the div that will be populated with search results -->
                     <div id="results" style="padding-top: 20px;">
@@ -74,7 +74,7 @@
                         $(".table").append(
                             '<tr>' +
                             '<td>' + person.firstName + ' ' + person.lastName + '</td>' +
-                            '<td>' + person.patientId + '</td>' +
+                            '<td style="font-size: smaller;">' + person.patientId + '</td>' +
                             '<td>' + person.dob + '</td>' +
                             '<td id="' + person.patientId  + '" class="table-link" data-dismiss="modal">Select</td>' +
                             '</tr>');
