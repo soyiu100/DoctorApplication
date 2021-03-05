@@ -5,6 +5,9 @@
 <head>
     <title>Preview Sessions</title>
     <th:block th:include="../fragments/header.html"></th:block>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+        integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+        crossorigin="anonymous" />
 </head>
 <body>
 <th:block th:include="../fragments/navbar.html"></th:block>
@@ -52,17 +55,17 @@
                     <td th:if="${sess.time}" th:text="${sess.time}">...</td>
                     <td th:if="${sess.durationInMin}" th:text="${sess.durationInMin}">...</td>
 
-                    <td th:if="${sess.doctorStatus}">Connected</td>
-                    <td th:unless="${sess.doctorStatus}">Not Connected</td>
+                    <td th:if="${sess.doctorStatus}"><i class="fas fa-user-check fa-2x"></i>Connected</td>
+                    <td th:unless="${sess.doctorStatus}"><i class="fas fa-user fa-2x"></i>  Waiting</i></td>
 
-                    <td th:if="${sess.patientStatus}">Connected</td>
-                    <td th:unless="${sess.patientStatus}"> Not Connected</td>
+                    <td th:if="${sess.patientStatus}"><i class="fas fa-user-check fa-2x"></i>Connected</td>
+                    <td th:unless="${sess.patientStatus}"><i class="fas fa-user fa-2x"></i>  Waiting</td>
 
                     <td th:classappend="${!sess.doctorStatus} ? table-link" style="border-color: #fff;">
                         <div th:if="${!sess.doctorStatus}">
                             <form action="/connect_session" method="post">
                                 <input type="hidden" id="roomId" name="roomId" th:value="${sess.roomId}">
-                                <input type="submit" class="btn btn-link table-link" value="Join Session">
+                              <button type="submit" class="btn table-link" value="Join Session">Join</button>
                             </form>
 
                         </div>

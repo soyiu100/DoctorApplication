@@ -15,6 +15,14 @@ canvas {
     display: block;
 }
 
+.fa-user-check {
+  color: green;
+}
+
+.fa-user {
+  color: gray;
+}
+
 /* css for session call page*/
 video {
     display: block;
