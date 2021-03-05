@@ -5,7 +5,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import lombok.extern.log4j.Log4j2;
-import com.doctorapp.data.users.AlexaUserSession;
 import com.doctorapp.data.users.WebUserSession;
 import org.kurento.client.EventListener;
 import org.kurento.client.GStreamerFilter;
@@ -20,7 +19,6 @@ public class Room implements Closeable {
 
     private MediaPipeline pipeline;
     private WebUserSession provider;
-    private AlexaUserSession alexa;
     private WebRtcEndpoint providerWebRtcEp;
     private WebRtcEndpoint alexaWebRtcEp;
     private GStreamerFilter flipFilter;
@@ -61,15 +59,6 @@ public class Room implements Closeable {
     public void joinAsProvider(String userName, WebUserSession userSession) {
         this.provider = userSession;
         log.info("Provider {} has joined", userName);
-    }
-
-    public void joinAsAlexa(String userName, AlexaUserSession userSession) {
-        this.alexa = userSession;
-        log.info("Alexa user {} has joined", userName);
-    }
-
-    public AlexaUserSession getAlexa() {
-        return alexa;
     }
 
     public WebUserSession getProvider() {
@@ -195,7 +184,6 @@ public class Room implements Closeable {
     public void close() {
         releaseFilters();
         provider = null;
-        alexa = null;
         pipeline.release();
         pipeline = null;
 

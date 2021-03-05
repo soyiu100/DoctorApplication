@@ -1,15 +1,13 @@
 package com.doctorapp.api;
 
-import com.doctorapp.data.users.AlexaUserSession;
-import com.doctorapp.data.users.UserRegistry;
+import com.doctorapp.data.TelehealthSessionRequest;
+import com.doctorapp.data.TelehealthSessionRequest.IceServer;
+import com.doctorapp.data.TelehealthSessionResponse;
 import com.doctorapp.room.Room;
 import com.doctorapp.room.RoomManager;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import lombok.extern.log4j.Log4j2;
-import com.doctorapp.data.TelehealthSessionRequest;
-import com.doctorapp.data.TelehealthSessionRequest.IceServer;
-import com.doctorapp.data.TelehealthSessionResponse;
 import org.kurento.client.WebRtcEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,9 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Log4j2
 public class InitiateSession {
-
-    @Autowired
-    private UserRegistry registry;
 
     @Autowired
     private RoomManager roomManager;
@@ -41,17 +36,8 @@ public class InitiateSession {
         // Write into MeetingRoom table and get room name
 //		meetingRoomDAO.addPatientToMeetingRoom(initiateSession.getUserName(), initiateSession.getSessionId());
 
-        // Register Alexa user
-        AlexaUserSession alexaUserSession = new AlexaUserSession(initiateSession.getUserName(),
-            initiateSession.getSessionId(),
-            initiateSession.getSdpOffer());
-        log.info("alexa user room is {}", alexaUserSession.getRoomName());
-        registry.registerAlexaUser(alexaUserSession);
-        log.info("Alexa user {} has been registered successfully", initiateSession.getUserName());
-
         // Join room
         Room room = roomManager.getRoomOrCreate(initiateSession.getSessionId());
-        room.joinAsAlexa(initiateSession.getUserName(), alexaUserSession);
 
         // start the call
         if (initiateSession.getIceServers() != null) {

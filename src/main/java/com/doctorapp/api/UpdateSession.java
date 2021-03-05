@@ -7,7 +7,6 @@ import com.doctorapp.data.TelehealthSessionRequest;
 import com.doctorapp.data.TelehealthSessionResponse;
 import com.doctorapp.room.Room;
 import com.doctorapp.room.RoomManager;
-import com.doctorapp.data.users.AlexaUserSession;
 import org.kurento.client.WebRtcEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,11 +29,6 @@ public class UpdateSession {
 
         // Find the room
         Room room = roomManager.getRoomOrThrow(updateSession.getSessionId());
-
-
-        // Find alexa user session
-        AlexaUserSession alexa = room.getAlexa();
-        alexa.setSdpOffer(updateSession.getSdpOffer());
 
         // Create new WebRtcEp for Alexa
         WebRtcEndpoint alexaWebRtcEp = room.createAlexaWebRtcEp(updateSession.getSdpOffer());

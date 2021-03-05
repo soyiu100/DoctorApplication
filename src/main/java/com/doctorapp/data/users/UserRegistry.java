@@ -19,10 +19,6 @@ public class UserRegistry {
     private ConcurrentHashMap<String, UserSession> usersBySessionId = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, WebSocketSession> wsSessionByName = new ConcurrentHashMap<>();
 
-    public void registerAlexaUser(AlexaUserSession user) {
-        usersByName.put(user.getName(), user);
-    }
-
     public void registerWebUser(WebUserSession user) {
         usersByName.put(user.getName(), user);
         usersBySessionId.put(user.getSession().getId(), user);
@@ -32,10 +28,6 @@ public class UserRegistry {
 
     public UserSession getBySession(WebSocketSession session) {
         return usersBySessionId.get(session.getId());
-    }
-
-    public WebSocketSession getWSSessionByName(String name) {
-        return wsSessionByName.get(name);
     }
 
     public UserSession removeBySession(WebSocketSession session) {
