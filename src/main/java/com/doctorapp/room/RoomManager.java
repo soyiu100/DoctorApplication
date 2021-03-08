@@ -2,14 +2,14 @@ package com.doctorapp.room;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import lombok.extern.log4j.Log4j2;
 import org.kurento.client.KurentoClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Log4j2
 public class RoomManager {
-
-    private final Logger log = LoggerFactory.getLogger(RoomManager.class);
 
     @Autowired
     private KurentoClient kurento;
