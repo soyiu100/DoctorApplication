@@ -36,14 +36,14 @@ public class PatientInfoEndpoint {
     ScheduledSessionDao scheduledSessionDao;
 
     /**
-     * Grabs the sessions associated with the patient linked to the access token.
+     * Grabs the patient ID associated with the patient linked to the access token.
      *
      * @param accessToken
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/api/patients/accessToken", method = RequestMethod.POST)
-    public List<ScheduledSession> getSessionsWithAccessToken(String accessToken) {
+    public String getPatientIdWithAccessToken(String accessToken) {
         try {
             List<OAuthAccessToken> targetUsers = dynamoDBTokenDAO.getOAuthAccessTokenUsingAccessToken(accessToken);
 
@@ -52,9 +52,8 @@ public class PatientInfoEndpoint {
 
             String username = targetUsers.get(0).getUserName();
 
-            return getSessionByUsername(username);
-        } catch (
-        DynamoDBMappingException e) {
+            return getPatientIdByUsername(username);
+        } catch (DynamoDBMappingException e) {
             String errorMessage = String.format("Failed to get OAuthAccessTokens in DynamoDB using access token %s", accessToken);
             log.error(errorMessage, e);
             throw new DependencyException(errorMessage, e);
@@ -75,21 +74,25 @@ public class PatientInfoEndpoint {
     @RequestMapping(value = "/api/patients/username", method = RequestMethod.POST)
     public List<ScheduledSession> getSessionByUsername(String username) {
         try {
-            ListUsersResult userResult =
-                    cognitoClient.getPatientIdsByFilter(USERNAME, username.trim());
-            List<UserType> patientUserType = userResult.getUsers();
-            assert (patientUserType.size() == 1);
-
-            List<AttributeType> attributes = patientUserType.get(0).getAttributes();
-
-            assert (attributes.size() == 1);
-
-            String patientId = attributes.get(0).getValue();
+            String patientId = getPatientIdByUsername(username);
 
             return scheduledSessionDao.getScheduledSessionsByPatientId(patientId);
         } catch (Exception e) {
             log.info("Error occurred while getting sessions by patient ID: {}", e.getMessage());
             throw e;
         }
+    }
+
+    private String getPatientIdByUsername(String username) {
+        ListUsersResult userResult = cognitoClient.getPatientIdsByFilter(USERNAME, username.trim());
+        List<UserType> patientUserType = userResult.getUsers();
+        assert (patientUserType.size() == 1);
+
+        List<AttributeType> attributes = patientUserType.get(0).getAttributes();
+
+        // Only attribute should be patient ID
+        assert (attributes.size() == 1);
+        return attributes.get(0).getValue();
+
     }
 }
