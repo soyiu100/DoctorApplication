@@ -7,6 +7,12 @@ import com.doctorapp.room.SessionHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +41,10 @@ public class TelehealthSkillStreamHandler {
         }
         String name = skillRequest.path("directive").path("header").path("name").asText();
         JsonNode payload = skillRequest.path("directive").path("payload");
+
+        String token = skillRequest.path("directive").path("endpoint").path("scope").path("token").asText();
+        String patientId = (new PatientInfoEndpoint().getPatientIdWithAccessToken(token));
+        log.info("Get patientId: " + patientId);
 
         switch (name) {
             case "InitiateSessionWithOffer":
@@ -73,6 +83,39 @@ public class TelehealthSkillStreamHandler {
                 return null;
         }
     }
+
+
+//    public String getPatientId(String accessToken) throws IOException {
+//        String url = "https://telehealth.lucuncai.com/api/patients/accessToken?accessToken=" + accessToken;
+//        log.info("url is " + url);
+//        URL u = new URL(url);
+//        HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
+//        c.setRequestMethod("POST");
+//        c.connect();
+//        int status = c.getResponseCode();
+//
+//        log.info("status is " + status);
+//        BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
+//        StringBuilder sb = new StringBuilder();
+//        String line;
+//        while ((line = br.readLine()) != null) {
+//            sb.append(line).append("\n");
+//        }
+//        br.close();
+//        return sb.toString();
+////        switch (status) {
+////            case 200:
+////            case 201:
+////                BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
+////                StringBuilder sb = new StringBuilder();
+////                String line;
+////                while ((line = br.readLine()) != null) {
+////                    sb.append(line).append("\n");
+////                }
+////                br.close();
+////                return sb.toString();
+////        }
+//    }
 
     private String getSdpOffer(JsonNode offer) {
         String format = offer.path("format").asText();

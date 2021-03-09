@@ -20,9 +20,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.bind.annotation.RestController;
 
 import static com.doctorapp.constant.AWSConfigConstants.USERNAME;
 
+@RestController
 @Log4j2
 public class PatientInfoEndpoint {
 

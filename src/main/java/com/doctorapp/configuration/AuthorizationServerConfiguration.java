@@ -79,6 +79,12 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     }
 
     @Bean
+    @Scope
+    public DynamoDBTokenDAO dynamoDBTokenDAO() {
+        return new DynamoDBTokenDAO(dynamoDBMapper);
+    }
+
+    @Bean
     public DynamoDBClientDetailsDAO dynamoDBClientDetailsService() {
         return new DynamoDBClientDetailsDAO(dynamoDBMapper, passwordEncoder());
     }

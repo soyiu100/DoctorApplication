@@ -26,8 +26,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class CallHandler extends TextWebSocketHandler {
 
     private static final Gson gson = new GsonBuilder().create();
-    private static final String tokenEndpoint = "https:///api/partner/token?user_id=user&partner_id=qiang_telehealth_skill_5";
-    private String appToken = "Bearer b326f600-938d-4cc9-a80c-c51ea965f9c7";
 
     @Autowired
     private UserRegistry registry;
@@ -169,13 +167,6 @@ public class CallHandler extends TextWebSocketHandler {
     public void leaveRoom(WebSocketSession session, String roomName) {
         Room room = roomManager.getRoomOrThrow(roomName);
 
-//        try {
-//            String lwaToken = getLWAToken();
-//            log.info("Get Application token: {}", lwaToken);
-//        } catch (IOException e) {
-//            log.error(e.getMessage());
-//        }
-
         // Show waiting room if patient not null
         if (room.getAlexaWebRtcEp() != null) {
             room.buildWelcomeConnection(room.getAlexaWebRtcEp());
@@ -190,34 +181,6 @@ public class CallHandler extends TextWebSocketHandler {
     private void terminate(String roomName) {
         Room room = roomManager.getRoomOrThrow(roomName);
         roomManager.removeRoom(room);
-    }
-
-    public String getLWAToken() throws IOException {
-        URL u = new URL(tokenEndpoint);
-        HttpURLConnection c = (HttpURLConnection) u.openConnection();
-        c.setRequestMethod("GET");
-        c.setRequestProperty("Accept", "application/json");
-        c.setRequestProperty("Content-Type", "application/json");
-        c.setRequestProperty("Authorization", "Bearer " + appToken);
-        c.setUseCaches(false);
-        c.setConnectTimeout(1000);
-        c.setReadTimeout(1000);
-        c.connect();
-        int status = c.getResponseCode();
-
-        switch (status) {
-            case 200:
-            case 201:
-                BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line).append("\n");
-                }
-                br.close();
-                return sb.toString();
-        }
-        return null;
     }
 
     @Override
