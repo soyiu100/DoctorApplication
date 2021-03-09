@@ -40,9 +40,6 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * An customized AuthenticationProvider.
  *
- * <p>
- *     TODO: Replace the sample users in this class with the actual authentication server or user DB.
- * </p>
  *
  * @author Lucun Cai
  */

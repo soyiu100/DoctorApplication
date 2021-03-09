@@ -70,8 +70,8 @@ public class RegisterController {
             newPage = "redirect:login?doctor";
         } catch (Exception e) {
             log.error("Failed to create user" + e.getMessage(), e);
-            redirect.addFlashAttribute("errMessage", e.getMessage());
-            return "redirect:error";
+            redirect.addFlashAttribute("errMessage", whichError(e.getMessage()));
+            return "redirect:register";
         }
         return newPage;
     }
@@ -97,7 +97,8 @@ public class RegisterController {
             newPage = "redirect:login";
         } catch (Exception e) {
             log.error("Failed to create user" + e.getMessage(), e);
-            throw new Exception("Failed to create user", e);
+            redirect.addFlashAttribute("errMessage", whichError(e.getMessage()));
+            return "redirect:register";
         }
         return newPage;
     }
@@ -120,7 +121,8 @@ public class RegisterController {
             newPage = "redirect:login?admin";
         } catch (Exception e) {
             log.error("Failed to create user" + e.getMessage(), e);
-            throw new Exception("Failed to create user", e);
+            redirect.addFlashAttribute("errMessage", whichError(e.getMessage()));
+            return "redirect:register";
         }
         return newPage;
     }
@@ -179,8 +181,19 @@ public class RegisterController {
             }
             log.info("No duplicate user found for email address: {}", emailAddr);
         } catch (IllegalArgumentException e) {
-            //todo: Error message like : emailAddr has exist
             throw new InvalidParameterException(e.getMessage());
         }
     }
+
+
+    private String whichError(String errorMessage) {
+        if (errorMessage.contains("email")) {
+            return "Duplicate user found for email address.";
+        } else if (errorMessage.contains("username")) {
+            return "Duplicate user found for username";
+        } else {
+            return "";
+        }
+    }
+
 }

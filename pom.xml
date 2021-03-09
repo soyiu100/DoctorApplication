@@ -147,14 +147,6 @@
           <artifactId>kurento-utils-js</artifactId>
           <version>6.15.0</version>
         </dependency>
-
-        <!-- Alexa Skill Kit -->
-        <dependency>
-          <groupId>com.amazon.ask</groupId>
-          <artifactId>ask-sdk-experimental</artifactId>
-          <version>1.0</version>
-        </dependency>
-
     </dependencies>
 
     <dependencyManagement>

@@ -10,6 +10,11 @@
 <body>
     <th:block th:include="../fragments/navbar.html"></th:block>
     <div class="d-flex justify-content-center">
+        <div id="message-div">
+            <div class="alert alert-info" th:if="${createSessionFailed}">
+                There was an error in creating a session. Please contact the developers.
+            </div>
+        </div>
         <form action="/create_session_form" id="session-form" method="post">
             <fieldset>
                 <h1>Create Session</h1>

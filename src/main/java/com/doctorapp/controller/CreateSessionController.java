@@ -54,7 +54,7 @@ public class CreateSessionController {
             newPage = "redirect:view_sessions";
         } catch (Exception e) {
             log.error("Failed to create session: {}", e.getMessage(), e);
-            //todo: promote error message on frontend
+            redirectAttributes.addFlashAttribute("createSessionFailed", true);
         }
         return newPage;
     }

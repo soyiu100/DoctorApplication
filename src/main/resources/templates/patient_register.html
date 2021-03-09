@@ -10,6 +10,11 @@
 <div class="d-flex justify-content-center">
     <form action="/create_patient_form" method="post">
         <fieldset>
+            <div id="error-message">
+                <div class="alert alert-danger" th:if="${errMessage}"
+                     th:text="${errMessage}">
+                </div>
+            </div>
             <h1>Patient Registration</h1>
             <div class="form-group">
                 <!-- Username -->

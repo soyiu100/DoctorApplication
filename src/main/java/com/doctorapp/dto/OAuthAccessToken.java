@@ -53,4 +53,7 @@ public class OAuthAccessToken {
     @DynamoDBIndexHashKey(globalSecondaryIndexName = "refreshToken-index")
     String refreshToken;
 
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "accessToken-index")
+    String accessToken;
+
 }
