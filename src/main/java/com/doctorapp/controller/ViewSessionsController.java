@@ -153,39 +153,6 @@ public class ViewSessionsController {
         return "redirect:session_call";
     }
 
-
-    /**
-     * TODO: untested but implemented
-     * As per documentation,
-     * 1) 3P Skill Handler receives the username of the patient and invokes (POST?) to the webapp
-     * 2) the webapp grabs the patient ID using the username
-     * 3) then searches a DDB table to get the sessions
-     *
-     * Possible requirements:
-     * - Valid CSRF token, as Spring Security is very picky about any POSTs that have a response body
-     */
-    @ResponseBody
-    public List<ScheduledSession> getSessionByPatientId(String username) {
-        try {
-            ListUsersResult userResult =
-                    cognitoClient.getPatientIdsByFilter(USERNAME, username.trim());
-            List<UserType> patientUserType = userResult.getUsers();
-            List<ScheduledSession> matchedSessions = new ArrayList<>();
-            assert (patientUserType.size() == 1);
-
-            List<AttributeType> attributes = patientUserType.get(0).getAttributes();
-
-            assert (attributes.size() == 1);
-
-            String patientId = attributes.get(0).getValue();
-
-            return scheduledSessionDao.getScheduledSessionsByPatientId(patientId);
-        } catch (Exception e) {
-            log.info("Error occurred while getting sessions by patient ID: {}", e.getMessage());
-            throw e;
-        }
-    }
-
     private ScheduledSession parseSessionInfo(ScheduledSession session, StringBuilder sessionInfo) {
         String date = "";
         String time = "";

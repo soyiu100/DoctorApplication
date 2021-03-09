@@ -5,16 +5,10 @@
  */
 package com.doctorapp.dao;
 
-import com.amazonaws.services.cognitoidp.model.ListUsersResult;
-import com.amazonaws.services.cognitoidp.model.UserType;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMappingException;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.doctorapp.client.CognitoClient;
-import com.doctorapp.constant.AWSConfigConstants;
-import com.doctorapp.data.Patient;
-import com.doctorapp.data.ScheduledSession;
 import com.doctorapp.dto.OAuthAccessToken;
 import com.doctorapp.dto.OAuthRefreshToken;
 import java.io.UnsupportedEncodingException;
@@ -30,8 +24,6 @@ import java.util.stream.Collectors;
 import com.doctorapp.exception.DependencyException;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.units.qual.A;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -52,12 +44,6 @@ public class DynamoDBTokenDAO implements TokenStore {
     private final AuthenticationKeyGenerator authenticationKeyGenerator;
 
     private final DynamoDBMapper dynamoDBMapper;
-
-    @Autowired
-    CognitoClient cognitoClient;
-
-    @Autowired
-    ScheduledSessionDao scheduledSessionDao;
 
     public DynamoDBTokenDAO(DynamoDBMapper dynamoDBMapper) {
         this.dynamoDBMapper = dynamoDBMapper;
@@ -87,10 +73,12 @@ public class DynamoDBTokenDAO implements TokenStore {
             refreshToken = token.getRefreshToken().getValue();
         }
 
+        log.info("access token? : {}", token.getValue());
+
         OAuthAccessToken accessToken = OAuthAccessToken.builder()
             .tokenId(extractTokenKey(token.getValue()))
             .token(token)
-            .accessToken(token.ACCESS_TOKEN)
+            .accessToken(token.getValue())
             .authenticationId(authenticationKeyGenerator.extractKey(authentication))
             .authentication(authentication)
             .clientId(authentication.getOAuth2Request().getClientId())
@@ -111,12 +99,12 @@ public class DynamoDBTokenDAO implements TokenStore {
 
 
     /**
-     * Getting scheduled sessions with the access token.
+     * Getting the list of OAuthAccessToken objects with the access token.
      *
      * @param accessToken
      * @return
      */
-    public List<ScheduledSession> getSessionsWithAccessToken(String accessToken) {
+    public List<OAuthAccessToken> getOAuthAccessTokenUsingAccessToken(String accessToken) {
         try {
             // query by access token
             HashMap<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
@@ -127,28 +115,10 @@ public class DynamoDBTokenDAO implements TokenStore {
                             .withScanIndexForward(false)
                             .withKeyConditionExpression("accessToken = :v_accessToken")
                             .withExpressionAttributeValues(eav);
-            List<OAuthAccessToken> targetUsers = dynamoDBMapper
-                    .query(OAuthAccessToken.class, queryExpression);
+            return dynamoDBMapper.query(OAuthAccessToken.class, queryExpression);
 
-            // ...assuming access tokens are unique UUIDs!
-            assert (targetUsers.size() == 1);
-
-            String username = targetUsers.get(0).getUserName();
-
-            // Query patient Cognito pool for patient ID
-            ListUsersResult usersResult = cognitoClient.getPatientIdsByFilter(username, AWSConfigConstants.USERNAME);
-            List<UserType> userTypes = usersResult.getUsers();
-
-            assert (userTypes.size() == 1);
-
-            // Sanity check: should only grabbing the patient ID
-            assert (userTypes.get(0).getAttributes().size() == 1);
-
-            String patientId = userTypes.get(0).getAttributes().get(0).getValue();
-
-            return scheduledSessionDao.getScheduledSessionsByPatientId(patientId);
         } catch (DynamoDBMappingException e) {
-            String errorMessage = String.format("Failed to get scheduledSessions in DynamoDB for access token %s", accessToken);
+            String errorMessage = String.format("Failed to get OAuthAccessTokens in DynamoDB using access token %s", accessToken);
             log.error(errorMessage, e);
             throw new DependencyException(errorMessage, e);
         }
