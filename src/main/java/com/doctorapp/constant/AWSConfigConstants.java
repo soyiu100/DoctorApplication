@@ -47,7 +47,10 @@ public class AWSConfigConstants {
      * Constant for Data Access
      */
     public final static String SCHEDULED_TIME = "scheduledTime";
+    public final static String PATIENTID = "patientId";
     public final static String FILTER_EXPRESSION = String.format("%s > :startTime and %s  < :endTime",
-            SCHEDULED_TIME, SCHEDULED_TIME);
+        SCHEDULED_TIME, SCHEDULED_TIME);
+    public final static String FILTER_EXPRESSION_WITH_PATIENTID = String.format("%s = :startTime and %s = :patientId",
+            SCHEDULED_TIME, PATIENTID);
 
 }

@@ -6,6 +6,7 @@
 package com.doctorapp.configuration;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.doctorapp.client.PatientDataClient;
 import com.doctorapp.dao.DynamoDBClientDetailsDAO;
 import com.doctorapp.dao.DynamoDBPartnerTokenDAO;
 import com.doctorapp.dao.DynamoDBTokenDAO;
@@ -97,6 +98,11 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Bean
     public DynamoDBPartnerTokenDAO dynamoDBPartnerTokenService() {
         return new DynamoDBPartnerTokenDAO(dynamoDBMapper);
+    }
+
+    @Bean
+    public PatientDataClient patientDataClient() {
+        return new PatientDataClient();
     }
 
     @Override
