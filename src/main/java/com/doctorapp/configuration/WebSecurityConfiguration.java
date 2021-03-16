@@ -50,6 +50,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/change_password_form",
                 "/create_patient_form", "/create_doctor_form", "/create_admin_form",
                 "/create_session_form",
+                "/timezone_change",
                 "/connect_session", "/disconnect_session",
                 "/search_patient", "/alexa/telehealth/**", "/api/patients/accessToken");
     }

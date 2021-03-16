@@ -1,4 +1,4 @@
-<!-- Doctor Preview Sessions : /sessions -->
+<!-- Doctor Preview Sessions : /view_sessions -->
 
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
@@ -35,7 +35,6 @@
                 <th>Patient Name</th>
                 <th>Appointment Date</th>
                 <th>Appointment Time</th>
-                <th>Duration in Minutes</th>
                 <th>Doctor Status</th>
                 <th>Patient Status</th>
                 <th>Access Session</th>
@@ -56,7 +55,6 @@
                     <td th:if="${sess.date}" th:text="${sess.date}">...</td>
 
                     <td th:if="${sess.time}" th:text="${sess.time}">...</td>
-                    <td th:if="${sess.durationInMin}" th:text="${sess.durationInMin}">...</td>
 
                     <td th:if="${sess.doctorStatus}"><i class="fas fa-user-check fa-2x"></i>Connected</td>
                     <td th:unless="${sess.doctorStatus}"><i class="fas fa-user fa-2x"></i>  Waiting</i></td>
@@ -101,6 +99,7 @@
     </div>
 
 </div>
+<th:block th:include="../fragments/footer.html"></th:block>
 
 </body>
 </html>

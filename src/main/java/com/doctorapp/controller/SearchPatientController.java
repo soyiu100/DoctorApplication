@@ -5,6 +5,7 @@ import com.amazonaws.services.cognitoidp.model.ListUsersResult;
 import com.amazonaws.services.cognitoidp.model.UserType;
 import com.doctorapp.client.CognitoClient;
 import com.doctorapp.dao.PatientDao;
+import com.doctorapp.dao.ScheduledSessionDao;
 import com.doctorapp.data.Patient;
 import com.doctorapp.exception.DependencyException;
 import lombok.extern.log4j.Log4j2;
@@ -31,6 +32,9 @@ public class SearchPatientController {
 
     @Autowired
     private PatientDao patientDao;
+
+    @Autowired
+    private ScheduledSessionDao scheduledSessionDao;
 
     @Autowired
     CognitoClient cognitoClient;
@@ -86,6 +90,7 @@ public class SearchPatientController {
             Patient patient = patientDao.getPatientById(patientId);
 
             if (patient.getFirstName().equals(firstName) && patient.getLastName().equals(lastName)) {
+                patient.setScheduledSessions(scheduledSessionDao.getScheduledSessionsByPatientId(patientId));
                 matchedPatients.add(patient);
             }
         });

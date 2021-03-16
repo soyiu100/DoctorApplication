@@ -1,8 +1,5 @@
 package com.doctorapp.controller;
 
-import com.amazonaws.services.cognitoidp.model.AttributeType;
-import com.amazonaws.services.cognitoidp.model.ListUsersResult;
-import com.amazonaws.services.cognitoidp.model.UserType;
 import com.doctorapp.client.CognitoClient;
 import com.doctorapp.dao.PatientDao;
 import com.doctorapp.dao.ScheduledSessionDao;
@@ -17,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,13 +25,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
-
-import static com.doctorapp.constant.AWSConfigConstants.LASTNAME;
-import static com.doctorapp.constant.AWSConfigConstants.PATIENT_POOL_ID;
-import static com.doctorapp.constant.AWSConfigConstants.USERNAME;
-
-import com.doctorapp.controller.SessionCallController;
-
 
 /**
  * MVC Controller for {@link ViewSessionsController}
@@ -53,11 +42,17 @@ public class ViewSessionsController {
     @Autowired
     private CognitoClient cognitoClient;
 
-//    @RequestMapping(value = "/")
-//    public String indexPage(Model model, HttpServletRequest request) {
-//        return "redirect:view_sessions";
-//    }
 
+    /**
+     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     * Currently view sessions grabs the preferred timezone but doesn't actually translate any times yet
+     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     *
+     * @param model
+     * @param request
+     * @param redirectAttributes
+     * @return
+     */
     @RequestMapping(value = "/view_sessions")
     public String viewSessionPage(Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         log.info("Room ID is: {}", request.getParameter("roomId"));
@@ -77,6 +72,14 @@ public class ViewSessionsController {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String startTime = "";
         String endTime = "";
+
+        if (request.getSession().getAttribute("preferredTimezone") != null) {
+            String savedTimezone = (String) request.getSession().getAttribute("preferredTimezone");
+            TimeZone.setDefault(TimeZone.getTimeZone(savedTimezone));
+        } else {
+            // preferred Seattleite timezone ;)
+            TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
+        }
 
         if (request.getParameter("startTime") != null && request.getParameter("startTime").length() != 0) {
             log.info("Requested start time is: {}", request.getParameter("startTime"));
@@ -115,6 +118,9 @@ public class ViewSessionsController {
 
             log.info(sessionInfo);
             model.addAttribute("sessions", visibleSessions);
+
+            model.addAttribute("timeZone", TimeZone.getDefault().getID());
+
             return "view_sessions";
         } catch (Exception e) {
             redirectAttributes
@@ -153,6 +159,38 @@ public class ViewSessionsController {
         return "redirect:session_call";
     }
 
+    @PostMapping("/timezone_change")
+    public String changeTimezones(@RequestParam("timeZone") final String timeZone,
+                                  HttpServletRequest request) {
+        log.info("Request to change time zone: {}", timeZone);
+        // US Time Zone recommendations:
+        // https://blog.andrewbeacock.com/2006/03/list-of-us-time-zone-ids-for-use-with.html
+        switch (timeZone) {
+            case "EST":
+                request.getSession().setAttribute("preferredTimezone", "America/New_York");
+                break;
+            case "CST":
+                request.getSession().setAttribute("preferredTimezone", "America/Chicago");
+                break;
+            case "MST":
+                request.getSession().setAttribute("preferredTimezone", "America/Denver");
+                break;
+            case "PST":
+                request.getSession().setAttribute("preferredTimezone", "America/Los_Angeles");
+                break;
+            case "AST":
+                request.getSession().setAttribute("preferredTimezone", "America/Anchorage");
+                break;
+            case "HST":
+                request.getSession().setAttribute("preferredTimezone", "America/Adak");
+                break;
+            default:
+                // for now just set the default to UTC
+                request.getSession().setAttribute("preferredTimezone", "UTC");
+        }
+        return "redirect:view_sessions";
+    }
+
     private ScheduledSession parseSessionInfo(ScheduledSession session, StringBuilder sessionInfo) {
         String date = "";
         String time = "";
@@ -169,7 +207,6 @@ public class ViewSessionsController {
                             "patientStatus is %b {}\n", session.getPatientId(),
                     session.getRoomId(),
                     date, time,
-                    session.getDurationInMin(),
                     session.isDoctorStatus(),
                     session.isPatientStatus(),
                     session.isDoctorStatus() == AWSConfigConstants.ParticipantStatus_NOTCONNECTED);
@@ -189,7 +226,6 @@ public class ViewSessionsController {
                     .patientId(session.getPatientId())
                     .doctorStatus(session.isDoctorStatus())
                     .patientStatus(session.isPatientStatus())
-                    .durationInMin(session.getDurationInMin())
                     .date(date)
                     .time(time)
                     .patient(patient)
@@ -201,7 +237,6 @@ public class ViewSessionsController {
                     .patientId(session.getPatientId())
                     .doctorStatus(session.isDoctorStatus())
                     .patientStatus(session.isPatientStatus())
-                    .durationInMin(session.getDurationInMin())
                     .date(date)
                     .time(time)
                     .build();

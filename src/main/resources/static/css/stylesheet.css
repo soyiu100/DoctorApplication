@@ -28,6 +28,15 @@
     background-color: #e9ecef !important;
 }
 
+
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}
+
 canvas {
     padding-left: 0;
     padding-right: 0;

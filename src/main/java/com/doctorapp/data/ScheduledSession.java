@@ -35,8 +35,6 @@ public class ScheduledSession {
     @DynamoDBRangeKey
     private String scheduledTime;
 
-    private int durationInMin;
-
     @DynamoDBTyped(DynamoDBAttributeType.BOOL)
     private boolean doctorStatus;
 

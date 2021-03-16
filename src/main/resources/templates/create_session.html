@@ -10,88 +10,90 @@
 <body>
     <th:block th:include="../fragments/navbar.html"></th:block>
     <div class="d-flex justify-content-center">
-        <div id="message-div">
-            <div class="alert alert-info" th:if="${createSessionFailed}">
-                There was an error in creating a session. Please contact the developers.
-            </div>
+        <div>
+            <form action="/create_session_form" id="session-form" method="post">
+                <div id="message-div" style="width:500px;">
+                    <div class="alert alert-danger" th:if="${createSessionFailed}">
+                        There was an error in creating a session. Please contact the developers.
+                    </div>
+
+                    <div class="alert alert-danger" th:if="${noSessionTime}">
+                        No time was selected for the session. Please select a time and create the session again.
+                    </div>
+                </div>
+                <fieldset style="width:500px;">
+                    <h1>Create Session</h1>
+                    <h3>Patient Information</h3>
+                    <small>Search for the patient you are looking for using 'Search Patients'.</small>
+
+                    <div class="form-row">
+                        <!-- Patient Name -->
+                        <label class="col-form-label" for="patientName">Patient Name</label>
+                        <div class="input-group mb-3">
+                            <input type="text" id="patientName" name="patientName"
+                                   class="form-control" required readonly="readonly">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-info" id="openModal" type="button"
+                                        data-toggle="modal" data-target="#searchPatientModal" >Search Patients</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <!-- Patient ID -->
+                            <label class="col-form-label" for="patientId">Patient ID</label>
+                            <div class="controls">
+                                <input type="text" id="patientId" name="patientId"
+                                       class="form-control" required readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <!-- Patient DOB -->
+                            <label class="col-form-label" for="patientDOB">Patient Date of Birth</label>
+                            <div class="controls">
+                                <input type="text" id="patientDOB" name="patientDOB"
+                                       class="form-control" required readonly="readonly">
+                            </div>
+                        </div>
+                    </div>
+
+                    <th:block th:include="../fragments/search_patient.html"></th:block>
+                    <hr/>
+
+                    <h2>Appointment Information</h2>
+
+                    <div class="form-group">
+                        <!-- Scheduled Date -->
+                        <label class="col-form-label" for="scheduledDate">Scheduled Date</label>
+                        <div class="controls">
+                            <input type="date" id="scheduledDate" name="scheduledDate"
+                                   class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <!-- Scheduled Time -->
+                        <label class="col-form-label">Scheduled Time</label>
+                        <div class="controls" id="times">
+                            <strong>Available session times will appear here once you find a patient above.</strong>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="controls">
+                            <button type="submit" class="btn btn-info" id="session-submit" form="session-form" disabled>Create</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
         </div>
-        <form action="/create_session_form" id="session-form" method="post">
-            <fieldset>
-                <h1>Create Session</h1>
-                <h3>Patient Information</h3>
-                <small>Search for the patient you are looking for using 'Search Patients'.</small>
 
-                <div class="form-row">
-                    <!-- Patient Name -->
-                    <label class="col-form-label" for="patientName">Patient Name</label>
-                    <div class="input-group mb-3">
-                        <input type="text" id="patientName" name="patientName"
-                               class="form-control" required readonly="readonly">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-info" id="openModal" type="button"
-                                    data-toggle="modal" data-target="#searchPatientModal" >Search Patients</button>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col">
-                        <!-- Patient ID -->
-                        <label class="col-form-label" for="patientId">Patient ID</label>
-                        <div class="controls">
-                            <input type="text" id="patientId" name="patientId"
-                                   class="form-control" required readonly="readonly">
-                        </div>
-                    </div>
-                    <div class="col">
-                        <!-- Patient DOB -->
-                        <label class="col-form-label" for="patientDOB">Patient Date of Birth</label>
-                        <div class="controls">
-                            <input type="text" id="patientDOB" name="patientDOB"
-                                   class="form-control" required readonly="readonly">
-                        </div>
-                    </div>
-                </div>
+        <input type="hidden" id="scheduledTimes">
 
-                <th:block th:include="../fragments/search_patient.html"></th:block>
-                <hr/>
-
-                <h2>Appointment Information</h2>
-
-                <div class="form-group">
-                    <!-- Scheduled Date -->
-                    <label class="col-form-label" for="scheduledDate">Scheduled Date</label>
-                    <div class="controls">
-                        <input type="date" id="scheduledDate" name="scheduledDate"
-                               class="form-control" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <!-- Scheduled Time -->
-                    <label class="col-form-label" for="scheduledTime">Scheduled Time (in UTC)</label>
-                    <div class="controls">
-                        <input type="time" id="scheduledTime" name="scheduledTime"
-                               class="form-control" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <!-- Duration in Minutes -->
-                    <label class="col-form-label" for="durationInMin">Duration in Minutes</label>
-                    <div class="controls">
-                        <input type="number" id="durationInMin" name="durationInMin" placeholder="Appointment Length (Minutes)"
-                               class="form-control" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="controls">
-                        <button type="submit" class="btn btn-info" form="session-form">Create</button>
-                    </div>
-                </div>
-            </fieldset>
-        </form>
     </div>
+    <th:block th:include="../fragments/footer.html"></th:block>
 
 </body>
 </html>

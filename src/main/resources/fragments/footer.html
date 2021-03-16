@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <footer class="bg-light text-center">
+        <div class="p-2 d-flex justify-content-around" style="background-color: rgba(0, 0, 0, 0.2);">
+            <div>Timezone: <span id="current-timezone" th:text="${timeZone} ? ${timeZone} : 'No timezone provided.'"></span>
+            </div>
+            <div class="form-group row d-flex">
+
+                <form action="/timezone_change" method="post" class="form-inline">
+                    <div class="form-group row">
+                        <label for="timeZone">Change timezone</label> &emsp;
+                        <select class="form-control" id="timeZone" name="timeZone">
+                            <option>EST</option>
+                            <option>CST</option>
+                            <option>MST</option>
+                            <option>PST</option>
+                            <option>AST</option>
+                            <option>HST</option>
+                            <option>UTC</option>
+                        </select> &emsp;
+                        <input type="submit" class="btn btn-outline-info" id="timeSubmit" value="Submit">
+                    </div>
+                </form>
+            </div>
+            <div>© 2021 Copyright AHEAD Clinic</div>
+        </div>
+    </footer>
+</body>
+</html>

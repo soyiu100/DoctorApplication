@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 
 /**
  * A DTO object represents a Patient.
@@ -32,6 +34,9 @@ public class Patient {
 
     @DynamoDBIgnore
     String emailAddress;
+
+    @DynamoDBIgnore
+    List<ScheduledSession> scheduledSessions;
 
     String firstName;
     String lastName;

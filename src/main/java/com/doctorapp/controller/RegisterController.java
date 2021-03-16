@@ -90,7 +90,12 @@ public class RegisterController {
             validateUsername(username, PATIENT);
             log.info("Creating patient for username {}, email address {}, dateOfBirth {}, firstname {}, " +
                     "lastname {}", username, emailAddr, dob, firstName, lastName);
-            Patient patient = new Patient(username, UUID.randomUUID().toString(), emailAddr, firstName, lastName, dob);
+            Patient patient = Patient.builder().username(username)
+                    .dob(dob)
+                    .firstName(firstName)
+                    .lastName(lastName)
+                    .patientId(UUID.randomUUID().toString())
+                    .emailAddress(emailAddr).build();
             cognitoClient.createNewUser(patient);
             patientDao.putPatient(patient);
             redirect.addFlashAttribute("user_name_val", username);

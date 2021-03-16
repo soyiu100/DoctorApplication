@@ -30,7 +30,12 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
 
         if (savedRequest == null || savedRequest.getRedirectUrl().contains("login")
                 || roles.contains(UNVERIFIED_DOCTOR.name()) || roles.contains(UNVERIFIED_PATIENT.name())
-                || roles.contains(UNVERIFIED_ADMIN.name())) {
+                || roles.contains(UNVERIFIED_ADMIN.name())
+                // force doctor to go to view_sessions
+                || (roles.contains(ROLE_DOCTOR.name()) && savedRequest.getRedirectUrl().charAt(savedRequest.getRedirectUrl().length() - 1) == '/')) {
+            if (savedRequest != null) {
+                log.info("Saved request URL: {}", savedRequest.getRedirectUrl());
+            }
             if (roles.contains(ROLE_CLIENT_ADMIN.name()) || roles.contains(ROLE_USER_ADMIN.name())) {
                 response.sendRedirect("/partners/form");
             } else if (roles.contains(ROLE_DOCTOR.name())) {
