@@ -215,9 +215,14 @@
             var day = localTime[2];
             var month = localTime[1];
 
-            if (parseInt(year) <= parseInt(splitProvidedDate[0])
-                && parseInt(month) <= parseInt(splitProvidedDate[1])
-                && parseInt(day) <= parseInt(splitProvidedDate[2])) {
+            if (parseInt(year) < parseInt(splitProvidedDate[0]) ||
+
+                (parseInt(year) == parseInt(splitProvidedDate[0])
+                && parseInt(month) < parseInt(splitProvidedDate[1])) ||
+
+                (parseInt(year) == parseInt(splitProvidedDate[0])
+                && parseInt(month) == parseInt(splitProvidedDate[1])
+                && parseInt(day) <= parseInt(splitProvidedDate[2]))) {
                     datePropagation(dateToTimeMap)
             } else {
                 $("#times").empty();

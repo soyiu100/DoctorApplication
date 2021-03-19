@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
-import static com.doctorapp.constant.AWSConfigConstants.FIRSTNAME;
-import static com.doctorapp.constant.AWSConfigConstants.LASTNAME;
 import static com.doctorapp.constant.AWSConfigConstants.USERNAME;
 
 
@@ -52,7 +50,7 @@ public class SessionCallController {
         ScheduledSession session = scheduledSessionDao.getScheduledSessionByRoomId(roomId);
         if (session == null) {
             redirect
-                    .addFlashAttribute("errMessage", "No session ID is linked to this session call.");
+                    .addFlashAttribute("errMessage", "No session ID is registered for this session call.");
             return "redirect:error";
         } else {
             session.setDoctorStatus(false);

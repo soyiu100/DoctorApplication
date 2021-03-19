@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
-    <title>Appointment with Patient</title>
+    <title>Error Page</title>
     <th:block th:include="../fragments/header.html"></th:block>
 </head>
 <body>
@@ -11,13 +11,15 @@
      padding-right:20%;
      display: block !important;">
     <th:block th:if="${error404}">
-        This page doesn't exist.
+        <h1>This page doesn't exist.</h1>
     </th:block>
     <th:block th:unless="${error404}">
-        <span id="error-message" th:text="${errMessage} ?: 'Something went wrong.'"></span>
+        <h1>An Error has Occurred.</h1>
+        <span id="error-message" th:text="${errMessage} ?: 'Something went wrong. Please contact the developers.'"></span>
     </th:block>
     <div class="text-center" style="padding-top: 20px;">
-        <a href="/">Go Home</a>
+        <a sec:authorize="hasAnyAuthority('ROLE_USER_ADMIN', 'ROLE_PATIENT', 'ROLE_CLIENT_ADMIN')" href="/">Go Home</a>
+        <a sec:authorize="hasAuthority('ROLE_DOCTOR')" href="/view_sessions">Go Home</a>
 
     </div>
 </div>
