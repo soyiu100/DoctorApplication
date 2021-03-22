@@ -1,16 +1,18 @@
 package com.doctorapp.room;
 
+import com.doctorapp.constant.SessionCallConstants;
 import com.doctorapp.data.TelehealthSessionRequest;
 import com.doctorapp.data.TelehealthSessionRequest.IceServer;
 import com.google.gson.JsonObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import javax.net.ssl.HttpsURLConnection;
 import lombok.extern.log4j.Log4j2;
+import org.json.JSONObject;
 import org.kurento.client.WebRtcEndpoint;
 
 @Log4j2
@@ -21,7 +23,7 @@ public class SessionHandler {
 
     public String initiateSessionHandler(TelehealthSessionRequest initiateSession, RoomManager roomManager) {
         // Join room
-        Room room = roomManager.getRoomOrCreate(initiateSession.getSessionId());
+        Room room = roomManager.getRoomOrCreate(initiateSession.getRoomId());
 
         // start the call
         if (initiateSession.getIceServers() != null) {
@@ -39,20 +41,12 @@ public class SessionHandler {
         String alexaSdpAnswer = alexaWebRtcEp.getLocalSessionDescriptor();
         log.info("Answer generated for Alexa: {} ", alexaSdpAnswer);
 
-        String lwaToken = null;
-        try {
-            lwaToken = getLWAToken();
-            log.info("Got lwaToken: " + lwaToken);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         return alexaSdpAnswer;
     }
 
     public String updateSessionHandler(TelehealthSessionRequest updateSession, RoomManager roomManager) {
         // Find the room
-        Room room = roomManager.getRoomOrThrow(updateSession.getSessionId());
+        Room room = roomManager.getRoomOrThrow(updateSession.getRoomId());
 
         // Create new WebRtcEp for Alexa
         WebRtcEndpoint alexaWebRtcEp = room.createAlexaWebRtcEp(updateSession.getSdpOffer());
@@ -80,11 +74,11 @@ public class SessionHandler {
     }
 
     public void disconnectSessionHandler(TelehealthSessionRequest disconnectSession, RoomManager roomManager) {
-        if (disconnectSession.getSessionId().equals("room")) {
+        if (disconnectSession.getRoomId().equals("room")) {
             return;
         }
 
-        Room room = roomManager.getRoomOrThrow(disconnectSession.getSessionId());
+        Room room = roomManager.getRoomOrThrow(disconnectSession.getRoomId());
         room.disconnectAlexa();
         // Show waiting room if provider not null
         if (room.getProviderWebRtcEp() != null) {
@@ -123,36 +117,6 @@ public class SessionHandler {
         } catch (UnknownHostException e) {
             log.error("UnknownHostException", e);
         }
-    }
-
-    public String getLWAToken() throws IOException {
-        URL u = new URL(tokenEndpoint);
-        HttpURLConnection c = (HttpURLConnection) u.openConnection();
-        c.setRequestMethod("GET");
-        c.setRequestProperty("Accept", "application/json");
-        c.setRequestProperty("Content-Type", "application/json");
-        c.setRequestProperty("Authorization", "Bearer " + appToken);
-        c.setUseCaches(false);
-        c.setConnectTimeout(1000);
-        c.setReadTimeout(1000);
-        c.connect();
-        int status = c.getResponseCode();
-
-
-
-        switch (status) {
-            case 200:
-            case 201:
-                BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line).append("\n");
-                }
-                br.close();
-                return sb.toString();
-        }
-        return null;
     }
 
 }

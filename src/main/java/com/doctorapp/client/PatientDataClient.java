@@ -34,15 +34,21 @@ public class PatientDataClient {
 
     public String getPatientIdWithAccessToken(String accessToken) {
         try {
+            String username = getUserNameWithAccessToken(accessToken);
+            return getPatientIdByUsername(username);
+        } catch (DynamoDBMappingException e) {
+            String errorMessage = String.format("Failed to get OAuthAccessTokens in DynamoDB using access token %s", accessToken);
+            log.error(errorMessage, e);
+            throw new DependencyException(errorMessage, e);
+        }
+    }
 
+    public String getUserNameWithAccessToken(String accessToken) {
+        try {
             List<OAuthAccessToken> targetUsers = dynamoDBTokenDAO.getOAuthAccessTokenUsingAccessToken(accessToken);
-
             // ...assuming access tokens are unique UUIDs!
             assert (targetUsers.size() == 1);
-
-            String username = targetUsers.get(0).getUserName();
-
-            return getPatientIdByUsername(username);
+            return targetUsers.get(0).getUserName();
         } catch (DynamoDBMappingException e) {
             String errorMessage = String.format("Failed to get OAuthAccessTokens in DynamoDB using access token %s", accessToken);
             log.error(errorMessage, e);

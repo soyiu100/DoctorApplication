@@ -2,6 +2,7 @@ package com.doctorapp.api;
 
 
 import com.doctorapp.client.PatientDataClient;
+import com.doctorapp.constant.SessionCallConstants;
 import com.doctorapp.data.ScheduledSession;
 import com.doctorapp.data.TelehealthSessionRequest;
 import com.doctorapp.room.RoomManager;
@@ -12,15 +13,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import java.util.TimeZone;
 import javax.net.ssl.HttpsURLConnection;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.time.DateUtils;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,6 +53,7 @@ public class TelehealthSkillStreamHandler {
 
         String token = skillRequest.path("directive").path("endpoint").path("scope").path("token").asText();
         String patientId = patientDataClient.getPatientIdWithAccessToken(token);
+        String userName = patientDataClient.getUserNameWithAccessToken(token);
         log.info("Get patientId: " + patientId);
         Optional<ScheduledSession> sessionOptional = patientDataClient.getCurrentSessionsByPatientId(patientId);
 
@@ -65,29 +65,34 @@ public class TelehealthSkillStreamHandler {
                 String sdpOffer = getSdpOffer(payload.path("offer"));
                 TelehealthSessionRequest initiateSession = TelehealthSessionRequest
                     .builder()
-                    .sessionId(sessionOptional.get().getRoomId())
-                    .userName(sessionOptional.get().getPatientId())
+                    .roomId(sessionOptional.get().getRoomId())
+                    .userName(userName)
                     .sdpOffer(sdpOffer)
                     .build();
                 log.info("Starting initiateSession: " + initiateSession.toString());
-                sessionHandler.initiateSessionHandler(initiateSession, roomManager);
+                String sdpAnswer = sessionHandler.initiateSessionHandler(initiateSession, roomManager);
+
+                callRTCSCAPI(skillRequest, sdpAnswer, userName);
+
+                return deferredResponse(skillRequest.path("directive").path("header"));
             case "UpdateSessionWithOffer":
                 String updatedSdpOffer = getSdpOffer(payload.path("offer"));
                 TelehealthSessionRequest updateSession = TelehealthSessionRequest
                     .builder()
-                    .sessionId(sessionOptional.get().getRoomId())
-                    .userName(sessionOptional.get().getPatientId())
+                    .roomId(sessionOptional.get().getRoomId())
+                    .userName(userName)
                     .sdpOffer(updatedSdpOffer)
                     .build();
                 log.info("Starting updateSession: " + updateSession.toString());
-                sessionHandler.updateSessionHandler(updateSession, roomManager);
+                String updatedSdpAnswer = sessionHandler.updateSessionHandler(updateSession, roomManager);
+                callRTCSCAPI(skillRequest, updatedSdpAnswer, userName);
                 return deferredResponse(skillRequest.path("directive").path("header"));
             case "SessionDisconnected":
             case "DisconnectSession":
                 TelehealthSessionRequest disconnectSession = TelehealthSessionRequest
                     .builder()
-                    .sessionId(sessionOptional.get().getRoomId())
-                    .userName(sessionOptional.get().getPatientId())
+                    .roomId(sessionOptional.get().getRoomId())
+                    .userName(userName)
                     .build();
                 sessionHandler.disconnectSessionHandler(disconnectSession, roomManager);
                 return deferredResponse(skillRequest.path("directive").path("header"));
@@ -97,12 +102,88 @@ public class TelehealthSkillStreamHandler {
         }
     }
 
+    private String getSdpOffer(JsonNode offer) {
+        String format = offer.path("format").asText();
+        if (!"SDP".equals(format)) {
+            throw new IllegalArgumentException("Offer must be in SDP format.");
+        }
+        return offer.path("value").asText();
+    }
 
-    public String getPatientId(String accessToken) throws IOException {
-        String url = "https://telehealth.lucuncai.com/api/patients/accessToken?accessToken=" + accessToken;
-        log.info("url is " + url);
-        URL u = new URL(url);
+    private void callRTCSCAPI(JsonNode skillRequest, String sdpAnswer, String userName) {
+
+        ObjectNode header = (ObjectNode) skillRequest.path("directive").path("header");
+        header.put("name", "AnswerGeneratedForSession");
+
+        ObjectNode answerValue = mapper.createObjectNode();
+        answerValue.put("format", "SDP");
+        answerValue.put("value", sdpAnswer);
+
+        ObjectNode payloadValue = mapper.createObjectNode();
+        payloadValue.put("sessionId", skillRequest.path("directive").path("payload").path("sessionId").asText());
+        payloadValue.put("sessionDomain", skillRequest.path("directive").path("payload").path("sessionDomain").asText());
+        payloadValue.putPOJO("answer", answerValue);
+
+        ObjectNode eventValue = mapper.createObjectNode();
+        eventValue.putPOJO("header", header);
+        eventValue.putPOJO("payload", payloadValue);
+
+        ObjectNode rtcscRequest = mapper.createObjectNode();
+        rtcscRequest.putPOJO("event", eventValue);
+        log.info("rtcscRequest is " + rtcscRequest.toString());
+
+        String lwaToken = getLWAToken(userName);
+        log.info("Got LWA Token: " + lwaToken);
+
+        try {
+            URL rtcscUrl = new URL("https://api.amazonalexa.com/v1/rtcsessioncontroller/events");
+            HttpsURLConnection c = (HttpsURLConnection) rtcscUrl.openConnection();
+            c.setDoOutput(true);
+            log.info("Making HTTP call to URL: " + rtcscUrl);
+            c.setRequestMethod("POST");
+            c.setRequestProperty("Accept", "application/json");
+            c.setRequestProperty("Content-Type", "application/json");
+            c.setRequestProperty("Authorization", "Bearer " + lwaToken);
+            c.connect();
+            OutputStream os = c.getOutputStream();
+            os.write(rtcscRequest.toString().getBytes(StandardCharsets.UTF_8));
+            os.close();
+
+            int status = c.getResponseCode();
+            log.info("RTCSC response status: " + status );
+            BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+            br.close();
+
+            log.info("Got response from APIGW: " + sb.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getLWAToken(String userName) {
+        try {
+            URL accessTokenUrl = new URL(SessionCallConstants.TOKEN_URL);
+            JSONObject accessTokenResult = getHttpPost(accessTokenUrl);
+            String accessToken = accessTokenResult.get("access_token").toString();
+
+            URL lwaUrl = new URL(String.format(SessionCallConstants.LWA_TOKEN_URL, userName, accessToken));
+            JSONObject lwaResult = getHttpPost(lwaUrl);
+            log.info("Get LWA result: " + lwaResult.toString());
+            return lwaResult.get("access_token").toString();
+        } catch (IOException e) {
+            log.info(e);
+        }
+        return null;
+    }
+
+    private JSONObject getHttpPost(URL u) throws IOException {
         HttpsURLConnection c = (HttpsURLConnection) u.openConnection();
+        log.info("Making HTTP call to URL: " + u);
         c.setRequestMethod("POST");
         c.connect();
         int status = c.getResponseCode();
@@ -115,27 +196,9 @@ public class TelehealthSkillStreamHandler {
             sb.append(line).append("\n");
         }
         br.close();
-        return sb.toString();
-//        switch (status) {
-//            case 200:
-//            case 201:
-//                BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
-//                StringBuilder sb = new StringBuilder();
-//                String line;
-//                while ((line = br.readLine()) != null) {
-//                    sb.append(line).append("\n");
-//                }
-//                br.close();
-//                return sb.toString();
-//        }
-    }
 
-    private String getSdpOffer(JsonNode offer) {
-        String format = offer.path("format").asText();
-        if (!"SDP".equals(format)) {
-            throw new IllegalArgumentException("Offer must be in SDP format.");
-        }
-        return offer.path("value").asText();
+        log.info("Got response: " + sb.toString());
+        return new JSONObject(sb.toString());
     }
 
     private ObjectNode deferredResponse(JsonNode headerJson) {

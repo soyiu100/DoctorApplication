@@ -11,7 +11,7 @@ public class TelehealthSessionRequest {
 
     private String userName;
 
-    private String sessionId;
+    private String roomId;
 
     private String sdpOffer;
 
@@ -21,8 +21,8 @@ public class TelehealthSessionRequest {
         return userName;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getRoomId() {
+        return roomId;
     }
 
     public String getSdpOffer() {

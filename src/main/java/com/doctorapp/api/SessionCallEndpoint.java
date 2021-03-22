@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Log4j2
-public class CallSessionEndpoint {
+public class SessionCallEndpoint {
 
     @Autowired
     private SessionHandler sessionHandler;
@@ -25,22 +25,22 @@ public class CallSessionEndpoint {
     public TelehealthSessionResponse initiateSessionWithOffer(
         @RequestBody TelehealthSessionRequest initiateSession) {
         log.info("Alexa user {} started a session {} with an SDP offer {}",
-            initiateSession.getUserName(), initiateSession.getSessionId(),
+            initiateSession.getUserName(), initiateSession.getRoomId(),
             initiateSession.getSdpOffer());
 
         String alexaSdpAnswer = sessionHandler.initiateSessionHandler(initiateSession, roomManager);
         return new TelehealthSessionResponse(initiateSession.getUserName(),
-            initiateSession.getSessionId(), alexaSdpAnswer);
+            initiateSession.getRoomId(), alexaSdpAnswer);
     }
 
     @PostMapping(value = "/alexa/telehealth/session/update",
         consumes= "application/json", produces = "application/json")
     public TelehealthSessionResponse updateSessionWithOffer(@RequestBody TelehealthSessionRequest updateSession) {
         log.info("Alexa user {} is updating a session {} with an SDP offer {}",
-            updateSession.getUserName(), updateSession.getSessionId(), updateSession.getSdpOffer());
+            updateSession.getUserName(), updateSession.getRoomId(), updateSession.getSdpOffer());
 
         String alexaSdpAnswer = sessionHandler.updateSessionHandler(updateSession, roomManager);
-        return new TelehealthSessionResponse(updateSession.getUserName(), updateSession.getSessionId(), alexaSdpAnswer);
+        return new TelehealthSessionResponse(updateSession.getUserName(), updateSession.getRoomId(), alexaSdpAnswer);
     }
 
     @PostMapping(value = "/alexa/telehealth/session/disconnect",
@@ -48,7 +48,7 @@ public class CallSessionEndpoint {
     public void disconnectSession(
         @RequestBody TelehealthSessionRequest disconnectSession) {
         log.info("Alexa user {} ended the session {}",
-            disconnectSession.getUserName(), disconnectSession.getSessionId());
+            disconnectSession.getUserName(), disconnectSession.getRoomId());
 
         sessionHandler.disconnectSessionHandler(disconnectSession, roomManager);
     }

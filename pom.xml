@@ -147,6 +147,14 @@
           <artifactId>kurento-utils-js</artifactId>
           <version>6.15.0</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+          <groupId>org.json</groupId>
+          <artifactId>json</artifactId>
+          <version>20201115</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
