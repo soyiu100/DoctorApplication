@@ -41,6 +41,7 @@
 
     var times = [];
     var i;
+    // Latest meeting start go out at 5:30; doctors are available from 9am-6pm
     for (i = 9; i <= 17; i++) {
         times.push(i + ":00");
         times.push(i + ":30");
@@ -70,8 +71,8 @@
 
 
         if (initial) {
-            // it's past 5'o clock, maybe appointments should be an hour in advance
-            if (hours >= 17) {
+            // it's past 6'o clock, can't schedule any times today
+            if (hours >= 18) {
                 today = today.substring(0,9) + '' + (parseInt(today.substring(9)) + 1);
                 hours = 0;
             }
@@ -82,7 +83,8 @@
         var btn_group_idx = 0;
         var i = 0;
         for (let time of times) {
-            if (parseInt(time.split(":")[0]) > hours && (typeof dateToTimeMap[$("#scheduledDate").val()] === 'undefined' || !dateToTimeMap[$("#scheduledDate").val()].includes(time))) {
+            // Let the doctor search times within the current hour
+            if (parseInt(time.split(":")[0]) >= hours && (typeof dateToTimeMap[$("#scheduledDate").val()] === 'undefined' || !dateToTimeMap[$("#scheduledDate").val()].includes(time))) {
 
                 if (i == 7) {
                     i = 0;
