@@ -59,6 +59,10 @@
             hour: 'numeric',
             hour12: false
         }).format(fullDate);
+        var mins = new Intl.DateTimeFormat('en-US', {
+            timeZone: $("#current-timezone").html(),
+            minute: 'numeric'
+        }).format(fullDate);
 
         if (!initial) {
             if (today.toString() != $("#scheduledDate").val().toString()) {
@@ -84,18 +88,19 @@
         var i = 0;
         for (let time of times) {
             // Let the doctor search times within the current hour
-            if (parseInt(time.split(":")[0]) >= hours && (typeof dateToTimeMap[$("#scheduledDate").val()] === 'undefined' || !dateToTimeMap[$("#scheduledDate").val()].includes(time))) {
-
-                if (i == 7) {
-                    i = 0;
-                    btn_group_idx++;
-                    $("#times").append('<div class="btn-group btn-group-toggle" id="button-group-' + btn_group_idx + '" data-toggle="buttons" style="padding-bottom: 2%;"></div><br/>');
-                }
-                $("#button-group-" + btn_group_idx).append('<label class="btn btn-outline-info">' +
-                    '<input type="radio" name="scheduledTime" id="'
-                    + time.split(":")[0] + time.split(":")[1] + '" autocomplete="off" value="' +
-                    time + '">' + time + '</label>')
-                i++;
+            if ((parseInt(time.split(":")[0]) > hours
+                || (parseInt(time.split(":")[0]) == hours && ((mins >= 30 && parseInt(time.split(":")[1]) == 30)
+                    || mins < 30))) && (typeof dateToTimeMap[$("#scheduledDate").val()] === 'undefined' || !dateToTimeMap[$("#scheduledDate").val()].includes(time))) {
+                    if (i == 7) {
+                        i = 0;
+                        btn_group_idx++;
+                        $("#times").append('<div class="btn-group btn-group-toggle" id="button-group-' + btn_group_idx + '" data-toggle="buttons" style="padding-bottom: 2%;"></div><br/>');
+                    }
+                    $("#button-group-" + btn_group_idx).append('<label class="btn btn-outline-info">' +
+                        '<input type="radio" name="scheduledTime" id="'
+                        + time.split(":")[0] + time.split(":")[1] + '" autocomplete="off" value="' +
+                        time + '">' + time + '</label>')
+                    i++;
             } else {
                 if (typeof dateToTimeMap[$("#scheduledDate").val()] !== 'undefined' && dateToTimeMap[$("#scheduledDate").val()].includes(time)) {
                     if (i == 7) {
