@@ -109,7 +109,7 @@ public class CallHandler extends TextWebSocketHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        log.info("SDP answer is generated for provider");
+        log.info("SDP answer is generated for provider. " + callerSdpAnswer);
         providerWebRtcEp.gatherCandidates();
     }
 
