@@ -102,7 +102,8 @@
                         time + '">' + time + '</label>')
                     i++;
             } else {
-                if (typeof dateToTimeMap[$("#scheduledDate").val()] !== 'undefined' && dateToTimeMap[$("#scheduledDate").val()].includes(time)) {
+                if (parseInt(time.split(":")[0]) > hours
+                    && typeof dateToTimeMap[$("#scheduledDate").val()] !== 'undefined' && dateToTimeMap[$("#scheduledDate").val()].includes(time)) {
                     if (i == 7) {
                         i = 0;
                         btn_group_idx++;
