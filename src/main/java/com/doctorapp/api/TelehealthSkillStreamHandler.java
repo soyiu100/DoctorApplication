@@ -52,49 +52,53 @@ public class TelehealthSkillStreamHandler {
         JsonNode payload = skillRequest.path("directive").path("payload");
 
         String token = skillRequest.path("directive").path("endpoint").path("scope").path("token").asText();
+        assert(token != null && !token.isEmpty());
         String patientId = patientDataClient.getPatientIdWithAccessToken(token);
         String userName = patientDataClient.getUserNameWithAccessToken(token);
         log.info("Get patientId: " + patientId);
         Optional<ScheduledSession> sessionOptional = patientDataClient.getCurrentSessionsByPatientId(patientId);
 
         if (!sessionOptional.isPresent()) {
-            return null;
+            return deferredResponse(skillRequest.path("directive").path("header"));
         }
+        ScheduledSession session = sessionOptional.get();
         switch (name) {
             case "InitiateSessionWithOffer":
                 String sdpOffer = getSdpOffer(payload.path("offer"));
                 TelehealthSessionRequest initiateSession = TelehealthSessionRequest
                     .builder()
-                    .roomId(sessionOptional.get().getRoomId())
+                    .roomId(session.getRoomId())
                     .userName(userName)
                     .sdpOffer(sdpOffer)
                     .build();
                 log.info("Starting initiateSession: " + initiateSession.toString());
                 String sdpAnswer = sessionHandler.initiateSessionHandler(initiateSession, roomManager);
 
-                callRTCSCAPI(skillRequest, sdpAnswer, userName);
-
+                callRTCSCAPIWithSdpAnswer(skillRequest, sdpAnswer, userName);
+                // Update patient status
+                session.setPatientStatus(true);
                 return deferredResponse(skillRequest.path("directive").path("header"));
             case "UpdateSessionWithOffer":
                 String updatedSdpOffer = getSdpOffer(payload.path("offer"));
                 TelehealthSessionRequest updateSession = TelehealthSessionRequest
                     .builder()
-                    .roomId(sessionOptional.get().getRoomId())
+                    .roomId(session.getRoomId())
                     .userName(userName)
                     .sdpOffer(updatedSdpOffer)
                     .build();
                 log.info("Starting updateSession: " + updateSession.toString());
                 String updatedSdpAnswer = sessionHandler.updateSessionHandler(updateSession, roomManager);
-                callRTCSCAPI(skillRequest, updatedSdpAnswer, userName);
+                callRTCSCAPIWithSdpAnswer(skillRequest, updatedSdpAnswer, userName);
                 return deferredResponse(skillRequest.path("directive").path("header"));
             case "SessionDisconnected":
             case "DisconnectSession":
                 TelehealthSessionRequest disconnectSession = TelehealthSessionRequest
                     .builder()
-                    .roomId(sessionOptional.get().getRoomId())
+                    .roomId(session.getRoomId())
                     .userName(userName)
                     .build();
                 sessionHandler.disconnectSessionHandler(disconnectSession, roomManager);
+                session.setPatientStatus(false);
                 return deferredResponse(skillRequest.path("directive").path("header"));
             default:
                 log.info("Unsupported directive" + name);
@@ -110,7 +114,7 @@ public class TelehealthSkillStreamHandler {
         return offer.path("value").asText();
     }
 
-    private void callRTCSCAPI(JsonNode skillRequest, String sdpAnswer, String userName) {
+    private void callRTCSCAPIWithSdpAnswer(JsonNode skillRequest, String sdpAnswer, String userName) {
 
         ObjectNode header = (ObjectNode) skillRequest.path("directive").path("header");
         header.put("name", "AnswerGeneratedForSession");
