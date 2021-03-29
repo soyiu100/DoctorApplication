@@ -90,6 +90,13 @@
       return;
     }
 
+    // To configure ice servers on client side, add the following code to 'options'
+    // configuration: {
+    //       iceServers: [{"urls":"turn:turn.example.org","username":"user","credential":"myPassword"},
+    //                    {"urls":"turn:turn.example.org","username":"user","credential":"myPassword"},
+    //                    {"urls":"stun:stun1.example.net"}]
+    //     }
+    // https://doc-kurento.readthedocs.io/en/stable/features/kurento_utils_js.html
     var options = {
       localVideo : videoInput,
       remoteVideo : videoOutput,
