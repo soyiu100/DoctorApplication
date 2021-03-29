@@ -13,7 +13,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import javax.net.ssl.HttpsURLConnection;
 import lombok.extern.log4j.Log4j2;
@@ -77,6 +79,7 @@ public class TelehealthSkillStreamHandler {
                 callRTCSCAPI(skillRequest, sdpAnswer, userName, "AnswerGeneratedForSession");
                 // Update patient status
                 initiatedSession.setPatientStatus(true);
+                patientDataClient.putScheduledSession(initiatedSession);
                 return deferredResponse(skillRequest.path("directive").path("header"));
             case "UpdateSessionWithOffer":
                 if (!sessionOptional.isPresent()) {
@@ -111,6 +114,7 @@ public class TelehealthSkillStreamHandler {
                     .build();
                 sessionHandler.disconnectSessionHandler(disconnectSession, roomManager);
                 disconnectedSession.setPatientStatus(false);
+                patientDataClient.putScheduledSession(disconnectedSession);
                 return deferredResponse(skillRequest.path("directive").path("header"));
             default:
                 log.info("Unsupported directive" + name);
@@ -163,6 +167,10 @@ public class TelehealthSkillStreamHandler {
             c.setRequestProperty("Accept", "application/json");
             c.setRequestProperty("Content-Type", "application/json");
             c.setRequestProperty("Authorization", "Bearer " + lwaToken);
+            c.connect();
+            OutputStream os = c.getOutputStream();
+            os.write(rtcscRequest.toString().getBytes(StandardCharsets.UTF_8));
+            os.close();
             JSONObject response = getHttpPost(c);
             log.info("Got response from APIGW: " + response.toString());
         } catch (IOException e) {
@@ -176,6 +184,7 @@ public class TelehealthSkillStreamHandler {
             HttpsURLConnection accessTokenConnection = (HttpsURLConnection) accessTokenUrl.openConnection();
             log.info("Making HTTP call to token endpoint: " + accessTokenUrl);
             accessTokenConnection.setRequestMethod("POST");
+            accessTokenConnection.connect();
             JSONObject accessTokenResult = getHttpPost(accessTokenConnection);
             String accessToken = accessTokenResult.get("access_token").toString();
 
@@ -183,6 +192,7 @@ public class TelehealthSkillStreamHandler {
             HttpsURLConnection lwaConnection = (HttpsURLConnection) lwaUrl.openConnection();
             log.info("Making HTTP call to LWA partner endpoint: " + lwaUrl);
             lwaConnection.setRequestMethod("POST");
+            lwaConnection.connect();
             JSONObject lwaResult = getHttpPost(lwaConnection);
             log.info("Get LWA result: " + lwaResult.toString());
             return lwaResult.get("access_token").toString();
@@ -193,7 +203,6 @@ public class TelehealthSkillStreamHandler {
     }
 
     private JSONObject getHttpPost(HttpsURLConnection c) throws IOException {
-        c.connect();
         int status = c.getResponseCode();
 
         log.info("status is " + status);
