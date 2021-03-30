@@ -103,7 +103,10 @@ public class TelehealthSkillStreamHandler {
             case "DisconnectSession":
                 if (!sessionOptional.isPresent()) {
                     log.info("No session is found");
-//                    callRTCSCAPI(skillRequest, null, userName, "InitiateSessionWithOfferFailed");
+                    return deferredResponse(skillRequest.path("directive").path("header"));
+                }
+                if (!sessionOptional.get().isPatientStatus()) {
+                    log.info("Patient is not in the room");
                     return deferredResponse(skillRequest.path("directive").path("header"));
                 }
                 ScheduledSession disconnectedSession = sessionOptional.get();
@@ -115,6 +118,7 @@ public class TelehealthSkillStreamHandler {
                 sessionHandler.disconnectSessionHandler(disconnectSession, roomManager);
                 disconnectedSession.setPatientStatus(false);
                 patientDataClient.putScheduledSession(disconnectedSession);
+                callRTCSCAPI(skillRequest, null, userName, "SessionDisconnected");
                 return deferredResponse(skillRequest.path("directive").path("header"));
             default:
                 log.info("Unsupported directive" + name);
