@@ -185,9 +185,9 @@ public class CallHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        log.info("Connection is closed###################### for session " + session.getId());
-//		UserSession stopperUser = registry.getBySession(session);
-//		Room room = roomManager.getRoomOrCreate(stopperUser.getRoomName());
-//		roomManager.removeRoom(room);
+        log.info("Connection is closed for session " + session.getId());
+        final UserSession user = registry.getBySession(session);
+        String roomName = user.getRoomName();
+        leaveRoom(session, roomName);
     }
 }
