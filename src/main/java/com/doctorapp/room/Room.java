@@ -85,6 +85,7 @@ public class Room implements Closeable {
         WebRtcEndpoint providerWebRtcEp = new WebRtcEndpoint.Builder(pipeline).build();
         setProviderWebRtcEp(providerWebRtcEp);
         if (alexaWebRtcEp == null) {
+            log.info("Alexa WebRTC endpoint is null, building welcome connection");
             buildWelcomeConnection(providerWebRtcEp);
         }
 
@@ -111,6 +112,7 @@ public class Room implements Closeable {
         WebRtcEndpoint alexaWebRtcEp = new WebRtcEndpoint.Builder(pipeline).useDataChannels().build();
         setAlexaWebRtcEp(alexaWebRtcEp);
         if (providerWebRtcEp == null) {
+            log.info("Provider WebRTC endpoint is null, building welcome connection");
             buildWelcomeConnection(alexaWebRtcEp);
         }
 

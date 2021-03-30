@@ -171,8 +171,7 @@ public class TelehealthSkillStreamHandler {
             OutputStream os = c.getOutputStream();
             os.write(rtcscRequest.toString().getBytes(StandardCharsets.UTF_8));
             os.close();
-            JSONObject response = getHttpPost(c);
-            log.info("Got response from APIGW: " + response.toString());
+            getHttpPost(c);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -214,8 +213,12 @@ public class TelehealthSkillStreamHandler {
         }
         br.close();
 
-        log.info("Got response: " + sb.toString());
-        return new JSONObject(sb.toString());
+        String response = sb.toString();
+        if (response.isEmpty()) {
+            return null;
+        }
+        log.info("Got response: " + response);
+        return new JSONObject(response);
     }
 
     private ObjectNode deferredResponse(JsonNode headerJson) {
