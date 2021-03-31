@@ -7,6 +7,9 @@ server:
     key-store-password: "kurento"
     key-store-type: "JKS"
     key-alias: "kurento-selfsigned"
+  error:
+    include-exception: true
+    include-stacktrace: always
 
 logging:
   level:

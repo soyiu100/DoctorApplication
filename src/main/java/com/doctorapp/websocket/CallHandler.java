@@ -1,5 +1,7 @@
 package com.doctorapp.websocket;
 
+import com.doctorapp.dao.ScheduledSessionDao;
+import com.doctorapp.data.ScheduledSession;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -32,6 +34,9 @@ public class CallHandler extends TextWebSocketHandler {
 
     @Autowired
     private RoomManager roomManager;
+
+    @Autowired
+    private ScheduledSessionDao scheduledSessionDao;
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
@@ -186,8 +191,17 @@ public class CallHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         log.info("Connection is closed###################### for session " + session.getId());
-//		UserSession stopperUser = registry.getBySession(session);
-//		Room room = roomManager.getRoomOrCreate(stopperUser.getRoomName());
+
+		UserSession stopperUser = registry.getBySession(session);
+		Room room = roomManager.getRoomOrCreate(stopperUser.getRoomName());
+		String sessionID = room.getRoomName();
+		log.info("The session ID: {}", sessionID);
+		if (sessionID != null && sessionID.length() != 0) {
+		    log.info("Setting doctor status to away");
+            ScheduledSession scheduledSession = scheduledSessionDao.getScheduledSessionByRoomId(sessionID);
+            scheduledSession.setDoctorStatus(false);
+            scheduledSessionDao.putScheduledSession(scheduledSession);
+        }
 //		roomManager.removeRoom(room);
     }
 }

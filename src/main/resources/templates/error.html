@@ -17,6 +17,10 @@
         <h1>An Error has Occurred.</h1>
         <span id="error-message" th:text="${errMessage} ?: 'Something went wrong. Please contact the developers.'"></span>
     </th:block>
+    <br/>
+    <div>
+        <code th:text="${trace}" style="color: #f95d5d; font-size: 0.75rem;"></code>
+    </div>
     <div class="text-center" style="padding-top: 20px;">
         <a sec:authorize="hasAnyAuthority('ROLE_USER_ADMIN', 'ROLE_PATIENT', 'ROLE_CLIENT_ADMIN')" href="/">Go Home</a>
         <a sec:authorize="hasAuthority('ROLE_DOCTOR')" href="/view_sessions">Go Home</a>

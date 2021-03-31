@@ -109,9 +109,11 @@
 
   /*]]>*/
 
-
-  window.onbeforeunload = function() {
+  window.onbeforeunload = function(e) {
     ws.close();
+    // e.returnValue = 'onbeforeunload';
+    // disconnectSession();
+    // return 'onbeforeunload';
   }
 
   ws.onmessage = function(message) {

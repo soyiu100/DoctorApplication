@@ -11,7 +11,7 @@
 </head>
 <body>
 <th:block th:include="../fragments/navbar.html"></th:block>
-<div class="d-flex justify-content-center"
+<div class="d-flex justify-content-center fixed-height"
      style="padding-top: 2%;
      padding-left:20%;
      padding-right:20%;
@@ -27,7 +27,7 @@
         <h3 th:text="${param.startTime != null || param.endTime != null} ? 'For Requested Time Frame' : 'For this Week'"></h3>
     </div>
 
-    <div th:if="${sessions.size() != 0}" style="display: block;">
+    <div th:if="${sessions.size() != 0}" class="table-responsive" style="display: block;">
         <table class="table table-bordered">
             <thead class="thead-dark">
             <tr>
@@ -73,6 +73,11 @@
                         <div th:unless="${!sess.doctorStatus}" style="color: #eb4034 !important; text-align: center;">
                             Session in Progress
                         </div>
+                    </td>
+                    <td>
+                        <a class="btn btn-danger" th:href="@{__${sess.roomId}__/delete}">
+                            Delete Session
+                        </a>
                     </td>
                 </tr>
             </th:block>

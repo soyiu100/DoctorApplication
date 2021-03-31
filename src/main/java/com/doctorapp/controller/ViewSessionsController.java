@@ -11,6 +11,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -160,6 +162,15 @@ public class ViewSessionsController {
         return "redirect:session_call";
     }
 
+    @RequestMapping(value = "{sess.roomId}/delete")
+    public String deleteSession(@PathVariable("sess.roomId") String roomId) {
+        log.info("Deleting session: {}", roomId);
+        ScheduledSession session = scheduledSessionDao.getScheduledSessionByRoomId(roomId);
+        scheduledSessionDao.deleteSession(session);
+        return "redirect:/view_sessions";
+    }
+
+
     @PostMapping("/timezone_change")
     public String changeTimezones(@RequestParam("timeZone") final String timeZone,
                                   HttpServletRequest request) {
@@ -204,13 +215,12 @@ public class ViewSessionsController {
 
             String sessionTemplate = String.format("Session info is PatientId is %s," +
                             " roomId is %s, scheduled Date is %s, scheduled Time is %s, " +
-                            "duration is %s, doctorStatus is %b, " +
-                            "patientStatus is %b {}\n", session.getPatientId(),
+                            "doctorStatus is %b, " +
+                            "patientStatus is %b\n", session.getPatientId(),
                     session.getRoomId(),
                     date, time,
                     session.isDoctorStatus(),
-                    session.isPatientStatus(),
-                    session.isDoctorStatus() == AWSConfigConstants.ParticipantStatus_NOTCONNECTED);
+                    session.isPatientStatus());
 
             sessionInfo.append(sessionTemplate);
 

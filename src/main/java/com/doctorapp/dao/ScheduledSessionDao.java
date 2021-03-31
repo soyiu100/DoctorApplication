@@ -190,4 +190,9 @@ public class ScheduledSessionDao {
         }
     }
 
+    public void deleteSession(ScheduledSession session) {
+        dynamoDBMapper.delete(session);
+    }
+
+
 }

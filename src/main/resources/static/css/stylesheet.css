@@ -1,5 +1,11 @@
+.fixed-height {
+    height: 900px;
+}
+
+
 .table-link {
-    display:block;
+    padding-top: 1.5rem !important;
+    height: 100%;
     text-decoration:none;
     cursor:pointer;
     text-align:center !important;
@@ -8,7 +14,8 @@
 }
 
 .table-link:hover {
-    display:block;
+    padding-top: 1.5rem !important;
+    height: 100%;
     text-decoration:none;
     cursor:pointer;
     text-align:center !important;

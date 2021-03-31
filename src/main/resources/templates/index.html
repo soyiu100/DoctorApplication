@@ -12,7 +12,7 @@
     <h1 class="page-header">OAuth Management Dashboard </h1>
 
     <div class="row" th:if="${approvals != null}">
-        <div class="col-md-6 col-md-offset-3">
+        <div class="col-md-6 col-md-offset-3 table-responsive">
             <h2>Approvals</h2>
 
              <p>
@@ -47,7 +47,7 @@
     </div>
 
     <div class="row" th:if="${clientDetails != null}">
-        <div class="col-lg-10" sec:authorize="hasRole('ROLE_CLIENT_ADMIN')">
+        <div class="col-lg-10 table-responsive" sec:authorize="hasRole('ROLE_CLIENT_ADMIN')">
             <h2>Clients</h2>
             <table class="table table-bordered">
                 <tr>
@@ -87,7 +87,7 @@
     </div>
 
     <div class="row" th:if="${partners != null}">
-        <div class="col-md-10" sec:authorize="hasRole('ROLE_USER_ADMIN')">
+        <div class="col-md-10 table-responsive" sec:authorize="hasRole('ROLE_USER_ADMIN')">
             <h2>Partners</h2>
             <table class="table table-bordered">
                 <tr>
