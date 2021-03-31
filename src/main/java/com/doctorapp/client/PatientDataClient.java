@@ -32,6 +32,10 @@ public class PatientDataClient {
     @Autowired
     ScheduledSessionDao scheduledSessionDao;
 
+    public ScheduledSession putScheduledSession(ScheduledSession session) {
+        return scheduledSessionDao.putScheduledSession(session);
+    }
+
     public String getPatientIdWithAccessToken(String accessToken) {
         try {
             String username = getUserNameWithAccessToken(accessToken);
