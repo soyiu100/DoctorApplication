@@ -192,7 +192,9 @@ public class CallHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         log.info("Connection is closed for session " + session.getId());
         final UserSession user = registry.getBySession(session);
-        String roomName = user.getRoomName();
+        Room room = roomManager.getRoomOrCreate(user.getRoomName());
+        String roomName = room.getRoomName();
+//        String roomName = user.getRoomName();
         log.info("The session ID: {}", roomName);
         if (roomName != null && roomName.length() != 0) {
             log.info("Setting doctor status to away");
