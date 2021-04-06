@@ -59,13 +59,14 @@ public class ChangePasswordController {
                 String authority = role.getAuthority();
                 if (authority.equals(UNVERIFIED_DOCTOR.name()) || authority.equals(ROLE_DOCTOR.name())) {
                     model.addAttribute("doctor", "");
-                    return "redirect:change_password?doctor";
+                    return "change_password";
                 } else if (authority.equals(UNVERIFIED_PATIENT.name()) || authority.equals(ROLE_PATIENT.name())){
                     model.addAttribute("patient", "");
-                    return "redirect::change_password?patient";
+                    return "change_password";
                 } else if (authority.equals(UNVERIFIED_ADMIN.name())
                         || authority.equals(ROLE_CLIENT_ADMIN.name()) || authority.equals(ROLE_USER_ADMIN.name())) {
-                    return "redirect::change_password?admin";
+                    model.addAttribute("admin", "");
+                    return "change_password";
                 }
             }
         }
@@ -103,7 +104,7 @@ public class ChangePasswordController {
             poolClientID = ADMIN_POOL_CLIENT_ID;
         } else {
             // no? print an error
-            redirect.addFlashAttribute("passwordChangeErr", "No valid session or identifier was found.");
+            redirect.addFlashAttribute("passwordChangeErr", "No valid session or identifier was found. Please log in and try again.");
             return newPage;
         }
 
@@ -117,6 +118,8 @@ public class ChangePasswordController {
                     username, old_Password);
             AdminInitiateAuthResult authResult = cognitoClient.getAuthResult(poolID, poolClientID, authParams);
             String authSession = authResult.getSession();
+
+            log.info("authSession: {}", authSession);
 
             Map<String, String> challengeResponses = new HashMap<>();
             challengeResponses.put(USERNAME, username);

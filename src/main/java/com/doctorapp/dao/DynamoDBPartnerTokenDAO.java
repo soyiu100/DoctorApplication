@@ -8,7 +8,11 @@ package com.doctorapp.dao;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.doctorapp.dto.OAuthPartnerToken;
+
+import java.util.Arrays;
 import java.util.List;
+
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.ClientKeyGenerator;
@@ -21,6 +25,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
  *
  * @author Lucun Cai
  */
+@Log4j2
 public class DynamoDBPartnerTokenDAO implements ClientTokenServices {
 
     private DynamoDBMapper dynamoDBMapper;
