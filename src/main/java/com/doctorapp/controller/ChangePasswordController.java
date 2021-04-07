@@ -121,13 +121,18 @@ public class ChangePasswordController {
 
             log.info("authSession: {}", authSession);
 
-            Map<String, String> challengeResponses = new HashMap<>();
-            challengeResponses.put(USERNAME, username);
-            challengeResponses.put(PASSWORD, old_Password);
-            challengeResponses.put(NEW_PASSWORD, new_password);
+            if (authSession == null || StringUtils.isEmpty(authSession)) {
+                cognitoClient.changeOldPassword(poolID, username, new_password);
+                redirect.addFlashAttribute("passwordChanged", true);
+            } else {
+                Map<String, String> challengeResponses = new HashMap<>();
+                challengeResponses.put(USERNAME, username);
+                challengeResponses.put(PASSWORD, old_Password);
+                challengeResponses.put(NEW_PASSWORD, new_password);
 
-            cognitoClient.changeFromTemporaryPassword(poolID, poolClientID, challengeResponses, authSession);
-            redirect.addFlashAttribute("passwordChanged", true);
+                cognitoClient.changeFromTemporaryPassword(poolID, poolClientID, challengeResponses, authSession);
+                redirect.addFlashAttribute("passwordChanged", true);
+            }
 
             if (request.getParameter("userType").equals(DOCTOR)) {
                 newPage = "redirect:login?doctor";
@@ -136,6 +141,7 @@ public class ChangePasswordController {
             } else if (request.getParameter("userType").equals(PATIENT)) {
                 newPage = "redirect:login";
             }
+
         } catch (InvalidPasswordException ex) {
             log.error("Bad password offered: " + ex.getMessage());
             if (ex.getMessage().contains("uppercase")) {

@@ -69,6 +69,26 @@ public class CognitoClient {
         }
     }
 
+    public void changeOldPassword(String poolId, String username, String newPassword)
+            throws InvalidPasswordException, AWSCognitoIdentityProviderException {
+        AdminSetUserPasswordRequest changePasswordRequest = new AdminSetUserPasswordRequest()
+                .withUserPoolId(poolId)
+                .withUsername(username)
+                .withPassword(newPassword)
+                .withPermanent(true);
+        try {
+            awsCognitoIdentityProvider.adminSetUserPassword(changePasswordRequest);
+            log.info("Successfully changed password.");
+        } catch (InvalidPasswordException pwEx) {
+            log.error("Bad password offered with error type? " + pwEx.getMessage());
+            throw pwEx;
+        } catch (Exception e) {
+            log.info("Error to change user password", e);
+            throw e;
+        }
+    }
+
+
     public void createNewUser(final Patient patient) throws AWSCognitoIdentityProviderException {
         final String emailAddr = patient.getEmailAddress().trim();
         final String patientId = patient.getPatientId().trim();
