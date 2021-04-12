@@ -39,12 +39,19 @@
 <script>
     var searchRequest = document.getElementById('submit-search');
 
+    // how much longer than the 30 minutes a session should be, in 30-minute intervals
+    // e.g. if EXTRA_TIME_EXTENSIONS is 1, a session is now 60 minutes.
+    const EXTRA_TIME_EXTENSIONS = 1;
+
     var times = [];
-    var i;
     // Latest meeting start go out at 5:30; doctors are available from 9am-6pm
-    for (i = 9; i <= 17; i++) {
+    for (let i = 9; i <= 17 - Math.floor(EXTRA_TIME_EXTENSIONS / 2); i++) {
         times.push(i + ":00");
         times.push(i + ":30");
+    }
+
+    if (EXTRA_TIME_EXTENSIONS % 2 == 1) {
+        times.pop();
     }
 
     function datePropagation(dateToTimeMap, initial) {
@@ -167,13 +174,33 @@
                             $("#patientDOB").val(person.dob)
 
                             var dateToTimeMap = {};
+
                             for (const session of person.scheduledSessions) {
                                 var dateTime = session.scheduledTime;
+
+                                // date-time split, date (0) time (1)
                                 var splitDT = dateTime.split(" ");
                                 if (typeof dateToTimeMap[splitDT[0]] === 'undefined') {
                                     dateToTimeMap[splitDT[0]] = [];
                                 }
                                 dateToTimeMap[splitDT[0]].push(splitDT[1]);
+
+                                if (EXTRA_TIME_EXTENSIONS !== 0) {
+                                    for (let i = 0; i < EXTRA_TIME_EXTENSIONS; i++) {
+                                        if (splitDT[1].split(":")[1] == "30") {
+                                            let newHour = parseInt(splitDT[1].split(":")[0]) + 1;
+                                            let newSplitDT1 = newHour + ":00";
+                                            dateToTimeMap[splitDT[0]].push(newSplitDT1);
+
+                                            splitDT[1] = newSplitDT1;
+                                        } else {
+                                            let newSplitDT1 = splitDT[1].split(":")[0] + ":30";
+                                            dateToTimeMap[splitDT[0]].push(newSplitDT1);
+
+                                            splitDT[1] = newSplitDT1;
+                                        }
+                                    }
+                                }
                             }
 
                             $("#scheduledTimes").val(JSON.stringify(dateToTimeMap));
