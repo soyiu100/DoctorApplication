@@ -47,5 +47,7 @@ public class ScheduledSession {
     @DynamoDBIgnore
     private String time;
     @DynamoDBIgnore
+    private boolean expired;
+    @DynamoDBIgnore
     private Patient patient;
 }

@@ -62,17 +62,23 @@
                     <td th:if="${sess.patientStatus}"><i class="fas fa-user-check fa-2x"></i>Connected</td>
                     <td th:unless="${sess.patientStatus}"><i class="fas fa-user fa-2x"></i>  Waiting</td>
 
-                    <td th:classappend="${!sess.doctorStatus} ? table-link : table-disabled">
-                        <div th:if="${!sess.doctorStatus}">
-                            <form action="/connect_session" method="post">
-                                <input type="hidden" id="roomId" name="roomId" th:value="${sess.roomId}">
-                                <input type="submit" class="btn btn-link table-text" value="Join Session">
-                            </form>
+                    <td th:classappend="${!sess.doctorStatus && !sess.expired} ? table-link : table-disabled">
+                        <div th:if="${sess.expired}" style="color: #777 !important; text-align: center;">
+                            Session Expired
+                        </div>
+                        <div th:unless="${sess.expired}">
+                            <div th:if="${!sess.doctorStatus}">
+                                <form action="/connect_session" method="post">
+                                    <input type="hidden" id="roomId" name="roomId" th:value="${sess.roomId}">
+                                    <input type="submit" class="btn btn-link table-text" value="Join Session">
+                                </form>
 
+                            </div>
+                            <div th:unless="${!sess.doctorStatus}" style="color: #eb4034 !important; text-align: center;">
+                                Session in Progress
+                            </div>
                         </div>
-                        <div th:unless="${!sess.doctorStatus}" style="color: #eb4034 !important; text-align: center;">
-                            Session in Progress
-                        </div>
+
                     </td>
                     <td>
                         <a class="btn btn-danger" th:href="@{__${sess.roomId}__/delete}">

@@ -3,7 +3,6 @@ package com.doctorapp.controller;
 import com.doctorapp.client.CognitoClient;
 import com.doctorapp.dao.PatientDao;
 import com.doctorapp.dao.ScheduledSessionDao;
-import com.doctorapp.constant.AWSConfigConstants;
 import com.doctorapp.data.Patient;
 import com.doctorapp.data.ScheduledSession;
 import com.doctorapp.data.TimeRange;
@@ -11,7 +10,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -116,6 +114,7 @@ public class ViewSessionsController {
             List<ScheduledSession> visibleSessions = new ArrayList<>();
 
             sessionsFromDDB.forEach(session -> {
+                session.setExpired(sessionIsExpired(session.getScheduledTime()));
                 visibleSessions.add(parseSessionInfo(session, sessionInfo));
             });
 
@@ -240,6 +239,7 @@ public class ViewSessionsController {
                     .date(date)
                     .time(time)
                     .patient(patient)
+                    .expired(session.isExpired())
                     .build();
         } catch (ParseException e) {
             log.error("Failed to parse session time", e);
@@ -248,9 +248,21 @@ public class ViewSessionsController {
                     .patientId(session.getPatientId())
                     .doctorStatus(session.isDoctorStatus())
                     .patientStatus(session.isPatientStatus())
+                    .expired(session.isExpired())
                     .date(date)
                     .time(time)
                     .build();
+        }
+    }
+
+    private boolean sessionIsExpired(String sessionDate) {
+        try {
+            Date scheduledTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(sessionDate);
+            // get the time an hour back
+            return new Date(System.currentTimeMillis() - 3600 * 1000).after(scheduledTime);
+        } catch (ParseException e) {
+            log.error("Failed to parse session time", e);
+            return false;
         }
     }
 
