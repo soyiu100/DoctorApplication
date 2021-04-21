@@ -113,4 +113,11 @@
 <th:block th:include="../fragments/footer.html"></th:block>
 
 </body>
+
+<script>
+    $(document).ready(function() {
+        $(".fixed-height").height($("table").height() * 2);
+    });
+
+</script>
 </html>

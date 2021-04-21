@@ -190,6 +190,39 @@ public class ScheduledSessionDao {
         }
     }
 
+    /**
+     * Get a list of scheduledSessions by room ID;
+     *
+     * @param kSessionId the kurento session ID
+     */
+    public ScheduledSession getScheduledSessionByKurentoSessionId(@NonNull String kSessionId) {
+        try {
+            HashMap<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+            eav.put(":v_kurentoSessionId", new AttributeValue().withS(kSessionId));
+            final DynamoDBQueryExpression<ScheduledSession> queryExpression =
+                    new DynamoDBQueryExpression<ScheduledSession>()
+                            .withIndexName("kurentoSessionId-index").withConsistentRead(false)
+                            .withScanIndexForward(false)
+                            .withKeyConditionExpression("kurentoSessionId = :v_kurentoSessionId")
+                            .withExpressionAttributeValues(eav);
+            List<ScheduledSession> targetSessionList = dynamoDBMapper
+                    .query(ScheduledSession.class, queryExpression);
+
+            assert (targetSessionList.size() <= 1);
+
+            if (targetSessionList.size() == 1) {
+                return targetSessionList.get(0);
+            } else {
+                return null;
+            }
+        } catch (DynamoDBMappingException e) {
+            String errorMessage = String.format("Failed to get scheduledSessions in DynamoDB for room ID %s",
+                    kSessionId);
+            log.error(errorMessage, e);
+            throw new DependencyException(errorMessage, e);
+        }
+    }
+
     public void deleteSession(ScheduledSession session) {
         dynamoDBMapper.delete(session);
     }

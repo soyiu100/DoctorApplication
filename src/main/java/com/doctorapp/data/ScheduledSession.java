@@ -32,6 +32,9 @@ public class ScheduledSession {
     @DynamoDBIndexHashKey(globalSecondaryIndexName = "roomId-index", attributeName = "roomId")
     private String roomId;
 
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "kurentoSessionId-index", attributeName = "kurentoSessionId")
+    private String kurentoSessionId;
+
     @DynamoDBRangeKey
     private String scheduledTime;
 

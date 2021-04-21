@@ -1,5 +1,6 @@
 package com.doctorapp.websocket;
 
+import com.doctorapp.constant.AWSConfigConstants;
 import com.doctorapp.dao.ScheduledSessionDao;
 import com.doctorapp.data.ScheduledSession;
 import com.google.gson.Gson;
@@ -61,6 +62,10 @@ public class CallHandler extends TextWebSocketHandler {
             case "providerJoinSession":
                 joinRoom(session, jsonMessage);
                 providerJoinRoom(jsonMessage.getAsJsonPrimitive("room").getAsString());
+
+                ScheduledSession scheduledSession = scheduledSessionDao.getScheduledSessionByRoomId(jsonMessage.getAsJsonPrimitive("room").getAsString());
+                scheduledSession.setKurentoSessionId(session.getId());
+                scheduledSessionDao.putScheduledSession(scheduledSession);
                 break;
             case "onIceCandidate":
                 // Received local candidate
@@ -76,6 +81,7 @@ public class CallHandler extends TextWebSocketHandler {
             case "updatedSdpAnswer":
                 String updatedSdpAnswer = jsonMessage.getAsJsonPrimitive("sdpAnswer").getAsString();
                 String roomName = jsonMessage.getAsJsonPrimitive("room").getAsString();
+
                 reNegotiateWithSdpAnswer(roomName, updatedSdpAnswer);
                 break;
             case "leave":
@@ -161,7 +167,8 @@ public class CallHandler extends TextWebSocketHandler {
         WebUserSession caller = new WebUserSession(session, providerName, roomName);
         registry.registerWebUser(caller);
         log.info("Web user {} has been registered successfully, sessionId is {}", providerName,
-            caller.getSessionId());
+                caller.getSessionId());
+
         Room room = roomManager.getRoomOrCreate(roomName);
         caller.setSdpOffer(sdpOffer);
         room.joinAsProvider(providerName, caller);
@@ -192,16 +199,13 @@ public class CallHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         log.info("Connection is closed for session " + session.getId());
         final UserSession user = registry.getBySession(session);
-        Room room = roomManager.getRoomOrCreate(user.getRoomName());
-        String roomName = room.getRoomName();
-//        String roomName = user.getRoomName();
-        log.info("The session ID: {}", roomName);
-        if (roomName != null && roomName.length() != 0) {
-            log.info("Setting doctor status to away");
-            ScheduledSession scheduledSession = scheduledSessionDao.getScheduledSessionByRoomId(roomName);
-            scheduledSession.setDoctorStatus(false);
-            scheduledSessionDao.putScheduledSession(scheduledSession);
-        }
+        String roomName = user.getRoomName();
+
+        ScheduledSession scheduledSession = scheduledSessionDao.
+                getScheduledSessionByKurentoSessionId(session.getId());
+        scheduledSession.setDoctorStatus(AWSConfigConstants.ParticipantStatus_NOTCONNECTED);
+        scheduledSessionDao.putScheduledSession(scheduledSession);
+
         leaveRoom(session, roomName);
     }
 }

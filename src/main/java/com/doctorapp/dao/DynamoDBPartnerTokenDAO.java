@@ -63,8 +63,9 @@ public class DynamoDBPartnerTokenDAO implements ClientTokenServices {
     public void saveAccessToken(OAuth2ProtectedResourceDetails resource,
                                 Authentication authentication,
                                 OAuth2AccessToken accessToken) {
-
         String userName = authentication != null ? authentication.getName() : null;
+
+        removeDuplicatePartnerTokens(resource.getClientId(), userName);
 
         OAuthPartnerToken oauthPartnerToken = OAuthPartnerToken.builder()
             .tokenId(accessToken.getValue())
@@ -89,6 +90,26 @@ public class DynamoDBPartnerTokenDAO implements ClientTokenServices {
         List<OAuthPartnerToken> accessTokens = getOAuthPartnerTokensByAuthenticationId(authenticationId);
 
         dynamoDBMapper.batchDelete(accessTokens);
+    }
+
+    private void removeDuplicatePartnerTokens(String clientId, String username) {
+        log.info("Searching for any duplicate tokens with client ID {} and username {}",
+                clientId, username);
+        DynamoDBQueryExpression query = new DynamoDBQueryExpression<OAuthPartnerToken>()
+                .withIndexName("clientId-userName-index")
+                .withConsistentRead(Boolean.FALSE)
+                .withHashKeyValues(OAuthPartnerToken.builder()
+                        .clientId(clientId)
+                        .build());
+        List<OAuthPartnerToken> partnerTokens = dynamoDBMapper.query(OAuthPartnerToken.class, query);
+
+        if (partnerTokens.size() != 0) {
+            for (OAuthPartnerToken partnerToken : partnerTokens) {
+                if (partnerToken.getUserName().equals(username)) {
+                    dynamoDBMapper.delete(partnerToken);
+                }
+            }
+        }
     }
 
     private List<OAuthPartnerToken> getOAuthPartnerTokensByAuthenticationId(String authenticationId) {
