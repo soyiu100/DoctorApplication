@@ -56,7 +56,6 @@ public class ViewSessionsController {
     @RequestMapping(value = "/view_sessions")
     public String viewSessionPage(Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         // This is in the case that the doctor clicks home while
-        log.info("Room ID is: {}", request.getParameter("roomId"));
         if (request.getParameter("roomId") != null) {
             ScheduledSession session = scheduledSessionDao.getScheduledSessionByRoomId(request.getParameter("roomId"));
             if (session == null) {

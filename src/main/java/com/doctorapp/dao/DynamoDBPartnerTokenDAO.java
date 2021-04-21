@@ -72,6 +72,7 @@ public class DynamoDBPartnerTokenDAO implements ClientTokenServices {
             .token(accessToken)
             .authenticationId(keyGenerator.extractKey(resource, authentication))
             .userName(userName)
+            .expirationDate(accessToken.getExpiration())
             .clientId(resource.getClientId())
             .build();
 

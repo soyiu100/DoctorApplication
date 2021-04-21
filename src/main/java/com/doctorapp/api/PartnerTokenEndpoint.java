@@ -10,7 +10,9 @@ import com.doctorapp.authentication.UserIDAuthenticationToken;
 import com.doctorapp.dao.DynamoDBPartnerTokenDAO;
 import com.doctorapp.dto.OAuthPartner;
 import com.doctorapp.dao.DynamoDBPartnerDetailsDAO;
+import java.util.Date;
 import java.util.Map;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Lucun Cai
  */
 @RestController
+@Log4j2
 public class PartnerTokenEndpoint {
 
     @Autowired
@@ -61,9 +64,13 @@ public class PartnerTokenEndpoint {
         OAuth2AccessToken accessToken = partnerTokenService.getAccessToken(resourceDetails,
             new UserIDAuthenticationToken(userID));
 
+        log.info(String.format("Retrieving partner token for userId: %s, partnerId: %s. Token: %s",
+            userID, partnerId, accessToken));
+
         if (accessToken == null) {
             throw new OAuth2Exception("No token found for user: " + userID);
-        } else if (accessToken.getExpiresIn() <= NumberUtils.INTEGER_ZERO) {
+        } else if (accessToken.getExpiration().compareTo(new Date()) < 0) {
+            log.info("Token has expired, refresh the token");
             //Token expired, refresh the token.
             accessToken = refreshClientToken(accessToken, resourceDetails);
         }

@@ -55,7 +55,8 @@ public class TelehealthSkillStreamHandler {
         assert(token != null && !token.isEmpty());
         String patientId = patientDataClient.getPatientIdWithAccessToken(token);
         String userName = patientDataClient.getUserNameWithAccessToken(token);
-        log.info("Get patientId: " + patientId);
+        log.info(String.format("Received directive for patientId: %s, userName: %s, directive: %s",
+            patientId, userName, skillRequest.toString()));
         Optional<ScheduledSession> sessionOptional = patientDataClient.getCurrentSessionsByPatientId(patientId);
 
         switch (name) {
@@ -73,7 +74,7 @@ public class TelehealthSkillStreamHandler {
                     .userName(userName)
                     .sdpOffer(sdpOffer)
                     .build();
-                log.info("Starting initiateSession: " + initiateSession.toString());
+                log.info(String.format("Starting initiateSession for user %s with roomId %s", userName, initiateSession.getRoomId()));
                 String sdpAnswer = sessionHandler.initiateSessionHandler(initiateSession, roomManager);
 
                 callRTCSCAPI(skillRequest, sdpAnswer, userName, "AnswerGeneratedForSession");
@@ -95,7 +96,7 @@ public class TelehealthSkillStreamHandler {
                     .userName(userName)
                     .sdpOffer(updatedSdpOffer)
                     .build();
-                log.info("Starting updateSession: " + updateSession.toString());
+                log.info(String.format("Starting updateSession for user %s with roomId %s", userName, updateSession.getRoomId()));
                 String updatedSdpAnswer = sessionHandler.updateSessionHandler(updateSession, roomManager);
                 callRTCSCAPI(skillRequest, updatedSdpAnswer, userName, "AnswerGeneratedForSessionUpdate");
                 return deferredResponse(skillRequest.path("directive").path("header"));

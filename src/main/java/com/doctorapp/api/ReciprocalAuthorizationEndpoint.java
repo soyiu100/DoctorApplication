@@ -80,7 +80,7 @@ public class ReciprocalAuthorizationEndpoint {
         OAuth2AccessToken accessToken = tokenProvider.obtainAccessToken(resourceDetails,
             createAccessTokenRequest(authorizationCode));
 
-        log.info("Starting saving token for Reciprocal");
+        log.info("Starting saving token for Reciprocal: " + accessToken.getExpiration());
         partnerTokenRepository.saveAccessToken(resourceDetails, auth, accessToken);
     }
 
