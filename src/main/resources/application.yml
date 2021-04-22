@@ -1,4 +1,8 @@
 server:
+  servlet:
+    session:
+      cookie:
+        max-age: 90m
   port: 5000
   tomcat:
     use-relative-redirects: true
