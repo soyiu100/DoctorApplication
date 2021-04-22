@@ -52,6 +52,13 @@ public class DynamoDBPartnerTokenDAO implements ClientTokenServices {
         return accessTokens.stream().findAny().map(OAuthPartnerToken::getToken).orElse(null);
     }
 
+    public OAuthPartnerToken getOAuthPartnerToken(OAuth2ProtectedResourceDetails resource, Authentication authentication) {
+        String authenticationId = keyGenerator.extractKey(resource, authentication);
+        List<OAuthPartnerToken> accessTokens = getOAuthPartnerTokensByAuthenticationId(authenticationId);
+
+        return accessTokens.get(0);
+    }
+
     /**
      * Save the {@link OAuth2AccessToken} of a partner protected resource for the {@link Authentication} provided.
      *

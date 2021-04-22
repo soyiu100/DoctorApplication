@@ -10,10 +10,10 @@ import com.doctorapp.authentication.UserIDAuthenticationToken;
 import com.doctorapp.dao.DynamoDBPartnerTokenDAO;
 import com.doctorapp.dto.OAuthPartner;
 import com.doctorapp.dao.DynamoDBPartnerDetailsDAO;
+import com.doctorapp.dto.OAuthPartnerToken;
 import java.util.Date;
 import java.util.Map;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
@@ -61,15 +61,17 @@ public class PartnerTokenEndpoint {
 
         OAuth2ProtectedResourceDetails resourceDetails = partner.toProtectedResourceDetails();
 
-        OAuth2AccessToken accessToken = partnerTokenService.getAccessToken(resourceDetails,
+        OAuthPartnerToken partnerToken = partnerTokenService.getOAuthPartnerToken(resourceDetails,
             new UserIDAuthenticationToken(userID));
+        OAuth2AccessToken accessToken = partnerToken.getToken();
 
         log.info(String.format("Retrieving partner token for userId: %s, partnerId: %s. Token: %s",
             userID, partnerId, accessToken));
 
+        log.info(String.format("Token expiration date: %s, now is %s", partnerToken.getExpirationDate(), new Date()));
         if (accessToken == null) {
             throw new OAuth2Exception("No token found for user: " + userID);
-        } else if (accessToken.getExpiration().compareTo(new Date()) < 0) {
+        } else if (partnerToken.getExpirationDate().compareTo(new Date()) <= 0) {
             log.info("Token has expired, refresh the token");
             //Token expired, refresh the token.
             accessToken = refreshClientToken(accessToken, resourceDetails);

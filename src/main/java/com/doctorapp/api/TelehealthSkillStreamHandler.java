@@ -43,7 +43,6 @@ public class TelehealthSkillStreamHandler {
     @PostMapping(value = "/alexa/telehealth/skill/directive",
         consumes = "application/json", produces = "application/json")
     public ObjectNode handleRequest(@RequestBody JsonNode skillRequest) {
-        log.info("Received directive: " + skillRequest.toString());
         String namespace = skillRequest.path("directive").path("header").path("namespace").asText();
         if (!"Alexa.RTCSessionController".equals(namespace)) {
             throw new IllegalArgumentException("Unsupported namespace: {}" + namespace);
