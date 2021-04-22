@@ -8,6 +8,8 @@ package com.doctorapp.api;
 import com.doctorapp.dao.DynamoDBPartnerTokenDAO;
 import com.doctorapp.dto.OAuthPartner;
 import com.doctorapp.dao.DynamoDBPartnerDetailsDAO;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 import lombok.extern.log4j.Log4j2;
@@ -80,7 +82,7 @@ public class ReciprocalAuthorizationEndpoint {
         OAuth2AccessToken accessToken = tokenProvider.obtainAccessToken(resourceDetails,
             createAccessTokenRequest(authorizationCode));
 
-        log.info("Starting saving token for Reciprocal: " + accessToken.getExpiration());
+        log.info("Starting saving token for Reciprocal. Token will expire in -s" + accessToken.getExpiresIn());
         partnerTokenRepository.saveAccessToken(resourceDetails, auth, accessToken);
     }
 

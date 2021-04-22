@@ -10,6 +10,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.doctorapp.dto.OAuthPartnerToken;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import lombok.extern.log4j.Log4j2;
@@ -74,12 +76,19 @@ public class DynamoDBPartnerTokenDAO implements ClientTokenServices {
 
         removeDuplicatePartnerTokens(resource.getClientId(), userName);
 
+
+        // Calculate expiration date
+        Calendar date = Calendar.getInstance();
+        Date expirationDate = new Date(date.getTimeInMillis() + (accessToken.getExpiresIn() * 1000L));
+        log.info("Token will expire in -s" + accessToken.getExpiresIn());
+        log.info("Current time is: " + date.getTime());
+        log.info("expirationDate is: " + expirationDate.getTime());
         OAuthPartnerToken oauthPartnerToken = OAuthPartnerToken.builder()
             .tokenId(accessToken.getValue())
             .token(accessToken)
             .authenticationId(keyGenerator.extractKey(resource, authentication))
             .userName(userName)
-            .expirationDate(accessToken.getExpiration())
+            .expirationDate(expirationDate)
             .clientId(resource.getClientId())
             .build();
 

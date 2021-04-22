@@ -68,16 +68,15 @@ public class PartnerTokenEndpoint {
         log.info(String.format("Retrieving partner token for userId: %s, partnerId: %s. Token: %s",
             userID, partnerId, accessToken));
 
-        log.info(String.format("Token expiration date: %s, now is %s", partnerToken.getExpirationDate(), new Date()));
+        log.info(String.format("Partner token expiration date: %s, now is %s", partnerToken.getExpirationDate(), new Date()));
         if (accessToken == null) {
             throw new OAuth2Exception("No token found for user: " + userID);
         } else if (partnerToken.getExpirationDate().compareTo(new Date()) <= 0) {
             log.info("Token has expired, refresh the token");
             //Token expired, refresh the token.
             accessToken = refreshClientToken(accessToken, resourceDetails);
+            partnerTokenService.saveAccessToken(resourceDetails, new UserIDAuthenticationToken(userID), accessToken);
         }
-
-        partnerTokenService.saveAccessToken(resourceDetails, new UserIDAuthenticationToken(userID), accessToken);
 
         return accessToken;
     }
