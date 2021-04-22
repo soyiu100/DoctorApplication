@@ -62,8 +62,9 @@ public class TelehealthSkillStreamHandler {
         switch (name) {
             case "InitiateSessionWithOffer":
                 if (!sessionOptional.isPresent()) {
-                    log.info("No session is found");
-                    callRTCSCAPI(skillRequest, null, userName, "InitiateSessionWithOfferFailed");
+                    log.info("No session is found for user " + userName);
+                    callRTCSCAPI(skillRequest, null, userName, "InitiateSessionWithOfferFailed",
+                        "No available session. Please create a new session and try again.");
                     return deferredResponse(skillRequest.path("directive").path("header"));
                 }
                 ScheduledSession initiatedSession = sessionOptional.get();
@@ -77,15 +78,16 @@ public class TelehealthSkillStreamHandler {
                 log.info(String.format("Starting initiateSession for user %s with roomId %s", userName, initiateSession.getRoomId()));
                 String sdpAnswer = sessionHandler.initiateSessionHandler(initiateSession, roomManager);
 
-                callRTCSCAPI(skillRequest, sdpAnswer, userName, "AnswerGeneratedForSession");
+                callRTCSCAPI(skillRequest, sdpAnswer, userName, "AnswerGeneratedForSession", null);
                 // Update patient status
                 initiatedSession.setPatientStatus(true);
                 patientDataClient.putScheduledSession(initiatedSession);
                 return deferredResponse(skillRequest.path("directive").path("header"));
             case "UpdateSessionWithOffer":
                 if (!sessionOptional.isPresent()) {
-                    log.info("No session is found");
-                    callRTCSCAPI(skillRequest, null, userName, "UpdateSessionWithOfferFailed");
+                    log.info("No session is found for user " + userName);
+                    callRTCSCAPI(skillRequest, null, userName, "UpdateSessionWithOfferFailed",
+                        "No available session. Please create a new session and try again.");
                     return deferredResponse(skillRequest.path("directive").path("header"));
                 }
                 ScheduledSession updatedSession = sessionOptional.get();
@@ -98,12 +100,12 @@ public class TelehealthSkillStreamHandler {
                     .build();
                 log.info(String.format("Starting updateSession for user %s with roomId %s", userName, updateSession.getRoomId()));
                 String updatedSdpAnswer = sessionHandler.updateSessionHandler(updateSession, roomManager);
-                callRTCSCAPI(skillRequest, updatedSdpAnswer, userName, "AnswerGeneratedForSessionUpdate");
+                callRTCSCAPI(skillRequest, updatedSdpAnswer, userName, "AnswerGeneratedForSessionUpdate", null);
                 return deferredResponse(skillRequest.path("directive").path("header"));
             case "SessionDisconnected":
             case "DisconnectSession":
                 if (!sessionOptional.isPresent()) {
-                    log.info("No session is found");
+                    log.info("No session is found for user " + userName);
                     return deferredResponse(skillRequest.path("directive").path("header"));
                 }
                 if (!sessionOptional.get().isPatientStatus()) {
@@ -119,7 +121,7 @@ public class TelehealthSkillStreamHandler {
                 sessionHandler.disconnectSessionHandler(disconnectSession, roomManager);
                 disconnectedSession.setPatientStatus(false);
                 patientDataClient.putScheduledSession(disconnectedSession);
-                callRTCSCAPI(skillRequest, null, userName, "SessionDisconnected");
+                callRTCSCAPI(skillRequest, null, userName, "SessionDisconnected", null);
                 return deferredResponse(skillRequest.path("directive").path("header"));
             default:
                 log.info("Unsupported directive" + name);
@@ -136,11 +138,18 @@ public class TelehealthSkillStreamHandler {
     }
 
     private void callRTCSCAPI(JsonNode skillRequest, String sdpAnswer, String userName,
-        String eventName) {
+        String eventName, String errorMessage) {
         ObjectNode payloadValue = mapper.createObjectNode();
 
         ObjectNode header = (ObjectNode) skillRequest.path("directive").path("header");
         header.put("name", eventName);
+
+        if (errorMessage != null) {
+            ObjectNode errorValue = mapper.createObjectNode();
+            errorValue.put("code", "INTERNAL_ERROR");
+            errorValue.put("value", errorMessage);
+            payloadValue.putPOJO("error", errorValue);
+        }
 
         if (sdpAnswer != null && !sdpAnswer.isEmpty()) {
             ObjectNode answerValue = mapper.createObjectNode();
