@@ -1,33 +1,34 @@
 package com.doctorapp.dao;
 
+import static com.doctorapp.constant.AWSConfigConstants.FILTER_EXPRESSION;
+import static com.doctorapp.constant.AWSConfigConstants.FILTER_EXPRESSION_WITH_PATIENTID;
+import static com.doctorapp.constant.AWSConfigConstants.REGION;
+
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMappingException;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.doctorapp.data.ScheduledSession;
 import com.doctorapp.data.TimeRange;
 import com.doctorapp.exception.DependencyException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
+import javax.annotation.PostConstruct;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Repository;
-
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.doctorapp.constant.AWSConfigConstants.*;
 
 @Log4j2
 @Repository
@@ -97,19 +98,11 @@ public class ScheduledSessionDao {
     public Optional<ScheduledSession> getCurrentSessionsByPatientId(@NonNull String patientId) {
         String startTime = "";
         try {
-            Calendar calendar = Calendar.getInstance();
-            int minute = calendar.get(Calendar.MINUTE);
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             format.setTimeZone(TimeZone.getTimeZone("PST"));
-            calendar = DateUtils.round(Calendar.getInstance(), Calendar.HOUR);
+            Calendar calendar = DateUtils.round(Calendar.getInstance(), Calendar.HOUR);
 
-            if (minute / 30 == 0) {
-                startTime = format.format(calendar.getTime());
-                calendar.add(Calendar.MINUTE, 30);
-            } else {
-                calendar.add(Calendar.MINUTE, -30);
-                startTime = format.format(calendar.getTime());
-            }
+            startTime = format.format(calendar.getTime());
             log.info("startTime is " + startTime);
 
             Map<String, AttributeValue> expectedAttributes = new HashMap<>();

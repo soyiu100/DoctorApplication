@@ -9,7 +9,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.doctorapp.dto.OAuthPartnerToken;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -80,8 +79,6 @@ public class DynamoDBPartnerTokenDAO implements ClientTokenServices {
         // Calculate expiration date
         Calendar date = Calendar.getInstance();
         Date expirationDate = new Date(date.getTimeInMillis() + (accessToken.getExpiresIn() * 1000L));
-        log.info("Token will expire in -s" + accessToken.getExpiresIn());
-        log.info("Current time is: " + date.getTime());
         log.info("expirationDate is: " + expirationDate.getTime());
         OAuthPartnerToken oauthPartnerToken = OAuthPartnerToken.builder()
             .tokenId(accessToken.getValue())
