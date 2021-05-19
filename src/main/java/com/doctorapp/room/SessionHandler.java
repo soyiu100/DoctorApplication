@@ -18,9 +18,6 @@ import org.kurento.client.WebRtcEndpoint;
 @Log4j2
 public class SessionHandler {
 
-    private static final String tokenEndpoint = "https://telehealth.lucuncai.com/api/partner/token?user_id=wanbingy123&partner_id=wanbingy_telehealth_client";
-    private String appToken = "Bearer 33cfa9a1-1d6e-4ed9-bf54-1227cf42cfd0";
-
     public String initiateSessionHandler(TelehealthSessionRequest initiateSession, RoomManager roomManager) {
         // Join room
         Room room = roomManager.getRoomOrCreate(initiateSession.getRoomId());
