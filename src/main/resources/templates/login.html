@@ -55,27 +55,27 @@
                                class="btn btn-info"
                                value="Log In">
 
-                        <div class="float-right"><a th:href="${param.admin} ? '/admin/register' : (${param.doctor} ? '/register' : '/patient/register')" class="btn btn-outline-info">Register New User</a></div>
+                        <div class="float-right"><a id="register-link" class="btn btn-outline-info">Register New User</a></div>
                 </div>
                 <div class="d-flex justify-content-center" style="padding-top: 3%;">
                     <div style="font-size: 0.9rem; padding-right: 50px;">
                         <span th:text="${param.admin} ? 'Not an admin? Log in as a patient '
                             : (${param.doctor} ? 'Not a doctor? Log in as a patient ' : 'Not a patient? Log in as a doctor ')">
-                        </span><a th:href="${param.admin} ? '/login' : (${param.doctor} ? '/login' : '/doctor/login')">here</a>
+                        </span><a id="alt-login-link-a">here</a>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center">
                     <div style="font-size: 0.9rem; padding-right: 50px;">
                             <span th:text="${param.admin} ? 'Log in as a doctor '
                                 : (${param.doctor} ? 'Log in as an admin ' : 'Log in as an admin ')">
-                            </span><a th:href="${param.admin} ? '/doctor/login' : (${param.doctor} ? '/admin/login' : '/admin/login')">here</a>
+                            </span><a id="alt-login-link-b">here</a>
                     </div>
                 </div>
                 <hr/>
 
                 <div class="d-flex justify-content-center">
                     <div style="font-size: 0.9rem; padding-right: 50px;">
-                        <a th:href="${param.admin} ? '/change_password?admin' : (${param.doctor} ? '/change_password?doctor' : '/change_password?patient')">Change your Password?</a>
+                        <a id="change-password-link">Change your Password?</a>
                     </div>
                 </div>
 
@@ -98,6 +98,33 @@
                 event.preventDefault();
             }
         });
+    });
+</script>
+<script th:inline="javascript">
+    // https://github.com/spring-projects/spring-boot/issues/11254
+    $(document).ready(function() {
+        /*<![CDATA[*/
+        var admin = /*[[${param.admin}]]*/ '';
+        var doctor = /*[[ ${param.doctor} ]]*/ '';
+        /*]]>*/
+        if (admin) {
+            $("#change-password-link").attr("href", "/change_password?admin")
+            $("#register-link").attr("href", "/admin/register")
+            $("#alt-login-link-a").attr("href", "/login")
+            $("#alt-login-link-b").attr("href", "/doctor/login")
+        } else if (doctor) {
+            $("#change-password-link").attr("href", "/change_password?doctor")
+            $("#register-link").attr("href", "/register")
+            $("#alt-login-link-a").attr("href", "/login")
+            $("#alt-login-link-b").attr("href", "/admin/login")
+
+        } else {
+            $("#change-password-link").attr("href", "/change_password?patient")
+            $("#register-link").attr("href", "/patient/register")
+            $("#alt-login-link-a").attr("href", "/doctor/login")
+            $("#alt-login-link-b").attr("href", "/admin/login")
+
+        }
     });
 </script>
 </html>
